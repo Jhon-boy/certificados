@@ -1,4 +1,6 @@
 using certificados.models.Context;
+using certificados.services.Services;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 
 namespace certificados.web
@@ -14,6 +16,8 @@ namespace certificados.web
 
             builder.Services.AddDbContext<AppDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            builder.Services.AddScoped<LogService>();
+
 
             var app = builder.Build();
 
@@ -22,6 +26,30 @@ namespace certificados.web
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
+            //Midelware para capturar las exepciones de todo TIPO y registrar en LA DB
+            app.UseExceptionHandler(errorApp =>
+            {
+                errorApp.Run(async context =>
+                {
+                    var logService = context.RequestServices.GetRequiredService<LogService>();
+                    var exception = context.Features.Get<IExceptionHandlerPathFeature>()?.Error;
+
+                    if (exception != null)
+                    {
+                        await logService.RegistrarExcepcion(exception);
+                    }
+
+                    context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                    context.Response.ContentType = "application/json";
+
+                    await context.Response.WriteAsJsonAsync(new
+                    {
+                        Error = "Se produjo un error en el servidor. Por favor, contacte al soporte técnico."
+                    });
+                });
+            });
+
             app.UseStaticFiles();
 
             app.UseRouting();

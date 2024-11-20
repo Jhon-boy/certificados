@@ -21,6 +21,6 @@ namespace certificados.models.Entitys.dbo
         public string? ErrorType { get; set; }
 
         [Column("TIMESTAMP")]
-        public string? Timestamp { get; set; }
+        public string? Timestamp { get; set; }  
     }
 }
