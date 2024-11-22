@@ -1,119 +1,143 @@
 ﻿using System.Data;
 using certificados.models.Context;
+using certificados.models.Entitys;
 using certificados.models.Entitys.dbo;
+using certificados.services.Utils;
 using Microsoft.EntityFrameworkCore;
 
 namespace certificados.dal.DataAccess
+
 {
     public class TrolDA(AppDbContext appDbContext)
     {
         private readonly AppDbContext context = appDbContext;
 
-        public void insertarRol(Trol tRol)
-        {
+        public Response insertarRol(Trol tRol) {
+            Response response = Utils.BadResponse(null);
             try
             {
                 context.Trol.Add(tRol);
                 context.SaveChanges();
+                response = Utils.OkResponse(tRol);
+
             }
             catch (Exception ex) {
+
                 throw new Exception($"ERROR AL INSERTAR ROL: {ex.Message}");
             }
+            return response;
         }
 
-        public void modificarRol(Trol tRol)
+        public Response ModificarRol(Trol tRol)
         {
+            Response response = Utils.BadResponse(null);
             try
             {
-                // Buscamos la entidad que se quiere modificar en la base de datos
                 var rolExistente = context.Trol.FirstOrDefault(t => t.IdRol == tRol.IdRol);
-                if (rolExistente != null) {
+
+                if (rolExistente != null)
+                {
                     rolExistente.Nombre = tRol.Nombre;
                     rolExistente.Observacion = tRol.Observacion;
                     rolExistente.Estado = tRol.Estado;
-                    rolExistente.FModificacion = DateTime.Now; // Actualizamos la fecha de modificación
-                    rolExistente.UsuarioActualizacion = tRol.UsuarioActualizacion; // Usuario que realiza la actualización
+                    rolExistente.FModificacion = DateTime.Now;
+                    rolExistente.UsuarioActualizacion = tRol.UsuarioActualizacion; 
 
-                    // Guardar los cambios en la base de datos
                     context.SaveChanges();
+
+                    response = Utils.OkResponse(rolExistente);
                 }
                 else
                 {
-                    throw new Exception(message: "ROL NO EXISTE");
+                     response.Message = "ROL NO EXISTE";
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception($"ERROR AL MODIFICAR ROL: {ex.Message}");
+                response.Message = "ERROR AL MODIFICAR ROL: " + ex.Message;
+                throw new Exception($"ERROR AL INSERTAR ROL: {ex.Message}");
             }
+            return response;
         }
 
-        public void eliminarRol(Trol tRol)
+
+        public Response EliminarRol(Trol tRol)
         {
+            Response response = Utils.BadResponse(null);
+
             try
             {
-                // Buscamos la entidad que se quiere eliminar en la base de datos
                 var rolExistente = context.Trol.FirstOrDefault(t => t.IdRol == tRol.IdRol);
+
                 if (rolExistente != null)
                 {
-                    // Eliminar la entidad
                     context.Trol.Remove(rolExistente);
-
-                    // Guardar los cambios en la base de datos
                     context.SaveChanges();
+                    response = Utils.OkResponse(rolExistente);
                 }
-                else {
-                    throw new Exception(message: "ROL NO EXISTE");
+                else
+                {
+                    response = Utils.BadResponse("ROL NO EXISTE");
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception($"ERROR AL ELIMINAR ROL: {ex.Message}");
+                response = Utils.BadResponse($"ERROR AL ELIMINAR ROL: {ex.Message}");
+                throw new Exception($"ERROR AL INSERTAR ROL: {ex.Message}");
             }
+
+            return response;
         }
 
-        public List<Trol> listarRol()
-        {
+
+        public Response ListarRol(){
+            Response response = Utils.BadResponse(null);
+
             try
             {
+                var listaRoles = context.Trol.ToList();
+                if (listaRoles.Any())
                 {
-                    // Obtener todos los roles de la base de datos
-                    var listaRoles = context.Trol.ToList();
-
-                    // Devolver la lista de roles
-                    return listaRoles;
+                    response = Utils.OkResponse(listaRoles);
+                }
+                else
+                {
+                    response = Utils.BadResponse("NO SE ENCONTRARON ROLES.");
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception($"SE PRODUJO UN ERROR: {ex.Message}");
+                response = Utils.BadResponse($"SE PRODUJO UN ERROR AL LISTAR LOS ROLES: {ex.Message}");
+                throw new Exception($"ERROR AL INSERTAR ROL: {ex.Message}");
             }
+
+            return response;
         }
 
-        public Trol buscarRol(int idRol)
+        public Response BuscarRol(int idRol)
         {
+            Response response = Utils.BadResponse(null);
+
             try
             {
+                var trol = context.Trol.FirstOrDefault(t => t.IdRol == idRol);
+
+                if (trol != null)
                 {
-                    // Buscar el rol por su IdRol
-                    var trol = context.Trol.FirstOrDefault(t => t.IdRol == idRol);
-
-                    if (trol == null)
-                    {
-                        // Lanzar una excepción si no se encuentra el rol
-                        throw new Exception($"EL ROL CON ID {idRol} NO EXISTE.");
-                    }
-
-                    return trol;
+                    response = Utils.OkResponse(trol);
+                }
+                else
+                {
+                    response = Utils.BadResponse($"EL ROL CON ID {idRol} NO EXISTE.");
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception($"ERROR AL BUSCAR ROL: {ex.Message}", ex);
+                response = Utils.BadResponse($"ERROR AL BUSCAR ROL: {ex.Message}");
+                throw new Exception($"ERROR AL INSERTAR ROL: {ex.Message}");
             }
+
+            return response;
         }
-
-
-
     }
 }

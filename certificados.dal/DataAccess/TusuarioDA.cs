@@ -1,6 +1,7 @@
 ﻿using certificados.models.Context;
+using certificados.models.Entitys;
 using certificados.models.Entitys.dbo;
-using Microsoft.EntityFrameworkCore;
+using certificados.services.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,34 +10,36 @@ using System.Threading.Tasks;
 
 namespace certificados.dal.DataAccess
 {
-    public class TusuarioDA
+    public class TusuarioDA(AppDbContext appDbContext)
     {
-        private readonly AppDbContext _context;
+        private readonly AppDbContext context = appDbContext;
 
-        public TusuarioDA(AppDbContext context)
+        public Response InsertarUsuario(Tusuario tusuario)
         {
-            _context = context;
-        }
-        //Da para insertar usuario
-        public void InsertarUsuario(Tusuario tusuario)
-        {
+
+            Response response = Utils.BadResponse(null);
             try
             {
-                _context.Tusuario.Add(tusuario);
-                _context.SaveChanges();
+                context.Tusuario.Add(tusuario);
+                context.SaveChanges();
+
+                response = Utils.OkResponse(tusuario);
             }
             catch (Exception ex)
             {
 
+                response = Utils.BadResponse($"ERROR AL INSERTAR USUARIO: {ex.Message}");
                 throw new Exception($"ERROR AL INSERTAR USUARIO: {ex.Message}");
             }
+            return response;
         }
-        //DA para Modificar un usuario...
-        public void ModificarUsuario(Tusuario tusuario)
+
+        public Response ModificarUsuario(Tusuario tusuario)
         {
+            Response response = Utils.BadResponse(null);
             try
             {
-                var usuarioExistente = _context.Tusuario.FirstOrDefault(u => u.idUsuario == tusuario.idUsuario);
+                var usuarioExistente = context.Tusuario.FirstOrDefault(u => u.idUsuario == tusuario.idUsuario);
 
                 if (usuarioExistente != null)
                 {
@@ -44,82 +47,90 @@ namespace certificados.dal.DataAccess
                     usuarioExistente.Clave = tusuario.Clave;
                     usuarioExistente.Cedula = tusuario.Cedula;
                     usuarioExistente.Estado = tusuario.Estado;
-                    usuarioExistente.FModificacion = DateTime.Now; // Actualizamos la fecha de modificación
+                    usuarioExistente.FModificacion = DateTime.Now;
                     usuarioExistente.UsuarioActualizacion = tusuario.UsuarioActualizacion;
                     usuarioExistente.IdRol = tusuario.IdRol;
 
-                    _context.SaveChanges();
+                    context.SaveChanges();
+                    response = Utils.OkResponse(usuarioExistente);
                 }
                 else
                 {
-                    throw new Exception("USUARIO NO EXISTE");
+                    response = Utils.BadResponse("USUARIO NO EXISTE");
                 }
             }
             catch (Exception ex)
             {
+                response = Utils.BadResponse($"ERROR AL MODIFICAR USUARIO: {ex.Message}");
                 throw new Exception($"ERROR AL MODIFICAR USUARIO: {ex.Message}");
             }
+            return response;
         }
-        //Da para eliminar un usuario by ID 
-        public void EliminarUsuario(int idUsuario)
-        {
+
+        public Response BuscarUsuario(int idUsuario) {
+
+            Response response = Utils.BadResponse(null);
             try
             {
-                var usuarioExistente = _context.Tusuario.FirstOrDefault(u => u.idUsuario == idUsuario);
+                // Buscar el usuario por su ID
+                var usuario = context.Tusuario.FirstOrDefault(u => u.idUsuario == idUsuario);
+
+                if (usuario != null)
+                {
+                    // Retornar respuesta exitosa
+                    response = Utils.OkResponse(usuario);
+                }
+                else
+                {
+                    // Si el usuario no existe
+                    response = Utils.BadResponse("USUARIO NO EXISTE");
+                }
+            }
+            catch (Exception ex)
+            {
+                response = Utils.BadResponse($"ERROR AL BUSCAR USUARIO: {ex.Message}");
+                throw new Exception($"ERROR AL BUSCAR USUARIO: {ex.Message}");
+            }
+            return response;
+        }
+        public Response ListarUsuario() {
+            Response response = Utils.BadResponse(null);
+            try
+            {
+                var listarUsuarios =context.Tusuario.ToList();
+                response = Utils.OkResponse(listarUsuarios);
+
+            }
+            catch (Exception ex) {
+                response = Utils.BadResponse($"ERROR AL LISTAR USUARIOS: {ex.Message}");
+                throw new Exception($"ERROR AL LISTAR USUARIO: {ex.Message}");
+            }
+            return response;
+        }
+        public Response EliminarUsuario(int idUsuario) {
+            Response response = Utils.BadResponse(null);
+            try
+            {
+                var usuarioExistente = context.Tusuario.FirstOrDefault(u => u.idUsuario == idUsuario);
 
                 if (usuarioExistente != null)
                 {
-                    _context.Tusuario.Remove(usuarioExistente);
-                    _context.SaveChanges();
+                    context.Tusuario.Remove(usuarioExistente);
+                    context.SaveChanges();
+                    response = Utils.OkResponse(null);
                 }
                 else
                 {
-                    throw new Exception("USUARIO NO EXISTE");
+                    response = Utils.BadResponse("USUARIO NO EXISTE");
                 }
             }
             catch (Exception ex)
             {
+                response = Utils.BadResponse($"ERROR AL ELIMINAR USUARIO: {ex.Message}");
                 throw new Exception($"ERROR AL ELIMINAR USUARIO: {ex.Message}");
             }
-        }
-
-        //DA para listar USUARIOS dela APP 
-        public List<Tusuario> ListarUsuarios()
-        {
-            try
-            {
-                return _context.Tusuario
-                               .Include(u => u.Tpersona) // Incluimos las relaciones con Tpersona
-                               .Include(u => u.Trol)     // Incluimos las relaciones con Trol
-                               .ToList();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"ERROR AL LISTAR USUARIOS: {ex.Message}");
-            }
-        }
-
-        //Buscar un usuarios solo por su ID
-        public Tusuario BuscarUsuario(int idUsuario)
-        {
-            try
-            {
-                var usuario = _context.Tusuario
-                                      .Include(u => u.Tpersona) // Incluimos las relaciones con Tpersona
-                                      .Include(u => u.Trol)     // Incluimos las relaciones con Trol
-                                      .FirstOrDefault(u => u.idUsuario == idUsuario);
-
-                if (usuario == null)
-                {
-                    throw new Exception($"EL USUARIO CON ID {idUsuario} NO EXISTE.");
-                }
-
-                return usuario;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"ERROR AL BUSCAR USUARIO: {ex.Message}", ex);
-            }
+            return response;
         }
     }
+
 }

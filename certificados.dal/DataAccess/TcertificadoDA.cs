@@ -1,0 +1,152 @@
+﻿using certificados.models.Context;
+using certificados.models.Entitys;
+using certificados.models.Entitys.dbo;
+using certificados.services.Utils;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace certificados.dal.DataAccess
+{
+    public class TcertificadoDA(AppDbContext appDbContext)
+    {
+        private readonly AppDbContext context = appDbContext;
+
+        public Response InsertarCertificado(Tcertificado tcertificado) {
+            Response response = Utils.BadResponse(null);
+
+            try
+            {
+                context.Tcertificado.Add(tcertificado);
+                context.SaveChanges();
+                response = Utils.OkResponse(tcertificado);
+
+            }
+            catch (Exception ex) {
+                response = Utils.BadResponse("Error al insertar CERTIFICADO");
+
+                throw new Exception("ERROR AL PROCESAR LA INSERACION DE UN CERTIFICADO");
+            }
+            return response;
+        
+        }
+
+        public Response ModificarCertificado(Tcertificado certificado)
+        {
+            Response response = Utils.BadResponse(null);
+            try
+            {
+                // Buscar el certificado existente
+                var certificadoExistente = context.Tcertificado.FirstOrDefault(c => c.IdCertificado == certificado.IdCertificado);
+
+                if (certificadoExistente != null)
+                {
+                    // Actualizar los campos del certificado
+                    certificadoExistente.Titulo = certificado.Titulo;
+                    certificadoExistente.Imagen = certificado.Imagen;
+                    certificadoExistente.IdEvento = certificado.IdEvento;
+                    certificadoExistente.IdFormato = certificado.IdFormato;
+                    certificadoExistente.Tipo = certificado.Tipo;
+                    certificadoExistente.Estado = certificado.Estado;
+                    certificadoExistente.FModificacion = Utils.timeParsed(DateTime.Now);
+                    certificadoExistente.UsuarioActualizacion = certificado.UsuarioActualizacion;
+
+                    // Guardar los cambios
+                    context.SaveChanges();
+                    response = Utils.OkResponse(certificadoExistente);
+                }
+                else
+                {
+                    // Si el certificado no existe
+                    response = Utils.BadResponse("CERTIFICADO NO EXISTE");
+                }
+            }
+            catch (Exception ex)
+            {
+                response = Utils.BadResponse($"ERROR AL MODIFICAR CERTIFICADO: {ex.Message}");
+                throw new Exception($"ERROR AL MODIFICAR CERTIFICADO: {ex.Message}");
+            }
+            return response;
+        }
+
+        public Response EliminarCertificado(int idCertificado)
+        {
+            Response response = Utils.BadResponse(null);
+            try
+            {
+                // Buscar el certificado existente
+                var certificadoExistente = context.Tcertificado.FirstOrDefault(c => c.IdCertificado == idCertificado);
+
+                if (certificadoExistente != null)
+                {
+                    // Eliminar el certificado
+                    context.Tcertificado.Remove(certificadoExistente);
+                    context.SaveChanges();
+
+                    // Retornar respuesta exitosa
+                    response = Utils.OkResponse(certificadoExistente);
+                }
+                else
+                {
+                    // Si el certificado no existe
+                    response = Utils.BadResponse("CERTIFICADO NO EXISTE");
+                }
+            }
+            catch (Exception ex)
+            {
+                response = Utils.BadResponse($"ERROR AL ELIMINAR CERTIFICADO: {ex.Message}");
+                throw new Exception($"ERROR AL ELIMINAR CERTIFICADO: {ex.Message}");
+            }
+            return response;
+        }
+
+        public Response ListarCertificados()
+        {
+            Response response = Utils.BadResponse(null);
+            try
+            {
+      
+                var listaCertificados = context.Tcertificado.ToList();
+
+                // Retornar respuesta exitosa con la lista
+                response = Utils.OkResponse(listaCertificados);
+            }
+            catch (Exception ex)
+            {
+                response = Utils.BadResponse($"ERROR AL LISTAR CERTIFICADOS: {ex.Message}");
+                throw new Exception($"ERROR AL listar CERTIFICADO: {ex.Message}");
+            }
+            return response;
+        }
+
+        public Response BuscarCertificado(int idCertificado)
+        {
+            Response response = Utils.BadResponse(null);
+            try
+            {
+                // Buscar el certificado por su IdCertificado
+                var certificado = context.Tcertificado.FirstOrDefault(c => c.IdCertificado == idCertificado);
+
+                if (certificado != null)
+                {
+                    // Retornar respuesta exitosa
+                    response = Utils.OkResponse(certificado);
+                }
+                else
+                {
+                    // Si el certificado no existe
+                    response = Utils.BadResponse("CERTIFICADO NO EXISTE");
+                }
+            }
+            catch (Exception ex)
+            {
+                response = Utils.BadResponse($"ERROR AL BUSCAR CERTIFICADO: {ex.Message}");
+                throw new Exception($"ERROR AL BUSCAR CERTIFICADO: {ex.Message}");
+            }
+            return response;
+        }
+
+    }
+}
