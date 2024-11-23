@@ -1,4 +1,8 @@
 ﻿using certificados.models.Context;
+using certificados.models.Entitys;
+using certificados.models.Entitys.dbo;
+using certificados.services.Utils;
+using Microsoft.SqlServer.Server;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +14,129 @@ namespace certificados.dal.DataAccess
     public class TformatoCertificadoDA(AppDbContext appDbContext)
     {
         private readonly AppDbContext context = appDbContext;
+
+        public Response InsertarCertificado(TformatoCertificado tformatoCertificado) {
+
+            Response response = Utils.BadResponse(null);
+
+            try
+            { 
+                tformatoCertificado.FCreacion = Utils.timeParsed(DateTime.Now);
+                context.TformatoCertificado.Add(tformatoCertificado);
+                context.SaveChanges();
+                 
+                response = Utils.OkResponse(tformatoCertificado);
+            }
+            catch (Exception ex)
+            {
+                response = Utils.BadResponse($"ERROR AL INSERTAR FORMATO: {ex.Message}");
+                throw new Exception($"ERROR AL INSERTAR FORMATO CERTIFICADO: {ex.Message}");
+            }
+
+            return response;
+        
+        }
+
+        public Response ModificarFormatoCertificado(TformatoCertificado formato)
+        {
+            Response response = Utils.BadResponse(null);
+            try
+            { 
+                var formatoExistente = context.TformatoCertificado.FirstOrDefault(f => f.idFormato == formato.idFormato);
+
+                if (formatoExistente != null)
+                { 
+                    formatoExistente.LogoUniversidad = formato.LogoUniversidad;
+                    formatoExistente.LogoSecundario = formato.LogoSecundario;
+                    formatoExistente.MarcarAgua = formato.MarcarAgua;
+                    formatoExistente.Qr = formato.Qr;
+                    formatoExistente.FModificacion = DateTime.Now;
+                    formatoExistente.UsuarioActualizacion = formato.UsuarioActualizacion;
+                     
+                    context.SaveChanges();
+                     
+                    response = Utils.OkResponse(formatoExistente);
+                }
+                else
+                { 
+                    response = Utils.BadResponse("FORMATO NO EXISTE");
+
+                }
+            }
+            catch (Exception ex)
+            {
+                response = Utils.BadResponse($"ERROR AL MODIFICAR FORMATO: {ex.Message}");
+                throw new Exception($"ERROR AL MODIFICAR FORMATO: {ex.Message}");
+            }
+            return response;
+        }
+
+        public Response EliminarFormatoCertificado(int idFormato)
+        {
+            Response response = Utils.BadResponse(null);
+            try
+            { 
+                var formatoExistente = context.TformatoCertificado.FirstOrDefault(f => f.idFormato == idFormato);
+
+                if (formatoExistente != null)
+                { 
+                    context.TformatoCertificado.Remove(formatoExistente);
+                    context.SaveChanges(); 
+                    response = Utils.OkResponse(formatoExistente);
+                }
+                else
+                { 
+                    response = Utils.BadResponse("FORMATO NO EXISTE");
+                }
+            }
+            catch (Exception ex)
+            {
+                response = Utils.BadResponse($"ERROR AL ELIMINAR FORMATO: {ex.Message}");
+                throw new Exception($"ERROR AL ELIMINAR FIRMAS: {ex.Message}");
+            }
+            return response;
+        }
+
+        public Response ListarFormatosCertificados()
+        {
+            Response response = Utils.BadResponse(null);
+            try
+            { 
+                var listaFormatos = context.TformatoCertificado.ToList(); 
+                response = Utils.OkResponse(listaFormatos);
+            }
+            catch (Exception ex)
+            {
+                response = Utils.BadResponse($"ERROR AL LISTAR FORMATOS: {ex.Message}");
+                throw new Exception($"ERROR AL LISTAR FIRMAS: {ex.Message}");
+            }
+            return response;
+        }
+
+        public Response BuscarFormatoCertificado(int idFormato)
+        {
+            Response response = Utils.BadResponse(null);
+            try
+            { 
+                var formato = context.TformatoCertificado.FirstOrDefault(f => f.idFormato == idFormato);
+
+                if (formato != null)
+                { 
+                    response = Utils.OkResponse(formato);
+                }
+                else
+                { 
+                    response = Utils.BadResponse("FORMATO NO EXISTE");
+                }
+            }
+            catch (Exception ex)
+            {
+                response = Utils.BadResponse($"ERROR AL BUSCAR FORMATO: {ex.Message}");
+                throw new Exception($"ERROR AL BUSCAR FORMATO: {ex.Message}");
+            }
+            return response;
+        }
+
 
     }
 }
