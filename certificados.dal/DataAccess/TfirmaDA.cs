@@ -15,9 +15,9 @@ namespace certificados.dal.DataAccess
         private readonly AppDbContext context = appDbContext;
         //AQUI NOS UQUEDAMOS
 
-        public Response InsertarFirma(Tfirma tfirma) {
+        public ResponseApp InsertarFirma(Tfirma tfirma) {
 
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
 
             try
             {
@@ -33,9 +33,9 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response ModificarFirma(Tfirma tfirma) {
+        public ResponseApp ModificarFirma(Tfirma tfirma) {
 
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 var firmaExistente = context.Tfirma.FirstOrDefault(f => f.IdFirma == tfirma.IdFirma);
@@ -72,9 +72,9 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response ListarFirmas()
+        public ResponseApp ListarFirmas()
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             { 
                 var listaFirmas = context.Tfirma.ToList();
@@ -89,9 +89,9 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response BuscarFirma(int idFirma)
+        public ResponseApp BuscarFirma(int idFirma)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             { 
                 var firma = context.Tfirma.FirstOrDefault(f => f.IdFirma == idFirma);

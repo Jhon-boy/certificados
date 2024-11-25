@@ -14,9 +14,9 @@ namespace certificados.dal.DataAccess
     {
         private readonly AppDbContext context = appDbContext;
 
-        public Response InsertarEventoExpositor(TeventoExpositor teventoExpositor) {
+        public ResponseApp InsertarEventoExpositor(TeventoExpositor teventoExpositor) {
 
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
 
             try
             {
@@ -32,9 +32,9 @@ namespace certificados.dal.DataAccess
             }
             return response;
         }
-        public Response ModificarEventoExpositor(TeventoExpositor eventoExpositor)
+        public ResponseApp ModificarEventoExpositor(TeventoExpositor eventoExpositor)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 var eventoExpositorExistente = context.TeventoExpositor.FirstOrDefault(ee => ee.IdEventoExpositor == eventoExpositor.IdEventoExpositor);
@@ -62,9 +62,9 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response EliminarEventoExpositor(int idEventoExpositor)
+        public ResponseApp EliminarEventoExpositor(int idEventoExpositor)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 // Buscar el evento expositor existente
@@ -89,9 +89,9 @@ namespace certificados.dal.DataAccess
             }
             return response;
         }
-        public Response ListarEventosExpositores()
+        public ResponseApp ListarEventosExpositores()
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             { 
                 var listaEventosExpositores = context.TeventoExpositor.ToList();
@@ -105,9 +105,9 @@ namespace certificados.dal.DataAccess
             }
             return response;
         }
-        public Response BuscarEventoExpositor(int idEventoExpositor)
+        public ResponseApp BuscarEventoExpositor(int idEventoExpositor)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 // Buscar el evento expositor por su IdEventoExpositor

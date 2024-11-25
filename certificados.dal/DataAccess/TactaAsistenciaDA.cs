@@ -13,9 +13,9 @@ namespace certificados.dal.DataAccess
     public class TactAsistenciaDA(AppDbContext appDbContext)
     {
         private readonly AppDbContext context = appDbContext;
-        public Response InsertarActaAsistencia(TactaAsistencia tactaAsistencia)
+        public ResponseApp InsertarActaAsistencia(TactaAsistencia tactaAsistencia)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             { 
                 context.TactaAsistencia.Add(tactaAsistencia);
@@ -31,9 +31,9 @@ namespace certificados.dal.DataAccess
         }
 
 
-        public Response ModificarActaAsistencia(TactaAsistencia tactaAsistencia)
+        public ResponseApp ModificarActaAsistencia(TactaAsistencia tactaAsistencia)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             { 
                 var actaExistente = context.TactaAsistencia.FirstOrDefault(a => a.IdAsistencia == tactaAsistencia.IdAsistencia);
@@ -63,9 +63,9 @@ namespace certificados.dal.DataAccess
         }
 
 
-        public Response EliminarActaAsistencia(int idAsistencia)
+        public ResponseApp EliminarActaAsistencia(int idAsistencia)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 // Buscar la acta de asistencia existente
@@ -91,9 +91,9 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response ListarActasAsistencia()
+        public ResponseApp ListarActasAsistencia()
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 // Obtener todas las actas de asistencia de la base de datos
@@ -111,9 +111,9 @@ namespace certificados.dal.DataAccess
         }
 
 
-        public Response BuscarActaAsistencia(int idAsistencia)
+        public ResponseApp BuscarActaAsistencia(int idAsistencia)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             { 
                 var acta = context.TactaAsistencia.FirstOrDefault(a => a.IdAsistencia == idAsistencia);

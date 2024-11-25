@@ -15,10 +15,10 @@ namespace certificados.dal.DataAccess
     {
         private readonly AppDbContext context = appDbContext;
 
-        public Response InsertarGrupoPersona(TgrupoPersona tgrupoPersona) {
+        public ResponseApp InsertarGrupoPersona(TgrupoPersona tgrupoPersona) {
 
 
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
 
             try
             { 
@@ -39,9 +39,9 @@ namespace certificados.dal.DataAccess
         
         }
 
-        public Response ModificarGrupoPersona(TgrupoPersona grupoPersona)
+        public ResponseApp ModificarGrupoPersona(TgrupoPersona grupoPersona)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             { 
                 var grupoPersonaExistente = context.TgrupoPersona.FirstOrDefault(gp => gp.IdGrupoPersona == grupoPersona.IdGrupoPersona);
@@ -71,9 +71,9 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response EliminarGrupoPersona(int idGrupoPersona)
+        public ResponseApp EliminarGrupoPersona(int idGrupoPersona)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             { 
                 var grupoPersonaExistente = context.TgrupoPersona.FirstOrDefault(gp => gp.IdGrupoPersona == idGrupoPersona);
@@ -98,9 +98,9 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response ListarGrupoPersonas()
+        public ResponseApp ListarGrupoPersonas()
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             { 
                 var listaGrupoPersonas = context.TgrupoPersona
@@ -118,9 +118,9 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response BuscarGrupoPersona(int idGrupoPersona)
+        public ResponseApp BuscarGrupoPersona(int idGrupoPersona)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 // Buscar la relación por su ID

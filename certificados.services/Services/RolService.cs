@@ -1,91 +1,48 @@
 ﻿using certificados.dal.DataAccess;
 using certificados.models.Context;
+using certificados.models.Entitys;
 using certificados.models.Entitys.dbo;
 
 namespace certificados.services.Services
 {
     public class RolService
     {
-        private readonly AppDbContext appDbContext;
+        private readonly TrolDA rolDataAcces;
 
-        public RolService(AppDbContext appDbContext)
+        public RolService(TrolDA _rolAcces)
         {
-            this.appDbContext = appDbContext;
+            this.rolDataAcces = _rolAcces;
         }
 
-        public bool crearRol(Trol rolEntidad)
+        public ResponseApp CrearRol(Trol rol)
         {
-            TrolDA rolDA = new TrolDA(appDbContext);
-            try
-            {
-                rolDA.insertarRol(rolEntidad);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                ex.GetBaseException();
-                return false;
-            }
+            return rolDataAcces.insertarRol(rol);
         }
 
-        public bool actualizarRol(Trol rolEntidad)
+        // Modificar Rol
+        public ResponseApp ModificarRol(Trol tRol)
         {
-            TrolDA rolDA = new TrolDA(appDbContext);
-            try
-            {
-                rolDA.modificarRol(rolEntidad);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                ex?.GetBaseException();
-                return false;
-            }
+            return rolDataAcces.ModificarRol(tRol);
         }
 
-        public Trol buscarRol(int idRol)
+        // Eliminar Rol
+        public ResponseApp EliminarRol(int idRol)
         {
-            TrolDA rolDA = new TrolDA(appDbContext);
-            try
-            {
-                return rolDA.buscarRol(idRol);
-            }
-            catch (Exception ex)
-            {
-                ex?.GetBaseException();
-                return null;
-            }
+            return rolDataAcces.EliminarRol(idRol);
         }
 
-        public List<Trol>? listarRol()
+        // Listar Todos los Roles
+        public ResponseApp ListarRoles()
         {
-            TrolDA rolDA = new TrolDA(appDbContext);
-            try
-            {
-                return rolDA.listarRol();
-            }
-            catch (Exception ex)
-            {
-                ex.GetBaseException();
-                return null;
-            }
+            return rolDataAcces.ListarRol();
         }
 
-        public bool eliminarRol(Trol rolEntidad)
+        // Buscar Rol por ID
+        public ResponseApp BuscarRol(int idRol)
         {
-            TrolDA rolDA = new TrolDA(appDbContext);
-            try
-            {
-                rolDA.eliminarRol(rolEntidad);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                ex.GetBaseException();
-                return false;
-            }
+            return rolDataAcces.BuscarRol(idRol);
         }
+
     }
-
 
 }

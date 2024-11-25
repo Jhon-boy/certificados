@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace certificados.models.Entitys
 {
-    public class Response
+    public class ResponseApp
     {
         [JsonPropertyName("cod")]
         public string Cod { get; set; }
@@ -15,9 +15,9 @@ namespace certificados.models.Entitys
         public string Message { get; set; }
         [JsonPropertyName("data")]
         public object Data { get; set; }
-        public Response() { }
+        public ResponseApp() { }
 
-        public Response(string cod, string message, object data)
+        public ResponseApp(string cod, string message, object data)
         {
             Cod = cod;
             Message = message;

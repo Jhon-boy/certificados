@@ -12,8 +12,8 @@ namespace certificados.dal.DataAccess
     {
         private readonly AppDbContext context = appDbContext;
 
-        public Response insertarRol(Trol tRol) {
-            Response response = Utils.BadResponse(null);
+        public ResponseApp insertarRol(Trol tRol) {
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 context.Trol.Add(tRol);
@@ -22,15 +22,16 @@ namespace certificados.dal.DataAccess
 
             }
             catch (Exception ex) {
+                response.Message = $"PROBLEMAS AL INSERTAR ROL: {ex.Message}";
 
                 throw new Exception($"ERROR AL INSERTAR ROL: {ex.Message}");
             }
             return response;
         }
 
-        public Response ModificarRol(Trol tRol)
+        public ResponseApp ModificarRol(Trol tRol)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 var rolExistente = context.Trol.FirstOrDefault(t => t.IdRol == tRol.IdRol);
@@ -61,13 +62,13 @@ namespace certificados.dal.DataAccess
         }
 
 
-        public Response EliminarRol(Trol tRol)
+        public ResponseApp EliminarRol(int idRol)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
 
             try
             {
-                var rolExistente = context.Trol.FirstOrDefault(t => t.IdRol == tRol.IdRol);
+                var rolExistente = context.Trol.FirstOrDefault(t => t.IdRol == idRol);
 
                 if (rolExistente != null)
                 {
@@ -90,8 +91,8 @@ namespace certificados.dal.DataAccess
         }
 
 
-        public Response ListarRol(){
-            Response response = Utils.BadResponse(null);
+        public ResponseApp ListarRol(){
+            ResponseApp response = Utils.BadResponse(null);
 
             try
             {
@@ -114,9 +115,9 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response BuscarRol(int idRol)
+        public ResponseApp BuscarRol(int idRol)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
 
             try
             {

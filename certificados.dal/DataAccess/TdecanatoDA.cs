@@ -14,9 +14,9 @@ namespace certificados.dal.DataAccess
     {
         private readonly AppDbContext context = appDbContext;
 
-        public Response InsertarDecanato(Tdecanato tdecanato)
+        public ResponseApp InsertarDecanato(Tdecanato tdecanato)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             { 
                 context.Tdecanato.Add(tdecanato);
@@ -33,9 +33,9 @@ namespace certificados.dal.DataAccess
             return response;
 
         }
-        public Response ModificarDecanato(Tdecanato decanato)
+        public ResponseApp ModificarDecanato(Tdecanato decanato)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 // Buscar el decanato existente
@@ -68,9 +68,9 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response EliminarDecanato(int idDecanato)
+        public ResponseApp EliminarDecanato(int idDecanato)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 // Buscar el decanato existente
@@ -98,9 +98,9 @@ namespace certificados.dal.DataAccess
             }
             return response;
         }
-        public Response ListarDecanatos()
+        public ResponseApp ListarDecanatos()
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 // Obtener todos los decanatos de la base de datos
@@ -117,9 +117,9 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response BuscarDecanato(int idDecanato)
+        public ResponseApp BuscarDecanato(int idDecanato)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 // Buscar el decanato por su IdDecanato

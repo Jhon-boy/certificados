@@ -14,9 +14,9 @@ namespace certificados.dal.DataAccess
     {
         private readonly AppDbContext context = appDbContext;
 
-        public Response InsertarDocente(Tdocente tdocente) {
+        public ResponseApp InsertarDocente(Tdocente tdocente) {
 
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
 
             try
             {
@@ -34,9 +34,9 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response ModificarDocente(Tdocente tdocente)
+        public ResponseApp ModificarDocente(Tdocente tdocente)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 var docenteExistente = context.Tdocente.FirstOrDefault(d => d.CodigoDocente == tdocente.CodigoDocente);
@@ -68,9 +68,9 @@ namespace certificados.dal.DataAccess
         }
 
 
-        public Response EliminarDocente(string codigoDocente)
+        public ResponseApp EliminarDocente(string codigoDocente)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 var docenteExistente = context.Tdocente.FirstOrDefault(d => d.CodigoDocente == codigoDocente);
@@ -95,9 +95,9 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response ListarDocentes()
+        public ResponseApp ListarDocentes()
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 var listaDocentes = context.Tdocente.ToList();
@@ -111,9 +111,9 @@ namespace certificados.dal.DataAccess
             }
             return response;
         }
-        public Response BuscarDocente(string codigoDocente)
+        public ResponseApp BuscarDocente(string codigoDocente)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 var docente = context.Tdocente.FirstOrDefault(d => d.CodigoDocente == codigoDocente);

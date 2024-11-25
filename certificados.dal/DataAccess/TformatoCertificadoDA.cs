@@ -15,9 +15,9 @@ namespace certificados.dal.DataAccess
     {
         private readonly AppDbContext context = appDbContext;
 
-        public Response InsertarCertificado(TformatoCertificado tformatoCertificado) {
+        public ResponseApp InsertarCertificado(TformatoCertificado tformatoCertificado) {
 
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
 
             try
             { 
@@ -37,9 +37,9 @@ namespace certificados.dal.DataAccess
         
         }
 
-        public Response ModificarFormatoCertificado(TformatoCertificado formato)
+        public ResponseApp ModificarFormatoCertificado(TformatoCertificado formato)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             { 
                 var formatoExistente = context.TformatoCertificado.FirstOrDefault(f => f.idFormato == formato.idFormato);
@@ -71,9 +71,9 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response EliminarFormatoCertificado(int idFormato)
+        public ResponseApp EliminarFormatoCertificado(int idFormato)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             { 
                 var formatoExistente = context.TformatoCertificado.FirstOrDefault(f => f.idFormato == idFormato);
@@ -97,9 +97,9 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response ListarFormatosCertificados()
+        public ResponseApp ListarFormatosCertificados()
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             { 
                 var listaFormatos = context.TformatoCertificado.ToList(); 
@@ -113,9 +113,9 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response BuscarFormatoCertificado(int idFormato)
+        public ResponseApp BuscarFormatoCertificado(int idFormato)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             { 
                 var formato = context.TformatoCertificado.FirstOrDefault(f => f.idFormato == idFormato);

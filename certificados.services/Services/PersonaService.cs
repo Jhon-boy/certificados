@@ -1,7 +1,12 @@
-﻿using certificados.models.Context;
+﻿using certificados.dal.DataAccess;
+using certificados.models.Context;
+using certificados.models.Entitys;
+using certificados.models.Entitys.dbo;
+using certificados.services.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,13 +15,91 @@ namespace certificados.services.Services
 
     public class PersonaService
     {
-        private readonly AppDbContext appDbContext;
+        private readonly TpersonaDA personaDataAcces;
+        private readonly UsuarioService usuarioService;
 
-        public PersonaService(AppDbContext appDbContext)
+        public PersonaService(TpersonaDA _personaDataAcces, UsuarioService usuarioService)
         {
-            this.appDbContext = appDbContext;
+            this.personaDataAcces = _personaDataAcces;
+            this.usuarioService = usuarioService;
         }
 
+        public ResponseApp CrearPersona(Tpersona personaU) {
+
+            ResponseApp response = Utils.Utils.BadResponse(null);
+
+            try
+            {
+
+                if (personaDataAcces.BuscarPersona(personaU.Cedula).Cod.Equals(CONSTANTES.COD_OK))
+                {
+                    response.Message = "USUARIO YA ESTA REGISTRADO";
+                    return response;
+                }
+                response = personaDataAcces.InsertarPersona(personaU);
+            }
+            catch (Exception ex) {
+                response.Message = $"ERROR AL CREAR PERSONA: {personaU.Cedula}";
+                throw new Exception($"ERROR AL CREAR PERSONA: {ex.Message}", ex);
+            }
+
+            return response;
+
+        }
+        //Buscar una persona por medio de la CEDULA
+        public ResponseApp ObtenerPersona(String cedula) { 
+        
+            return personaDataAcces.BuscarPersona(cedula);
+        }
+
+        //Elimina una persona por medio de su ID
+        public ResponseApp ELiminarPersona(String cedula) {
+            ResponseApp response = Utils.Utils.BadResponse(null);
+            try
+            {
+                var buscarUsuario = personaDataAcces.BuscarPersona(cedula);
+                if (!buscarUsuario.Cod.Equals(CONSTANTES.COD_OK))
+                {
+                    return buscarUsuario;
+                }
+                if (buscarUsuario.Data is Tpersona persona)
+                {
+                 Tpersona personaResponse = buscarUsuario.Data as Tpersona;
+                var eliminarUsuario = usuarioService.EliminarUsuario(personaResponse.Cedula);
+                if (!eliminarUsuario.Cod.Equals(CONSTANTES.COD_OK))
+                {
+                    response.Message = "ERROR AL ELIMINAR USUARIO";
+                    return response;  
+                }
+                response =  personaDataAcces.EliminarPersona(cedula);
+                }
+                else {
+                    response.Message = "LA PERSONA NO ES VÁLIDA O NO SE ENCONTRÓ";
+                }
+
+            }
+            catch (Exception ex) {
+                response.Message = $"ERROR AL ELIMINAR PERSONA: {ex.Message}";
+                throw new Exception($"ERROR AL ELIMINAR PERSONA: {ex.Message}", ex);
+            }
+            return response;    
+        }
+        //Modifica los Datos de una persona
+        public ResponseApp ModificarPersona(Tpersona persona) {
+            ResponseApp response = Utils.Utils.BadResponse(null);
+
+            try
+            {
+                response = personaDataAcces.ModificarPersona(persona);
+
+            }
+            catch (Exception ex) {
+                response.Message = $"ERROR AL MODIFICAR PERSONA: {ex.Message}";
+                throw new Exception($"ERROR AL MODIFICAR PERSONA: {ex.Message}", ex);
+            }
+
+            return response;
+        }
 
     }
 }

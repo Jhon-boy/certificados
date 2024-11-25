@@ -14,9 +14,9 @@ namespace certificados.dal.DataAccess
     {
         private readonly AppDbContext context = appDbContext;
 
-        public Response InsertarEstadoDocente(TestadoDocente testado) {
+        public ResponseApp InsertarEstadoDocente(TestadoDocente testado) {
 
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
 
             try
             {
@@ -31,9 +31,9 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response ModificarEstadoDocente(TestadoDocente testado) {
+        public ResponseApp ModificarEstadoDocente(TestadoDocente testado) {
 
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
 
             try
             {
@@ -59,8 +59,8 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response EliminarEstadoDocente(int idDocente) {
-            Response response = Utils.BadResponse(null);
+        public ResponseApp EliminarEstadoDocente(int idDocente) {
+            ResponseApp response = Utils.BadResponse(null);
 
             try
             {
@@ -84,8 +84,8 @@ namespace certificados.dal.DataAccess
 
         }
 
-        public Response ListarEstados() {
-            Response response = Utils.BadResponse(null);
+        public ResponseApp ListarEstados() {
+            ResponseApp response = Utils.BadResponse(null);
 
             try
             {

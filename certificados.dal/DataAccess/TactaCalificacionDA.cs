@@ -13,9 +13,9 @@ namespace certificados.dal.DataAccess
     public class TactaCalificacionDA(AppDbContext appDbContext)
     {
         private readonly AppDbContext context = appDbContext;
-        public Response InsertarActaCalificacion(TactaCalificacion tactaCalificacion) {
+        public ResponseApp InsertarActaCalificacion(TactaCalificacion tactaCalificacion) {
 
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 context.TactaCalificacion.Add(tactaCalificacion);
@@ -31,9 +31,9 @@ namespace certificados.dal.DataAccess
 
         }
 
-        public Response ModificarActaCalificacion(TactaCalificacion tactaCalificacion)
+        public ResponseApp ModificarActaCalificacion(TactaCalificacion tactaCalificacion)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 var actaExistente = context.TactaCalificacion.FirstOrDefault(a => a.IdCalificacion == tactaCalificacion.IdCalificacion);
@@ -64,9 +64,9 @@ namespace certificados.dal.DataAccess
         }
 
 
-        public Response EliminarActaCalificacion(int idCalificacion)
+        public ResponseApp EliminarActaCalificacion(int idCalificacion)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 // Buscar la acta de calificación existente
@@ -96,9 +96,9 @@ namespace certificados.dal.DataAccess
         }
 
 
-        public Response ListarActasCalificacion()
+        public ResponseApp ListarActasCalificacion()
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 // Obtener todas las actas de calificación de la base de datos
@@ -116,9 +116,9 @@ namespace certificados.dal.DataAccess
         }
 
 
-        public Response BuscarActaCalificacion(int idCalificacion)
+        public ResponseApp BuscarActaCalificacion(int idCalificacion)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             { 
                 var acta = context.TactaCalificacion.FirstOrDefault(a => a.IdCalificacion == idCalificacion);

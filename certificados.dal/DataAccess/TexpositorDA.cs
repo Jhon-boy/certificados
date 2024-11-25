@@ -14,9 +14,9 @@ namespace certificados.dal.DataAccess
     {
         private readonly AppDbContext context = appDbContext;
 
-        public Response InsertarExpositor(Texpositor texpositor) {
+        public ResponseApp InsertarExpositor(Texpositor texpositor) {
 
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 context.Texpositor.Add(texpositor);
@@ -31,9 +31,9 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response ModificarExpositor(Texpositor expositor)
+        public ResponseApp ModificarExpositor(Texpositor expositor)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             { 
                 var expositorExistente = context.Texpositor.FirstOrDefault(e => e.IdExpositor == expositor.IdExpositor);
@@ -60,9 +60,9 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response EliminarExpositor(int idExpositor)
+        public ResponseApp EliminarExpositor(int idExpositor)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             { 
                 var expositorExistente = context.Texpositor.FirstOrDefault(e => e.IdExpositor == idExpositor);
@@ -87,9 +87,9 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response ListarExpositores()
+        public ResponseApp ListarExpositores()
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             { 
                 var listaExpositores = context.Texpositor.ToList();
@@ -103,9 +103,9 @@ namespace certificados.dal.DataAccess
             }
             return response;
         }
-        public Response BuscarExpositor(int idExpositor)
+        public ResponseApp BuscarExpositor(int idExpositor)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             { 
                 var expositor = context.Texpositor.FirstOrDefault(e => e.IdExpositor == idExpositor);

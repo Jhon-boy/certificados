@@ -13,9 +13,9 @@ namespace certificados.dal.DataAccess
     public class TpersonaDA(AppDbContext appDbContext)
     {
         private readonly AppDbContext context = appDbContext;
-        public Response InsertarPersona(Tpersona tpersona)
+        public ResponseApp InsertarPersona(Tpersona tpersona)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 // Insertar nueva persona en la base de datos
@@ -33,12 +33,12 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response ModificarPersona(Tpersona tpersona)
+        public ResponseApp ModificarPersona(Tpersona tpersona)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
-                // Buscar la persona existente
+ 
                 var personaExistente = context.Tpersona.FirstOrDefault(p => p.Cedula == tpersona.Cedula);
 
                 if (personaExistente != null)
@@ -71,9 +71,9 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response EliminarPersona(string cedula)
+        public ResponseApp EliminarPersona(string cedula)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 // Buscar la persona existente
@@ -103,9 +103,9 @@ namespace certificados.dal.DataAccess
         }
 
 
-        public Response ListarPersonas()
+        public ResponseApp ListarPersonas()
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 // Obtener todas las personas de la base de datos
@@ -122,9 +122,9 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response BuscarPersona(string cedula)
+        public ResponseApp BuscarPersona(string cedula)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 // Buscar la persona por su cédula

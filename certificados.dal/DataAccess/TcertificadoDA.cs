@@ -14,8 +14,8 @@ namespace certificados.dal.DataAccess
     {
         private readonly AppDbContext context = appDbContext;
 
-        public Response InsertarCertificado(Tcertificado tcertificado) {
-            Response response = Utils.BadResponse(null);
+        public ResponseApp InsertarCertificado(Tcertificado tcertificado) {
+            ResponseApp response = Utils.BadResponse(null);
 
             try
             {
@@ -33,9 +33,9 @@ namespace certificados.dal.DataAccess
         
         }
 
-        public Response ModificarCertificado(Tcertificado certificado)
+        public ResponseApp ModificarCertificado(Tcertificado certificado)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 // Buscar el certificado existente
@@ -71,9 +71,9 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response EliminarCertificado(int idCertificado)
+        public ResponseApp EliminarCertificado(int idCertificado)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 // Buscar el certificado existente
@@ -102,9 +102,9 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response ListarCertificados()
+        public ResponseApp ListarCertificados()
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
       
@@ -121,9 +121,9 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response BuscarCertificado(int idCertificado)
+        public ResponseApp BuscarCertificado(int idCertificado)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 // Buscar el certificado por su IdCertificado

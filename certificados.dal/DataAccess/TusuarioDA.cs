@@ -2,6 +2,7 @@
 using certificados.models.Entitys;
 using certificados.models.Entitys.dbo;
 using certificados.services.Utils;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,10 +15,10 @@ namespace certificados.dal.DataAccess
     {
         private readonly AppDbContext context = appDbContext;
 
-        public Response InsertarUsuario(Tusuario tusuario)
+        public ResponseApp InsertarUsuario(Tusuario tusuario)
         {
 
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 context.Tusuario.Add(tusuario);
@@ -34,9 +35,9 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response ModificarUsuario(Tusuario tusuario)
+        public ResponseApp ModificarUsuario(Tusuario tusuario)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 var usuarioExistente = context.Tusuario.FirstOrDefault(u => u.idUsuario == tusuario.idUsuario);
@@ -67,13 +68,13 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response BuscarUsuario(int idUsuario) {
+        public ResponseApp BuscarUsuarioByCedula(String cedula) {
 
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 // Buscar el usuario por su ID
-                var usuario = context.Tusuario.FirstOrDefault(u => u.idUsuario == idUsuario);
+                var usuario = context.Tusuario.FirstOrDefault(u => u.Cedula == cedula);
 
                 if (usuario != null)
                 {
@@ -93,8 +94,8 @@ namespace certificados.dal.DataAccess
             }
             return response;
         }
-        public Response ListarUsuario() {
-            Response response = Utils.BadResponse(null);
+        public ResponseApp ListarUsuario() {
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 var listarUsuarios =context.Tusuario.ToList();
@@ -107,11 +108,11 @@ namespace certificados.dal.DataAccess
             }
             return response;
         }
-        public Response EliminarUsuario(int idUsuario) {
-            Response response = Utils.BadResponse(null);
+        public ResponseApp EliminarUsuario(String cedula) {
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
-                var usuarioExistente = context.Tusuario.FirstOrDefault(u => u.idUsuario == idUsuario);
+                var usuarioExistente = context.Tusuario.FirstOrDefault(u => u.Cedula == cedula);
 
                 if (usuarioExistente != null)
                 {
@@ -131,6 +132,27 @@ namespace certificados.dal.DataAccess
             }
             return response;
         }
+        public ResponseApp BuscarPorEmail(string email)
+        {
+            ResponseApp response = Utils.BadResponse(null);
+            try
+            {
+                var usuario = context.Tusuario.FirstOrDefault(u => u.Email == email);
+
+                if (usuario != null)
+                {
+                    return Utils.OkResponse(usuario);
+                } 
+
+            }
+            catch (Exception ex)
+            {
+                response = Utils.BadResponse($"ERROR AL BUSCAR USUARIOS POR EMIAL: {ex.Message}");
+                throw new Exception($"ERROR AL BUSCAR USUARIOS POR EMIAL {ex.Message}");
+            }
+            return response;
+        }
+
     }
 
 }

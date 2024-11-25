@@ -14,9 +14,9 @@ namespace certificados.dal.DataAccess
     {
         private readonly AppDbContext context = appDbContext;
 
-        public Response InsertarEvento(Tevento tevento) {
+        public ResponseApp InsertarEvento(Tevento tevento) {
 
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
 
             try
             {
@@ -34,9 +34,9 @@ namespace certificados.dal.DataAccess
             return response;
         
         }
-        public Response ModificarEvento(Tevento evento)
+        public ResponseApp ModificarEvento(Tevento evento)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             { 
                 var eventoExistente = context.Tevento.FirstOrDefault(e => e.Idevento == evento.Idevento);
@@ -75,9 +75,9 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response EliminarEvento(int idEvento)
+        public ResponseApp EliminarEvento(int idEvento)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             { 
                 var eventoExistente = context.Tevento.FirstOrDefault(e => e.Idevento == idEvento);
@@ -102,9 +102,9 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response ListarEventos()
+        public ResponseApp ListarEventos()
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             { 
                 var listaEventos = context.Tevento.ToList();
@@ -119,9 +119,9 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response BuscarEvento(int idEvento)
+        public ResponseApp BuscarEvento(int idEvento)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             { 
                 var evento = context.Tevento.FirstOrDefault(e => e.Idevento == idEvento);

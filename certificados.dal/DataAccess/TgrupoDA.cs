@@ -15,9 +15,9 @@ namespace certificados.dal.DataAccess
     {
         private readonly AppDbContext context = appDbContext;
 
-        public Response InsertarGrupo(Tgrupo tgrupo) {
+        public ResponseApp InsertarGrupo(Tgrupo tgrupo) {
 
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
 
             try
             { 
@@ -30,16 +30,16 @@ namespace certificados.dal.DataAccess
             }
             catch (Exception ex)
             {
-                response = Utils.BadResponse($"ERROR AL INSERTAR GRUPO: {ex.Message}");
+                response.Message =$"ERROR AL INSERTAR GRUPO: {ex.Message}";
                 throw new Exception($"ERROR AL INSERTAR GRUPO: {ex.Message}");
             }
 
             return response;
         }
 
-        public Response ModificarGrupo(Tgrupo grupo)
+        public ResponseApp ModificarGrupo(Tgrupo grupo)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             { 
                 var grupoExistente = context.Tgrupo.FirstOrDefault(g => g.IdGrupo == grupo.IdGrupo);
@@ -68,9 +68,9 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public Response EliminarGrupo(int idGrupo)
+        public ResponseApp EliminarGrupo(int idGrupo)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             {
                 // Buscar el grupo existente por su ID
@@ -93,15 +93,15 @@ namespace certificados.dal.DataAccess
             }
             catch (Exception ex)
             {
-                response = Utils.BadResponse($"ERROR AL ELIMINAR GRUPO: {ex.Message}");
+                response.Message = $"ERROR AL ELIMINAR GRUPO: {ex.Message}";
                 throw new Exception($"ERROR AL ELIMINAR GRUPO: {ex.Message}");
             }
             return response;
         }
 
-        public Response ListarGrupos()
+        public ResponseApp ListarGrupos()
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             { 
                 var listaGrupos = context.Tgrupo.ToList(); 
@@ -109,15 +109,15 @@ namespace certificados.dal.DataAccess
             }
             catch (Exception ex)
             {
-                response = Utils.BadResponse($"ERROR AL LISTAR GRUPOS: {ex.Message}");
+                response.Message =  $"ERROR AL LISTAR GRUPOS: {ex.Message}";
                 throw new Exception($"ERROR AL LISTAR GRUPO: {ex.Message}");
             }
             return response;
         }
 
-        public Response BuscarGrupo(int idGrupo)
+        public ResponseApp BuscarGrupo(int idGrupo)
         {
-            Response response = Utils.BadResponse(null);
+            ResponseApp response = Utils.BadResponse(null);
             try
             { 
                 var grupo = context.Tgrupo.FirstOrDefault(g => g.IdGrupo == idGrupo);
@@ -133,7 +133,7 @@ namespace certificados.dal.DataAccess
             }
             catch (Exception ex)
             {
-                response = Utils.BadResponse($"ERROR AL BUSCAR GRUPO: {ex.Message}");
+                response.Message = $"ERROR AL BUSCAR GRUPO: {ex.Message}" ;
                 throw new Exception($"ERROR AL BUSCAR GRUPO: {ex.Message}");
             }
             return response;

@@ -11,17 +11,17 @@ namespace certificados.services.Utils
         /**
         Funcion que genera una Respuesta Correcta
         */
-        public static Response OkResponse(Object data)
+        public static ResponseApp OkResponse(Object data)
         {
-            return new Response(CONSTANTES.COD_OK, CONSTANTES.MESSAGE_OK, data);
+            return new ResponseApp(CONSTANTES.COD_OK, CONSTANTES.MESSAGE_OK, data);
         }
 
         /**
          Funcion que genera una respuesta Incorrecta
          */
-        public static Response BadResponse(Object data)
+        public static ResponseApp BadResponse(Object data)
         {
-            return new Response(CONSTANTES.COD_ERROR, CONSTANTES.MESSAGE_ERROR, data);
+            return new ResponseApp(CONSTANTES.COD_ERROR, CONSTANTES.MESSAGE_ERROR, data);
         }
 
         /**
