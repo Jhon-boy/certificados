@@ -123,7 +123,7 @@ namespace certificados.services.Services
 
             try
             {
-                var usuarioExiste = usuarioAcces.BuscarUsuario(tusuario.idUsuario);
+                var usuarioExiste = usuarioAcces.BuscarPorEmail(tusuario.Email);
                 if (!usuarioExiste.Cod.Equals(CONSTANTES.COD_OK))
                 {
                     response.Message = "USUARIO NO EXISTE";
@@ -151,12 +151,12 @@ namespace certificados.services.Services
             return usuarioAcces.ListarUsuario();
         }
 
-        public ResponseApp BuscarUsuarioId(int id) {
+        public ResponseApp BuscarUsuarioId(String email) {
             ResponseApp response = Utils.Utils.BadResponse(null);
 
             try
             {
-                var usuarioExiste = usuarioAcces.BuscarUsuario(id);
+                var usuarioExiste = usuarioAcces.BuscarPorEmail(email);
                 if (!usuarioExiste.Cod.Equals(CONSTANTES.COD_OK)) {
 
                     response.Message = "USUARIO NO EXISTE";
@@ -166,7 +166,7 @@ namespace certificados.services.Services
             }
             catch (Exception ex) {
                 response.Message = $"ERROR AL BUSCAR USUARIO: {ex.Message}";
-                throw new Exception($"ERROR AL BUSCAR USUARIO: {id}", ex);
+                throw new Exception($"ERROR AL BUSCAR USUARIO: {email}", ex);
             }
 
             return response;
