@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Certificados</title>
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+    <div class="wrapper d-flex">
+        <nav id="sidebar" class="sidebar">
+            <div class="sidebar-header p-3">
+                <img src="https://images.unsplash.com/photo-1633409361618-c73427e4e206?auto=format&fit=crop&w=80" alt="Logo de Dashboard" class="logo img-fluid">
+            </div>
+            <ul class="list-unstyled components p-3">
+                <li class="active">
+                    <a href="#" class="d-flex align-items-center">
+                        <i class="bi bi-search me-2"></i>
+                        <span class="d-none d-md-inline">Consultas</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="d-flex align-items-center">
+                        <i class="bi bi-calendar-check-fill me-2"></i>
+                        <span class="d-none d-md-inline">Planificación</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="d-flex align-items-center">
+                        <i class="bi bi-file-earmark-check-fill me-2"></i>
+                        <span class="d-none d-md-inline">Registro</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="d-flex align-items-center">
+                        <i class="bi bi-person-check-fill me-2"></i>
+                        <span class="d-none d-md-inline">Aprobación Participantes</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="d-flex align-items-center">
+                        <i class="bi bi-award-fill me-2"></i>
+                        <span class="d-none d-md-inline">Certificación</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="d-flex align-items-center">
+                        <i class="bi bi-gear-fill me-2"></i>
+                        <span class="d-none d-md-inline">Mantenimiento</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <div class="content flex-column">
+            <header class="header p-3 d-flex justify-content-between align-items-center">
+                <!-- Boton para movil -->
+                <button type="button" id="sidebarCollapse" class="btn d-md-none">
+                    <i class="bi bi-list"></i>
+                </button>
+               
+                <div class="user-profile dropdown ms-auto">
+                    <button class="btn dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
+                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=40" alt="Usuario" class="rounded-circle me-2">
+                        <span class="d-none d-md-inline">Johncito</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#">Cerrar sesión</a></li>
+                    </ul>
+                </div>
+            </header>
+            <main class="workspace p-4">
+                <div class="container-fluid">
+                    <div class="row g-4">
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                            <div class="card h-100 shadow-sm">
+                                <img src="https://via.placeholder.com/400x200?text=Formación+Académica" class="card-img-top" alt="Imagen representativa del Decanato de Formación Académica y Profesional">
+                                <div class="card-body">
+                                    <h5 class="card-title">Decanato de Formación Académica y Profesional</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                            <div class="card h-100 shadow-sm">
+                                <img src="https://via.placeholder.com/400x200?text=Posgrado+y+Servicios" class="card-img-top" alt="Imagen representativa del Decanato de Posgrado y Servicios Especializados">
+                                <div class="card-body">
+                                    <h5 class="card-title">Decanato de Posgrado, Educación Continua y Servicios Especializados</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                            <div class="card h-100 shadow-sm">
+                                <img src="https://via.placeholder.com/400x200?text=Investigación+e+Innovación" class="card-img-top" alt="Imagen representativa del Decanato de Investigación, Desarrollo e Innovación">
+                                <div class="card-body">
+                                    <h5 class="card-title">Decanato de Investigación, Desarrollo e Innovación</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                            <div class="card h-100 shadow-sm">
+                                <img src="https://via.placeholder.com/400x200?text=Vinculación+y+Bienestar" class="card-img-top" alt="Imagen representativa del Decanato de Vinculación con la Sociedad y Bienestar Universitario">
+                                <div class="card-body">
+                                    <h5 class="card-title">Decanato de Vinculación con la Sociedad y Bienestar Universitario</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

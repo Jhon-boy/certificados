@@ -1,0 +1,125 @@
+﻿body {
+    min-height: 100vh;
+    background-color: #f8f9fa;
+}
+
+.wrapper {
+    display: flex;
+}
+
+.sidebar {
+    width: 250px;
+    background: #E5E8E9;
+    color: #fff;
+    transition: all 0.3s ease;
+    min-height: 100vh;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+    .sidebar.active {
+        margin-left: -250px;
+    }
+
+    .sidebar .sidebar-header {
+        background: #F2F7FA;
+    }
+
+    .sidebar ul li a {
+        padding: 10px;
+        color: #000;
+        text-decoration: none;
+        display: block;
+        transition: all 0.3s;
+    }
+
+        .sidebar ul li a:hover {
+            background: #f5f5f5;
+        }
+
+.content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-profile img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+}
+
+.workspace {
+    flex: 1;
+    background: #f8f9fa;
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+}
+
+    .card:hover {
+        transform: scale(1.05);
+        transition: transform 0.3s ease;
+    }
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 80px;
+    }
+
+        .sidebar.active {
+            margin-left: -80px;
+        }
+}
+
+.logo {
+    max-width: 40px;
+    height: auto;
+}
+
+#sidebarCollapse {
+    background: transparent;
+    border: none;
+}
+
+    #sidebarCollapse:focus {
+        box-shadow: none;
+    }
+
+.dropdown-menu {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 992px) {
+    .sidebar {
+        width: 200px;
+    }
+
+        .sidebar.active {
+            margin-left: -200px;
+        }
+
+    .content {
+        padding-left: 0;
+    }
+}
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+.card-title {
+    text-align: center;
+}
