@@ -1,0 +1,102 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Planificación</title>
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="planificacion.css">
+</head>
+<body class="bg-light">
+    <div class="container my-5">
+        <h3 class="mb-4">Planificación del Evento</h3>
+        <form id="planificacion-form">
+            <div class="mb-3">
+                <label for="decano" class="form-label">Decanato</label>
+                <input type="text" class="form-control" id="decano" value="Formación Académica y Profesional" disabled>
+            </div>
+
+            <div class="mb-3">
+                <label for="tipoEvento" class="form-label">Tipo de evento</label>
+                <select class="form-select" id="tipoEvento">
+                    <option value="Capacitación docente">Capacitación docente</option>
+                    <option value="Conferencia">Conferencia</option>
+                    <!-- Agrega más opciones aquí -->
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="curso" class="form-label">Curso</label>
+                <input type="text" class="form-control" id="curso" value="Metodología de la Investigación">
+            </div>
+
+            <div class="mb-3">
+                <label for="dominio" class="form-label">Dominio</label>
+                <input type="text" class="form-control" id="dominio" value="Modelos Educativos Integrales e Inclusivos">
+            </div>
+
+            <div class="mb-3">
+                <label for="lineaInvestigacion" class="form-label">Línea de Investigación</label>
+                <input type="text" class="form-control" id="lineaInvestigacion" value="Modelos Educativos Integrales e Inclusivos">
+            </div>
+
+            <div class="mb-3">
+                <label for="ciclo" class="form-label">Ciclo</label>
+                <select class="form-select" id="ciclo">
+                    <option value="Ciclo II 2023-2024">Ciclo II 2023-2024</option>
+                    <!-- Agrega más ciclos si es necesario -->
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="facilitador" class="form-label">Facilitador</label>
+                <input type="text" class="form-control" id="facilitador" value="Héctor Mero">
+            </div>
+
+            <div class="mb-3">
+                <label for="modalidad" class="form-label">Modalidad</label>
+                <select class="form-select" id="modalidad">
+                    <option value="Síncrono">Síncrono</option>
+                    <option value="Asíncrono">Asíncrono</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="horario" class="form-label">Horario</label>
+                <input type="text" class="form-control" id="horario" value="miércoles, jueves, y viernes 20h00 - 22h00">
+            </div>
+
+            <div class="mb-3">
+                <label for="grupo" class="form-label">Grupo</label>
+                <input type="text" class="form-control" id="grupo" value="SOFT-NO-10-3">
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="fechaInicio" class="form-label">Fecha de inicio</label>
+                    <input type="date" class="form-control" id="fechaInicio" value="2024-09-10">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="fechaFin" class="form-label">Fecha de fin</label>
+                    <input type="date" class="form-control" id="fechaFin" value="2025-10-12">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="horas" class="form-label">Horas</label>
+                <input type="number" class="form-control" id="horas" value="50">
+            </div>
+
+            <div class="d-flex justify-content-end">
+                <button type="button" class="btn btn-secondary me-2">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    .<script src="planificacion.js"></script>
+</body>
+</html>
