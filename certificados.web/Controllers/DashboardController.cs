@@ -6,7 +6,7 @@ namespace certificados.web.Controllers
     {
         public IActionResult Index()
         {
-            return View("Dashboard");
+            return View("Dashboard"); 
         }
     }
 }

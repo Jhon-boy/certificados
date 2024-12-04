@@ -33,7 +33,9 @@ namespace certificados.web.Controllers
                 return Unauthorized("Credenciales incorrectas");
             }
 
-            return Ok(response); 
+            var redirectTo = "/Dashboard/Index";
+
+            return Ok(new { response, redirectTo });
         }
     }
 }
