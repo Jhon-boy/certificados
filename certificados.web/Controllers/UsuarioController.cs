@@ -1,34 +1,39 @@
-﻿
-using certificados.models.Entitys;
+﻿using certificados.models.Entitys;
 using certificados.services.Services;
 using certificados.services.Utils;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace certificados.web.Controllers
 {
     [ApiController]
-    [Route("usuario/")]
-    public class UsuarioController : Controller
+    [Route("api/usuario/")]
+    public class UsuarioController : ControllerBase
     {
-        private readonly UsuarioService usuarioService;
+        private readonly UsuarioService _usuarioService;
 
-        public UsuarioController(UsuarioService _usuarioService)
+        public UsuarioController(UsuarioService usuarioService)
         {
-
-            this.usuarioService = _usuarioService;
+            _usuarioService = usuarioService ?? throw new ArgumentNullException(nameof(usuarioService));
         }
 
-        public ResponseApp LogeoController([FromBody] Dictionary<string, string> requestBody)
+        [HttpPost("login")]
+        public ActionResult<ResponseApp> LogeoController([FromBody] Dictionary<string, string> requestBody)
         {
-
-            if (!requestBody.TryGetValue("email", out string email) || string.IsNullOrWhiteSpace(email) ||
-                !requestBody.TryGetValue("password", out string password) || string.IsNullOrWhiteSpace(password))
+            if (!requestBody.TryGetValue("email", out var email) || string.IsNullOrWhiteSpace(email) ||
+                !requestBody.TryGetValue("password", out var password) || string.IsNullOrWhiteSpace(password))
             {
-                return Utils.BadResponse("FALTAN DATOS");
+                return BadRequest("FALTAN DATOS");
             }
 
-            return usuarioService.LoginUsuario(email, password);
+            var response = _usuarioService.LoginUsuario(email, password);
 
+            if (response == null)
+            {
+                return Unauthorized("Credenciales incorrectas");
+            }
+
+            return Ok(response); 
         }
     }
 }

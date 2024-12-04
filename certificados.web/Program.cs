@@ -1,3 +1,4 @@
+using certificados.dal.DataAccess;
 using certificados.models.Context;
 using certificados.services.Services;
 using Microsoft.AspNetCore.Diagnostics;
@@ -16,7 +17,11 @@ namespace certificados.web
 
             builder.Services.AddDbContext<AppDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
             builder.Services.AddScoped<LogService>();
+            builder.Services.AddScoped<UsuarioService>();
+            builder.Services.AddScoped<TpersonaDA>();
+            builder.Services.AddScoped<TusuarioDA>();
 
 
             var app = builder.Build();

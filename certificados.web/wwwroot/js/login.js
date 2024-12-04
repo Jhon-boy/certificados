@@ -7,16 +7,66 @@
     const loginForm = document.getElementById('loginForm');
     const togglePasswordBtn = document.getElementById('togglePassword');
     const spinner = loginBtn.querySelector('.spinner-border');
+    const feedbackDiv = document.getElementById('feedback');
 
     // Validar el formulario antes de enviarlo
     loginForm.addEventListener('submit', function (e) {
         e.preventDefault(); // Evitar el envío del formulario por defecto
 
         // Limpiar las clases de error previas
-        emailInput.classList.remove('is-invalid');
-        passwordInput.classList.remove('is-invalid');
+        clearValidation();
 
         // Validar email y contraseña
+        let isValid = validateForm();
+
+        if (!isValid) {
+            return; // Si no es válido, no enviamos el formulario
+        }
+
+        // Mostrar spinner mientras se procesa el login
+        showSpinner();
+
+        // Realizar el login mediante la API
+        loginUser(emailInput.value.trim(), passwordInput.value.trim());
+    });
+
+    // Función para mostrar/ocultar la contraseña
+    togglePasswordBtn.addEventListener('click', function () {
+        togglePasswordVisibility();
+    });
+
+    // Función para hacer la solicitud de login
+    async function loginUser(email, password) {
+        try {
+            const response = await fetch('api/usuario/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password })
+            });
+
+            hideSpinner();
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.redirectTo) {
+                    window.location.href = data.redirectTo;
+                } else {
+                    showFeedback('Login exitoso, redirigiendo...', 'success');
+                }
+            } else {
+                const errorData = await response.json();
+                showFeedback(errorData.message || 'Credenciales incorrectas.', 'danger');
+            }
+        } catch (error) {
+            hideSpinner();
+            showFeedback('Error al conectar con el servidor. Intenta nuevamente.', 'danger');
+        }
+    }
+
+    // Función para validar el formulario
+    function validateForm() {
         let isValid = true;
 
         // Validar email
@@ -34,23 +84,49 @@
             passwordInput.classList.add('is-invalid');
         }
 
-        if (!isValid) {
-            return; // Si no es válido, no enviamos el formulario
+        return isValid;
+    }
+
+    // Función para limpiar las clases de validación
+    function clearValidation() {
+        emailInput.classList.remove('is-invalid');
+        passwordInput.classList.remove('is-invalid');
+    }
+
+    // Función para mostrar el spinner
+    function showSpinner() {
+        spinner.classList.remove('d-none');
+    }
+
+    // Función para ocultar el spinner
+    function hideSpinner() {
+        spinner.classList.add('d-none');
+    }
+
+    // Función para mostrar mensajes de feedback
+    function showFeedback(message, type) {
+        if (!feedbackDiv) {
+            console.warn('Elemento de feedback no encontrado.');
+            return;
         }
 
-        // Mostrar spinner mientras se procesa el login
-        spinner.classList.remove('d-none');
+        feedbackDiv.innerHTML = `
+            <div class="alert alert-${type}" role="alert">
+                ${message}
+            </div>
+        `;
 
-        // Realizar el login mediante la API
-        loginUser(email, password);
-    });
+        // Ocultar el mensaje después de unos segundos
+        setTimeout(() => {
+            feedbackDiv.innerHTML = '';
+        }, 5000);
+    }
 
-    // Función para mostrar/ocultar la contraseña
-    togglePasswordBtn.addEventListener('click', function () {
+    // Función para alternar la visibilidad de la contraseña
+    function togglePasswordVisibility() {
         const type = passwordInput.type === 'password' ? 'text' : 'password';
         passwordInput.type = type;
 
-        // Cambiar el icono de "ojo"
         const icon = togglePasswordBtn.querySelector('i');
         if (type === 'password') {
             icon.classList.remove('bi-eye-slash');
@@ -58,42 +134,6 @@
         } else {
             icon.classList.remove('bi-eye');
             icon.classList.add('bi-eye-slash');
-        }
-    });
-
-    // Función para hacer la solicitud de login
-    async function loginUser(email, password) {
-        try {
-            // Realizar la llamada a la API de login
-            const response = await fetch('/usuario/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, password })
-            });
-
-            // Ocultar el spinner
-            spinner.classList.add('d-none');
-
-            if (response.ok) {
-                // Si el login es exitoso, procesar la respuesta JSON y redirigir
-                const data = await response.json();
-                if (data.redirectTo) {
-                    // Redirigir al Dashboard
-                    window.location.href = data.redirectTo;
-                } else {
-                    alert('Login exitoso, pero no se especificó una redirección.');
-                }
-            } else {
-                // Si las credenciales son incorrectas, mostrar un mensaje de error
-                const errorMessage = await response.text();
-                alert(errorMessage);
-            }
-        } catch (error) {
-            // Manejo de errores si falla la comunicación con el servidor
-            spinner.classList.add('d-none');
-            alert('Error al conectar con el servidor. Intenta nuevamente.');
         }
     }
 

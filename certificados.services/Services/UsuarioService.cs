@@ -1,5 +1,6 @@
 ﻿using Azure;
 using certificados.dal.DataAccess;
+using certificados.models.Context;
 using certificados.models.Entitys;
 using certificados.models.Entitys.dbo;
 using certificados.services.Utils;
@@ -13,13 +14,12 @@ namespace certificados.services.Services
 {
     public class UsuarioService
     {
-        private readonly TusuarioDA usuarioAcces;
-        private readonly PersonaService personaService;
-
-        public UsuarioService(TusuarioDA tusuarioDA, PersonaService personaService)
+        private readonly TusuarioDA _usuarioDA;
+        private readonly TpersonaDA _personaDA;
+        public UsuarioService(TusuarioDA usuarioAcces, TpersonaDA personaDA)
         {
-            usuarioAcces = tusuarioDA;
-            this.personaService = personaService;
+            _usuarioDA = usuarioAcces ?? throw new ArgumentNullException(nameof(usuarioAcces));
+            _personaDA = personaDA ?? throw new ArgumentNullException(nameof(personaDA));
         }
 
         public ResponseApp LoginUsuario(String email, String password)
@@ -27,7 +27,7 @@ namespace certificados.services.Services
             ResponseApp response = Utils.Utils.BadResponse(null);
             try
             {
-                var responseUsuario = usuarioAcces.BuscarPorEmail(email);
+                var responseUsuario = _usuarioDA.BuscarPorEmail(email);
 
                 if (!responseUsuario.Cod.Equals(CONSTANTES.COD_OK) || responseUsuario.Data is not Tusuario usuario)
                 {
@@ -40,7 +40,7 @@ namespace certificados.services.Services
                     response.Message = usuario.Estado != "ACT" ? "USUARIO NO ESTA ACTIVO" : "CREDENCIALES INVALIDAS";
                     return response;
                 }
-                var usuarioResponse = personaService.ObtenerPersona(usuario.Cedula);
+                var usuarioResponse = _personaDA.BuscarPersona(usuario.Cedula);
 
                 if (usuarioResponse.Cod.Equals(CONSTANTES.COD_OK)) { 
                  //response = Utils.Utils.OkResponse(usuario);
@@ -75,14 +75,14 @@ namespace certificados.services.Services
                     response.Message = "EMAIL Y CONTRASEÑA SON OBLIGATORIOS";
                     return response;
                 }
-                var responseUsuarioExistente = usuarioAcces.BuscarPorEmail(usuario.Email);
+                var responseUsuarioExistente = _usuarioDA.BuscarPorEmail(usuario.Email);
                 if (responseUsuarioExistente.Cod.Equals(CONSTANTES.COD_OK))
                 {
                     response.Message = "NO SE PUEDE REGISTRAR AL USUARIO";
                     return response;
                 }
 
-                response = usuarioAcces.InsertarUsuario(usuario);
+                response = _usuarioDA.InsertarUsuario(usuario);
 
             }
             catch (Exception ex)
@@ -99,14 +99,14 @@ namespace certificados.services.Services
 
             try
             {
-                var usuarioExiste = usuarioAcces.BuscarUsuarioByCedula(cedula);
+                var usuarioExiste = _usuarioDA.BuscarUsuarioByCedula(cedula);
                 if (!usuarioExiste.Cod.Equals(CONSTANTES.COD_OK)) {
 
                     response.Message = "USUARIO NO EXISTE";
                     return response;
                 }
 
-                response = usuarioAcces.EliminarUsuario(cedula);
+                response = _usuarioDA.EliminarUsuario(cedula);
 
             }
             catch (Exception ex) {
@@ -123,20 +123,20 @@ namespace certificados.services.Services
 
             try
             {
-                var usuarioExiste = usuarioAcces.BuscarPorEmail(tusuario.Email);
+                var usuarioExiste = _usuarioDA.BuscarPorEmail(tusuario.Email);
                 if (!usuarioExiste.Cod.Equals(CONSTANTES.COD_OK))
                 {
                     response.Message = "USUARIO NO EXISTE";
                     return response;
                 }
-                var responseUsuarioExistente = usuarioAcces.BuscarPorEmail(tusuario.Email);
+                var responseUsuarioExistente = _usuarioDA.BuscarPorEmail(tusuario.Email);
                 if (responseUsuarioExistente.Cod.Equals(CONSTANTES.COD_OK))
                 {
                     response.Message = "NO SE PUEDE ACTUALIZAR AL USUARIO";
                     return response;
                 }
 
-                response = usuarioAcces.ModificarUsuario(tusuario);
+                response = _usuarioDA.ModificarUsuario(tusuario);
             }
             catch (Exception ex) {
                 response.Message = $"ERROR AL MODIFICAR USUARIO: {ex.Message}";
@@ -148,7 +148,7 @@ namespace certificados.services.Services
         }
         public ResponseApp ListarUsuario() { 
         
-            return usuarioAcces.ListarUsuario();
+            return _usuarioDA.ListarUsuario();
         }
 
         public ResponseApp BuscarUsuarioId(String email) {
@@ -156,7 +156,7 @@ namespace certificados.services.Services
 
             try
             {
-                var usuarioExiste = usuarioAcces.BuscarPorEmail(email);
+                var usuarioExiste = _usuarioDA.BuscarPorEmail(email);
                 if (!usuarioExiste.Cod.Equals(CONSTANTES.COD_OK)) {
 
                     response.Message = "USUARIO NO EXISTE";
