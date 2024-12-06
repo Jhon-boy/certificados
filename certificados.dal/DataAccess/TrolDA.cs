@@ -16,6 +16,12 @@ namespace certificados.dal.DataAccess
             ResponseApp response = Utils.BadResponse(null);
             try
             {
+                Trol insertRol = new Trol();
+                insertRol.Nombre = Utils.SafeString(tRol.Nombre);
+                insertRol.Observacion = Utils.SafeString(tRol.Observacion);
+                insertRol.FCreacion = Utils.timeParsed(DateTime.Now);
+                insertRol.UsuarioIngreso = Utils.SafeString(tRol.UsuarioIngreso);
+                insertRol.Estado = tRol.Estado;
                 context.Trol.Add(tRol);
                 context.SaveChanges();
                 response = Utils.OkResponse(tRol);
@@ -38,10 +44,10 @@ namespace certificados.dal.DataAccess
 
                 if (rolExistente != null)
                 {
-                    rolExistente.Nombre = tRol.Nombre;
+                    rolExistente.Nombre = Utils.SafeString(tRol.Nombre);
                     rolExistente.Observacion = tRol.Observacion;
                     rolExistente.Estado = tRol.Estado;
-                    rolExistente.FModificacion = DateTime.Now;
+                    rolExistente.FModificacion = Utils.timeParsed(DateTime.Now);
                     rolExistente.UsuarioActualizacion = tRol.UsuarioActualizacion; 
 
                     context.SaveChanges();
@@ -130,6 +136,31 @@ namespace certificados.dal.DataAccess
                 else
                 {
                     response = Utils.BadResponse($"EL ROL CON ID {idRol} NO EXISTE.");
+                }
+            }
+            catch (Exception ex)
+            {
+                response = Utils.BadResponse($"ERROR AL BUSCAR ROL: {ex.Message}");
+                throw new Exception($"ERROR AL INSERTAR ROL: {ex.Message}");
+            }
+
+            return response;
+        }
+        public ResponseApp BuscarRolByNombre(string nombreRol)
+        {
+            ResponseApp response = Utils.BadResponse(null);
+
+            try
+            {
+                var trol = context.Trol.FirstOrDefault(t => t.Nombre == nombreRol);
+
+                if (trol != null)
+                {
+                    response = Utils.OkResponse(trol);
+                }
+                else
+                {
+                    response = Utils.BadResponse($"EL ROL CON ID {nombreRol} NO EXISTE.");
                 }
             }
             catch (Exception ex)

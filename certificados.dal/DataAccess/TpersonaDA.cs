@@ -103,15 +103,37 @@ namespace certificados.dal.DataAccess
         }
 
 
-        public ResponseApp ListarPersonas()
+        public ResponseApp ListarPersonas(string estado)
         {
             ResponseApp response = Utils.BadResponse(null);
             try
             {
-                // Obtener todas las personas de la base de datos
-                var listaPersonas = context.Tpersona.ToList();
+                var listaPersonas = context.Tpersona
+            .Select(persona => new
+            {
+                Cedula = persona.Cedula,
+                Nombres = persona.Nombres,
+                Apellidos = persona.Apellidos,
+                Edad = persona.Edad,
+                Genero = persona.Genero,
+                FechaCreacion = persona.FechaCreacion,
+                FechaModificacion = persona.FechaModificacion,
+                UsuarioIngreso = persona.UsuarioIngreso,
+                UsuarioActualizacion = persona.UsuarioActualizacion,
+                mDatos = context.Tusuario
+                    .Where(usuario => usuario.Cedula == persona.Cedula && usuario.Estado == estado)
+                    .Select(usuario => new
+                    {
+                        Email = usuario.Email,
+                        Rol = context.Trol
+                            .Where(rol => rol.IdRol == usuario.IdRol)
+                            .Select(rol => rol.Nombre) 
+                            .FirstOrDefault()
+                    })
+                    .FirstOrDefault()
+            })
+            .ToList();
 
-                // Retornar respuesta exitosa con la lista
                 response = Utils.OkResponse(listaPersonas);
             }
             catch (Exception ex)

@@ -101,5 +101,17 @@ namespace certificados.services.Services
             return response;
         }
 
+        public ResponseApp ListarPersonas(string estado) {
+            ResponseApp response = Utils.Utils.BadResponse(null);
+            try
+            {
+                response = personaDataAcces.ListarPersonas(estado);
+            }
+            catch (Exception ex) {
+                response.Message = $"ERROR AL LISTAR PERSONA: {ex.Message}";
+                throw new Exception($"ERROR AL LISTAR PERSONA: {ex.Message}", ex);
+            }
+            return response;
+        }
     }
 }

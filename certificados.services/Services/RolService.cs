@@ -2,6 +2,7 @@
 using certificados.models.Context;
 using certificados.models.Entitys;
 using certificados.models.Entitys.dbo;
+using certificados.services.Utils;
 
 namespace certificados.services.Services
 {
@@ -16,6 +17,9 @@ namespace certificados.services.Services
 
         public ResponseApp CrearRol(Trol rol)
         {
+            if (rolDataAcces.BuscarRolByNombre(rol.Nombre).Cod == CONSTANTES.COD_OK) {
+                return Utils.Utils.BadResponse($"ROL {rol.Nombre} YA EXISTE");
+            }
             return rolDataAcces.insertarRol(rol);
         }
 

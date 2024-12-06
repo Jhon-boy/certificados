@@ -3,6 +3,7 @@ using certificados.models.Context;
 using certificados.services.Services;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
+using certificados.web.Infrastructure;
 
 namespace certificados.web
 {
@@ -18,10 +19,12 @@ namespace certificados.web
             builder.Services.AddDbContext<AppDbContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            builder.Services.AddScoped<LogService>();
-            builder.Services.AddScoped<UsuarioService>();
-            builder.Services.AddScoped<TpersonaDA>();
-            builder.Services.AddScoped<TusuarioDA>();
+            builder.Services.AddServices();
+
+            //builder.Services.AddScoped<LogService>();
+            //builder.Services.AddScoped<UsuarioService>();
+            //builder.Services.AddScoped<TpersonaDA>();
+            //builder.Services.AddScoped<TusuarioDA>();
 
 
             var app = builder.Build();
