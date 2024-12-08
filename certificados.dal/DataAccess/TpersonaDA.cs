@@ -13,61 +13,77 @@ namespace certificados.dal.DataAccess
     public class TpersonaDA(AppDbContext appDbContext)
     {
         private readonly AppDbContext context = appDbContext;
-        public ResponseApp InsertarPersona(Tpersona tpersona)
+        public ResponseApp InsertarPersona(Tpersona tpersona, Tusuario usuario)
         {
             ResponseApp response = Utils.BadResponse(null);
-            try
+            using (var transaction = context.Database.BeginTransaction())
             {
-                // Insertar nueva persona en la base de datos
-                context.Tpersona.Add(tpersona);
-                context.SaveChanges();
+                try
+                {
+                    context.Tpersona.Add(tpersona);
+                    context.Tusuario.Add(usuario);
+                    context.SaveChanges();
+                    transaction.Commit();
 
-                // Retornar respuesta exitosa con la persona creada
-                response = Utils.OkResponse(tpersona);
+                    // Retornar respuesta exitosa con la persona creada
+                    response = Utils.OkResponse(tpersona);
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    response = Utils.BadResponse($"ERROR AL INSERTAR PERSONA: {ex.Message}");
+                    throw new Exception($"ERROR AL INSERTAR PERSONA: {ex.Message}");
+                }
             }
-            catch (Exception ex)
-            {
-                response = Utils.BadResponse($"ERROR AL INSERTAR PERSONA: {ex.Message}");
-                throw new Exception($"ERROR AL INSERTAR PERSONA: {ex.Message}");
-            }
+
             return response;
         }
 
-        public ResponseApp ModificarPersona(Tpersona tpersona)
+        public ResponseApp ModificarPersona(Tpersona tpersona, Tusuario usuario)
         {
             ResponseApp response = Utils.BadResponse(null);
-            try
+            using (var transaction = context.Database.BeginTransaction())
             {
- 
-                var personaExistente = context.Tpersona.FirstOrDefault(p => p.Cedula == tpersona.Cedula);
-
-                if (personaExistente != null)
+                try
                 {
-                    // Actualizar los campos de la persona
-                    personaExistente.Nombres = tpersona.Nombres;
-                    personaExistente.Apellidos = tpersona.Apellidos;
-                    personaExistente.Edad = tpersona.Edad;
-                    personaExistente.Genero = tpersona.Genero;
-                    personaExistente.FechaModificacion = DateTime.Now;
-                    personaExistente.UsuarioActualizacion = tpersona.UsuarioActualizacion;
 
-                    // Guardar los cambios
-                    context.SaveChanges();
+                    var personaExistente = context.Tpersona.FirstOrDefault(p => p.Cedula == tpersona.Cedula);
+                    var usuarioExiste = context.Tusuario.FirstOrDefault(p => p.Cedula == tpersona.Cedula);
+                    if (personaExistente != null && usuarioExiste != null)
+                    {
+                        // Actualizar los campos de la persona
+                        personaExistente.Nombres = Utils.SafeString(tpersona.Nombres);
+                        personaExistente.Apellidos = Utils.SafeString(tpersona.Apellidos);
+                        personaExistente.Edad = tpersona.Edad;
+                        personaExistente.Genero = tpersona.Genero;
+                        personaExistente.FechaModificacion = Utils.timeParsed(DateTime.Now);
+                        personaExistente.UsuarioActualizacion = tpersona.UsuarioActualizacion;
 
-                    // Retornar respuesta exitosa
-                    response = Utils.OkResponse(personaExistente);
+                        usuarioExiste.Email = usuario.Email;
+                        usuarioExiste.Clave = usuario.Clave;
+                        usuarioExiste.FModificacion = Utils.timeParsed(DateTime.Now);
+                        usuarioExiste.UsuarioActualizacion = usuario.UsuarioActualizacion;
+                        // Guardar los cambios
+                        context.SaveChanges(); 
+                        transaction.Commit();
+
+                        // Retornar respuesta exitosa
+                        response = Utils.OkResponse(personaExistente);
+                    }
+                    else
+                    {
+                        // Si la persona no existe
+                        response = Utils.BadResponse("PERSONA NO EXISTE");
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    // Si la persona no existe
-                    response = Utils.BadResponse("PERSONA NO EXISTE");
+                    transaction.Rollback();
+                    response = Utils.BadResponse($"ERROR AL MODIFICAR PERSONA: {ex.Message}");
+                    throw new Exception($"ERROR AL MODIFICAR PERSONA: {ex.Message}");
                 }
             }
-            catch (Exception ex)
-            {
-                response = Utils.BadResponse($"ERROR AL MODIFICAR PERSONA: {ex.Message}");
-                throw new Exception($"ERROR AL MODIFICAR PERSONA: {ex.Message}");
-            }
+
             return response;
         }
 
@@ -127,7 +143,7 @@ namespace certificados.dal.DataAccess
                         Email = usuario.Email,
                         Rol = context.Trol
                             .Where(rol => rol.IdRol == usuario.IdRol)
-                            .Select(rol => rol.Nombre) 
+                            .Select(rol => rol.Nombre)
                             .FirstOrDefault()
                     })
                     .FirstOrDefault()
@@ -154,8 +170,32 @@ namespace certificados.dal.DataAccess
 
                 if (persona != null)
                 {
+                    var personaCompleta = new
+                    {
+                        Cedula = persona.Cedula,
+                        Nombres = persona.Nombres,
+                        Apellidos = persona.Apellidos,
+                        Edad = persona.Edad,
+                        Genero = persona.Genero,
+                        FechaCreacion = persona.FechaCreacion,
+                        FechaModificacion = persona.FechaModificacion,
+                        UsuarioIngreso = persona.UsuarioIngreso,
+                        UsuarioActualizacion = persona.UsuarioActualizacion,
+                        mDatos = context.Tusuario
+                           .Where(u => u.Cedula == persona.Cedula)
+                           .Select(usuario => new
+                           {
+                               Email = usuario.Email,
+                               Rol = context.Trol
+                                   .Where(rol => rol.IdRol == usuario.IdRol)
+                                   .Select(rol => rol.Nombre)
+                                   .FirstOrDefault()
+                           })
+                   .FirstOrDefault()
+                    };
+
                     // Retornar respuesta exitosa
-                    response = Utils.OkResponse(persona);
+                    response = Utils.OkResponse(personaCompleta);
                 }
                 else
                 {

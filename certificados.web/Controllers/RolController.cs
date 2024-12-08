@@ -10,7 +10,7 @@ namespace certificados.web.Controllers
     public class RolController : Controller
     {
         private readonly RolService rolService;
-
+            
         public RolController(RolService rolService)
         {
 

@@ -28,13 +28,18 @@ namespace certificados.web.Models.DTO
         [Required]
         [StringLength(100, ErrorMessage = "El usuario que realiza el ingreso no puede exceder los 100 caracteres.")]
         public required string UsuarioIngreso { get; set; }
+        [StringLength(100, ErrorMessage = "El usuario que realiza el ingreso no puede exceder los 100 caracteres.")]
+        public required string UsuarioActualizacion { get; set; }
         [Required]
         [StringLength(100, ErrorMessage = "El usuario que realiza el ingreso no puede exceder los 100 caracteres.")]
         public required string email { get; set; }
         [Required]
         [StringLength(100, ErrorMessage = "El usuario que realiza el ingreso no puede exceder los 100 caracteres.")]
         public required string clave { get; set; }
+        [Required]
+        public int idRol { get; set; }
 
-        public int idRol;
+        [StringLength(3, ErrorMessage = "El estado que realiza el ingreso no puede exceder los 3 caracteres.")]
+        public string? estado { get; set; }
     }
 }
