@@ -26,11 +26,6 @@ namespace certificados.services.Services
             ResponseApp response = Utils.Utils.BadResponse(null);
             try
             {
-                if (!personaDataAcces.BuscarPersona(expositor.Tpersona.Cedula).Cod.Equals(CONSTANTES.COD_OK)) {
-
-                    response.Message = "USUARIO NO EXISTE ";
-                    return response;
-                }
                 response = expositorDataAcces.InsertarExpositor(expositor);
 
             }
@@ -48,13 +43,6 @@ namespace certificados.services.Services
             ResponseApp response = Utils.Utils.BadResponse(null);
             try
             {
-                if (!personaDataAcces.BuscarPersona(texpositor.Tpersona.Cedula).Cod.Equals(CONSTANTES.COD_OK))
-                {
-
-                    response.Message = "USUARIO NO EXISTE ";
-                    return response;
-                }
-
                 response = expositorDataAcces.ModificarExpositor(texpositor);
 
             }

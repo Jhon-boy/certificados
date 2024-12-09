@@ -29,7 +29,7 @@ namespace certificados.services.Utils
          */
         public static string SafeString(String data)
         {
-            if (string.IsNullOrEmpty(data))
+            if (string.IsNullOrEmpty(data) || data ==null)
             {
                 return "";
             }
@@ -53,7 +53,7 @@ namespace certificados.services.Utils
         }
 
         /**
-         Funcion que sirve para devolver una fecha Pareada
+         Funcion que sirve para devolver una fecha Parseada
          */
         public static DateTime timeParsed(DateTime fecha)
         {

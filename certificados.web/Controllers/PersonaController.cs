@@ -9,6 +9,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace certificados.web.Controllers
 {
+    /**
+     * Controlador dedicado la entidad de TPERSONA
+     */
     [ApiController]
     [Route("api/personas")]
     public class PersonaController : Controller

@@ -2,6 +2,7 @@
 using certificados.models.Entitys;
 using certificados.models.Entitys.dbo;
 using certificados.services.Utils;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,11 +15,30 @@ namespace certificados.dal.DataAccess
     {
         private readonly AppDbContext context = appDbContext;
 
-        public ResponseApp InsertarExpositor(Texpositor texpositor) {
-
+        public ResponseApp InsertarExpositor(Texpositor texpositor)
+        {
             ResponseApp response = Utils.BadResponse(null);
+
             try
             {
+                var trackedEntity = context.ChangeTracker.Entries<Tpersona>()
+                    .FirstOrDefault(e => e.Entity.Cedula == texpositor.Tpersona.Cedula);
+
+                if (trackedEntity != null)
+                {
+                    trackedEntity.State = EntityState.Detached;
+                }
+
+                if (context.Tpersona.Any(p => p.Cedula == texpositor.Tpersona.Cedula))
+                {
+                    context.Attach(texpositor.Tpersona);
+                }
+                else
+                {
+                    response = Utils.BadResponse($"NO EXISTE LA PERSONA EN LOS REGISTROS");
+                    return response;
+                }
+
                 context.Texpositor.Add(texpositor);
                 context.SaveChanges();
                 response = Utils.OkResponse(texpositor);
@@ -26,30 +46,32 @@ namespace certificados.dal.DataAccess
             catch (Exception ex)
             {
                 response = Utils.BadResponse($"ERROR AL INSERTAR EXPOSITOR: {ex.Message}");
-                throw new Exception($"ERROR AL INSERTAR expositor: {ex.Message}");
+                throw new Exception($"ERROR AL INSERTAR expositor: {ex.Message}", ex);
             }
+
             return response;
         }
+
+
 
         public ResponseApp ModificarExpositor(Texpositor expositor)
         {
             ResponseApp response = Utils.BadResponse(null);
             try
-            { 
+            {
                 var expositorExistente = context.Texpositor.FirstOrDefault(e => e.IdExpositor == expositor.IdExpositor);
 
                 if (expositorExistente != null)
                 { 
-                    expositorExistente.Cedula = expositor.Cedula;
                     expositorExistente.FModificacion = Utils.timeParsed(DateTime.Now);
                     expositorExistente.UsuarioActualizacion = expositor.UsuarioActualizacion;
-                     
-                    context.SaveChanges(); 
+
+                    context.SaveChanges();
                     response = Utils.OkResponse(expositorExistente);
                 }
                 else
-                { 
-                    response = Utils.BadResponse("EXPOSITOR NO EXISTE");
+                {
+                    response = Utils.BadResponse($"EXPOSITOR {expositor.IdExpositor} NO EXISTE");
                 }
             }
             catch (Exception ex)
@@ -64,18 +86,18 @@ namespace certificados.dal.DataAccess
         {
             ResponseApp response = Utils.BadResponse(null);
             try
-            { 
+            {
                 var expositorExistente = context.Texpositor.FirstOrDefault(e => e.IdExpositor == idExpositor);
 
                 if (expositorExistente != null)
-                { 
+                {
                     context.Texpositor.Remove(expositorExistente);
                     context.SaveChanges();
-                     
+
                     response = Utils.OkResponse(expositorExistente);
                 }
                 else
-                { 
+                {
                     response = Utils.BadResponse("EXPOSITOR NO EXISTE");
                 }
             }
@@ -91,9 +113,9 @@ namespace certificados.dal.DataAccess
         {
             ResponseApp response = Utils.BadResponse(null);
             try
-            { 
-                var listaExpositores = context.Texpositor.ToList();
-                 
+            {
+                var listaExpositores = context.Texpositor.Include(e =>e.Tpersona).ToList();
+
                 response = Utils.OkResponse(listaExpositores);
             }
             catch (Exception ex)
@@ -107,15 +129,15 @@ namespace certificados.dal.DataAccess
         {
             ResponseApp response = Utils.BadResponse(null);
             try
-            { 
-                var expositor = context.Texpositor.FirstOrDefault(e => e.IdExpositor == idExpositor);
+            {
+                var expositor = context.Texpositor.Include(e => e.Tpersona).FirstOrDefault(e => e.IdExpositor == idExpositor);
 
                 if (expositor != null)
-                { 
+                {
                     response = Utils.OkResponse(expositor);
                 }
                 else
-                { 
+                {
                     response = Utils.BadResponse("EXPOSITOR NO EXISTE");
                 }
             }
