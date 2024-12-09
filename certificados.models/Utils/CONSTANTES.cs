@@ -33,5 +33,6 @@ namespace certificados.services.Utils
 
         //Para datos duplicados
         public static string MESSAGE_DATA_EXISTE = "DATOS DUPLICADOS:  ";
+        public static string MESSAGE_DATA_ERRORS = "ERROR EN LOS DATOS DE ENVIO";
     }
 }

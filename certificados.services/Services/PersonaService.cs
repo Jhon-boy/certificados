@@ -24,7 +24,7 @@ namespace certificados.services.Services
             this.usuarioService = usuarioService;
         }
 
-        public ResponseApp CrearPersona(Tpersona personaU) {
+        public ResponseApp CrearPersona(Tpersona personaU, Tusuario usuario) {
 
             ResponseApp response = Utils.Utils.BadResponse(null);
 
@@ -36,7 +36,7 @@ namespace certificados.services.Services
                     response.Message = "USUARIO YA ESTA REGISTRADO";
                     return response;
                 }
-                response = personaDataAcces.InsertarPersona(personaU);
+                response = personaDataAcces.InsertarPersona(personaU, usuario);
             }
             catch (Exception ex) {
                 response.Message = $"ERROR AL CREAR PERSONA: {personaU.Cedula}";
@@ -85,12 +85,12 @@ namespace certificados.services.Services
             return response;    
         }
         //Modifica los Datos de una persona
-        public ResponseApp ModificarPersona(Tpersona persona) {
+        public ResponseApp ModificarPersona(Tpersona persona, Tusuario usuario) {
             ResponseApp response = Utils.Utils.BadResponse(null);
 
             try
             {
-                response = personaDataAcces.ModificarPersona(persona);
+                response = personaDataAcces.ModificarPersona(persona, usuario);
 
             }
             catch (Exception ex) {
@@ -101,5 +101,17 @@ namespace certificados.services.Services
             return response;
         }
 
+        public ResponseApp ListarPersonas(string estado) {
+            ResponseApp response = Utils.Utils.BadResponse(null);
+            try
+            {
+                response = personaDataAcces.ListarPersonas(estado);
+            }
+            catch (Exception ex) {
+                response.Message = $"ERROR AL LISTAR PERSONA: {ex.Message}";
+                throw new Exception($"ERROR AL LISTAR PERSONA: {ex.Message}", ex);
+            }
+            return response;
+        }
     }
 }

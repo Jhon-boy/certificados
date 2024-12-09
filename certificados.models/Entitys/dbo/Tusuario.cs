@@ -57,5 +57,6 @@ namespace certificados.models.Entitys.dbo
         [DeleteBehavior(DeleteBehavior.NoAction)]
         public required virtual Trol Trol { get; set; }
 
+
     }
 }
