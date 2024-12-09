@@ -16,13 +16,13 @@
     <div class="wrapper d-flex">
         <nav id="sidebar" class="sidebar">
             <div class="sidebar-header p-3">
-                <img src="https://images.unsplash.com/photo-1633409361618-c73427e4e206?auto=format&fit=crop&w=80" alt="Logo de Dashboard" class="logo img-fluid">
+                <img src="~/img/logo_ug_vertical.svg" alt="Logo de Dashboard" class="logo">
             </div>
             <ul class="list-unstyled components p-3">
-                <li class="active">
+                <li>
                     <a href="#" class="d-flex align-items-center">
-                        <i class="bi bi-search me-2"></i>
-                        <span class="d-none d-md-inline">Consultas</span>
+                        <i class="bi bi-gear-fill me-2"></i>
+                        <span class="d-none d-md-inline">Mantenimiento</span>
                     </a>
                 </li>
                 <li>
@@ -49,28 +49,31 @@
                         <span class="d-none d-md-inline">Certificación</span>
                     </a>
                 </li>
-                <li>
+                <li class="">
                     <a href="#" class="d-flex align-items-center">
-                        <i class="bi bi-gear-fill me-2"></i>
-                        <span class="d-none d-md-inline">Mantenimiento</span>
+                        <i class="bi bi-search me-2"></i>
+                        <span class="d-none d-md-inline">Consultas</span>
                     </a>
                 </li>
             </ul>
         </nav>
         <div class="content flex-column">
             <header class="header p-3 d-flex justify-content-between align-items-center">
-                <!-- Boton para movil -->
-                <button type="button" id="sidebarCollapse" class="btn d-md-none">
-                    <i class="bi bi-list"></i>
-                </button>
-               
-                <div class="user-profile dropdown ms-auto">
+                <div class="flex-row mb-0">
+                    <h4 class="mb-0">VICERRECTORADO ACADÉMICO</h4>
+                    <h6 class="mb-0">Sistema de Certificación</h6>
+                </div>
+                <div class="user-profile dropdown ">
                     <button class="btn dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
-                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=40" alt="Usuario" class="rounded-circle me-2">
-                        <span class="d-none d-md-inline">Johncito</span>
+                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=40"
+                             alt="Usuario"
+                             class="rounded-circle me-2">
+                        <span class="d-none d-md-inline">Ruth</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#">Cerrar sesión</a></li>
+                        <li>
+                            <a class="dropdown-item" href="#">Cerrar sesión</a>
+                        </li>
                     </ul>
                 </div>
             </header>
@@ -79,7 +82,7 @@
                     <div class="row g-4">
                         <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                             <div class="card h-100 shadow-sm">
-                                <img src="https://via.placeholder.com/400x200?text=Formación+Académica" class="card-img-top" alt="Imagen representativa del Decanato de Formación Académica y Profesional">
+                                <img src="~/img/decanato_formacion_academica.jpg" class="card-img-top" alt="Imagen representativa del Decanato de Formación Académica y Profesional">
                                 <div class="card-body">
                                     <h5 class="card-title">Decanato de Formación Académica y Profesional</h5>
                                 </div>
@@ -103,7 +106,7 @@
                         </div>
                         <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                             <div class="card h-100 shadow-sm">
-                                <img src="https://via.placeholder.com/400x200?text=Vinculación+y+Bienestar" class="card-img-top" alt="Imagen representativa del Decanato de Vinculación con la Sociedad y Bienestar Universitario">
+                                <img src="~/img/decanato_vinculacion.jpg" class="card-img-top" alt="Imagen representativa del Decanato de Vinculación con la Sociedad y Bienestar Universitario">
                                 <div class="card-body">
                                     <h5 class="card-title">Decanato de Vinculación con la Sociedad y Bienestar Universitario</h5>
                                 </div>
@@ -116,6 +119,5 @@
     </div>
 
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>
