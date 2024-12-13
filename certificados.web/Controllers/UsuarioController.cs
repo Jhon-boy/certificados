@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace certificados.web.Controllers
 {
     [ApiController]
-    [Route("api/usuario/")]
+    [Route("api/usuario")]
     public class UsuarioController : ControllerBase
     {
         private readonly UsuarioService _usuarioService;

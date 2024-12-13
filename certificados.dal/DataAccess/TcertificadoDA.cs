@@ -16,27 +16,32 @@ namespace certificados.dal.DataAccess
 
         public ResponseApp InsertarCertificado(Tcertificado tcertificado) {
             ResponseApp response = Utils.BadResponse(null);
-
-            try
+            using (var transaction = context.Database.BeginTransaction()) { 
+                try
             {
                 context.Tcertificado.Add(tcertificado);
                 context.SaveChanges();
+                    transaction.Commit();
                 response = Utils.OkResponse(tcertificado);
 
             }
             catch (Exception ex) {
+                    transaction.Rollback();
                 response = Utils.BadResponse("Error al insertar CERTIFICADO");
 
-                throw new Exception("ERROR AL PROCESAR LA INSERACION DE UN CERTIFICADO");
+                throw new Exception($"ERROR AL PROCESAR LA INSERACION DE UN CERTIFICADO {ex.Message}");
             }
             return response;
+            }
+            
         
         }
 
         public ResponseApp ModificarCertificado(Tcertificado certificado)
         {
             ResponseApp response = Utils.BadResponse(null);
-            try
+            using (var transaction = context.Database.BeginTransaction()) { 
+                try
             {
                 // Buscar el certificado existente
                 var certificadoExistente = context.Tcertificado.FirstOrDefault(c => c.IdCertificado == certificado.IdCertificado);
@@ -55,6 +60,7 @@ namespace certificados.dal.DataAccess
 
                     // Guardar los cambios
                     context.SaveChanges();
+                        transaction.Commit();
                     response = Utils.OkResponse(certificadoExistente);
                 }
                 else
@@ -65,10 +71,13 @@ namespace certificados.dal.DataAccess
             }
             catch (Exception ex)
             {
-                response = Utils.BadResponse($"ERROR AL MODIFICAR CERTIFICADO: {ex.Message}");
+                    transaction.Rollback();
+                    response = Utils.BadResponse($"ERROR AL MODIFICAR CERTIFICADO: {ex.Message}");
                 throw new Exception($"ERROR AL MODIFICAR CERTIFICADO: {ex.Message}");
             }
             return response;
+            }
+            
         }
 
         public ResponseApp EliminarCertificado(int idCertificado)
@@ -109,6 +118,27 @@ namespace certificados.dal.DataAccess
             {
       
                 var listaCertificados = context.Tcertificado.ToList();
+
+                // Retornar respuesta exitosa con la lista
+                response = Utils.OkResponse(listaCertificados);
+            }
+            catch (Exception ex)
+            {
+                response = Utils.BadResponse($"ERROR AL LISTAR CERTIFICADOS: {ex.Message}");
+                throw new Exception($"ERROR AL listar CERTIFICADO: {ex.Message}");
+            }
+            return response;
+        }
+
+        public ResponseApp ListarCertificadosPorEvento(int idEvento)
+        {
+            ResponseApp response = Utils.BadResponse(null);
+            try
+            {
+
+                var listaCertificados = context.Tcertificado
+                    .Where(c => c.IdCertificado == idEvento)
+                    .ToList();
 
                 // Retornar respuesta exitosa con la lista
                 response = Utils.OkResponse(listaCertificados);

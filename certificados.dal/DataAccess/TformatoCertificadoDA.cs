@@ -18,28 +18,33 @@ namespace certificados.dal.DataAccess
         public ResponseApp InsertarCertificado(TformatoCertificado tformatoCertificado) {
 
             ResponseApp response = Utils.BadResponse(null);
-
-            try
-            { 
-                tformatoCertificado.FCreacion = Utils.timeParsed(DateTime.Now);
-                context.TformatoCertificado.Add(tformatoCertificado);
-                context.SaveChanges();
-                 
-                response = Utils.OkResponse(tformatoCertificado);
-            }
-            catch (Exception ex)
+            using (var transaction = context.Database.BeginTransaction())
             {
-                response = Utils.BadResponse($"ERROR AL INSERTAR FORMATO: {ex.Message}");
-                throw new Exception($"ERROR AL INSERTAR FORMATO CERTIFICADO: {ex.Message}");
-            }
+                try
+                { 
+                    tformatoCertificado.FCreacion = Utils.timeParsed(DateTime.Now);
+                    context.TformatoCertificado.Add(tformatoCertificado);
+                    context.SaveChanges();
+                    transaction.Commit();
+                 
+                    response = Utils.OkResponse(tformatoCertificado);
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    response = Utils.BadResponse($"ERROR AL INSERTAR FORMATO: {ex.Message}");
+                    throw new Exception($"ERROR AL INSERTAR FORMATO CERTIFICADO: {ex.Message}");
+                }
 
-            return response;
-        
+                return response;
+            } 
         }
 
         public ResponseApp ModificarFormatoCertificado(TformatoCertificado formato)
         {
             ResponseApp response = Utils.BadResponse(null);
+            using (var transaction = context.Database.BeginTransaction()) { 
+            
             try
             { 
                 var formatoExistente = context.TformatoCertificado.FirstOrDefault(f => f.idFormato == formato.idFormato);
@@ -50,7 +55,7 @@ namespace certificados.dal.DataAccess
                     formatoExistente.LogoSecundario = formato.LogoSecundario;
                     formatoExistente.MarcarAgua = formato.MarcarAgua;
                     formatoExistente.Qr = formato.Qr;
-                    formatoExistente.FModificacion = DateTime.Now;
+                    formatoExistente.FModificacion = Utils.timeParsed(DateTime.Now);
                     formatoExistente.UsuarioActualizacion = formato.UsuarioActualizacion;
                      
                     context.SaveChanges();
@@ -65,10 +70,13 @@ namespace certificados.dal.DataAccess
             }
             catch (Exception ex)
             {
+                transaction.Rollback();
                 response = Utils.BadResponse($"ERROR AL MODIFICAR FORMATO: {ex.Message}");
                 throw new Exception($"ERROR AL MODIFICAR FORMATO: {ex.Message}");
             }
             return response;
+            }
+              
         }
 
         public ResponseApp EliminarFormatoCertificado(int idFormato)

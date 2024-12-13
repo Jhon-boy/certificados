@@ -11,7 +11,7 @@ namespace certificados.web.Controllers
     public class IsAliveController : Controller
     {
         [HttpGet]
-
+                
         public ResponseApp isAlive() {
 
             return Utils.OkResponse("SERVICIO ACTIVO");

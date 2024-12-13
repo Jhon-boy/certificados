@@ -17,20 +17,25 @@ namespace certificados.dal.DataAccess
         public ResponseApp InsertarDecanato(Tdecanato tdecanato)
         {
             ResponseApp response = Utils.BadResponse(null);
-            try
-            { 
-                context.Tdecanato.Add(tdecanato);
-                context.SaveChanges();
-                 
-                response = Utils.OkResponse(tdecanato);
-            }
-            catch (Exception ex)
+            using (var transaction = context.Database.BeginTransaction())
             {
-                response = Utils.BadResponse($"ERROR AL INSERTAR DECANATO: {ex.Message}");
+                try
+                {
+                    context.Tdecanato.Add(tdecanato);
+                    context.SaveChanges();
+                    transaction.Commit();
 
-                throw new Exception("ERROR AL PROCESAR LA INSERACION DECANATO");
+                    response = Utils.OkResponse(tdecanato);
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    response = Utils.BadResponse($"ERROR AL INSERTAR DECANATO: {ex.Message}");
+
+                    throw new Exception("ERROR AL PROCESAR LA INSERACION DECANATO");
+                }
+                return response;
             }
-            return response;
 
         }
         public ResponseApp ModificarDecanato(Tdecanato decanato)
@@ -144,6 +149,31 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
+        public ResponseApp BuscarDecanatoByNombre(string nombreDecanato)
+        {
+            ResponseApp response = Utils.BadResponse(null);
+            try
+            {
+                // Buscar el decanato por su IdDecanato
+                var decanato = context.Tdecanato.FirstOrDefault(d => d.Nombre == nombreDecanato);
 
+                if (decanato != null)
+                {
+                    // Retornar respuesta exitosa
+                    response = Utils.OkResponse(decanato);
+                }
+                else
+                {
+                    // Si el decanato no existe
+                    response = Utils.BadResponse("DECANATO NO EXISTE");
+                }
+            }
+            catch (Exception ex)
+            {
+                response = Utils.BadResponse($"ERROR AL BUSCAR DECANATO: {ex.Message}");
+                throw new Exception("ERROR AL BUSCAR DECANATO");
+            }
+            return response;
+        }
     }
 }

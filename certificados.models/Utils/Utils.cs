@@ -22,7 +22,7 @@ namespace certificados.services.Utils
         public static ResponseApp BadResponse(Object data)
         {
             return new ResponseApp(CONSTANTES.COD_ERROR, CONSTANTES.MESSAGE_ERROR, data);
-        }
+        }   
 
         /**
          Metodo que nos permite asegurar valores de String eliminando caracteres

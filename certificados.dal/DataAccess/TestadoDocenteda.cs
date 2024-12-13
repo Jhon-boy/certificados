@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace certificados.dal.DataAccess
 {
-    public class TestadoDocenteda(AppDbContext appDbContext)
+    public class TestadoDocenteDA(AppDbContext appDbContext)
     {
         private readonly AppDbContext context = appDbContext;
 
@@ -23,7 +23,7 @@ namespace certificados.dal.DataAccess
                 context.TestadoDocente.Add(testado);
                 context.SaveChanges();
 
-                response = Utils.OkResponse(response);
+                response = Utils.OkResponse(testado);
             }
             catch (Exception ex) {
                 throw new Exception($"ERROR AL INSERTAR ESTADO DOCENTE: {ex.Message}");
@@ -44,7 +44,7 @@ namespace certificados.dal.DataAccess
 
                     estadoDocente.Nombre = testado.Nombre;
                     context.SaveChanges();
-                    response = Utils.OkResponse(response);
+                    response = Utils.OkResponse(estadoDocente);
                 }
                 else {
                     response = Utils.BadResponse("ESTADO DOCENTE NO EXISTE");
@@ -90,7 +90,7 @@ namespace certificados.dal.DataAccess
             try
             {
                     var listado = context.TestadoDocente.ToList();
-                    response = Utils.OkResponse(response);
+                    response = Utils.OkResponse(listado);
             }
             catch (Exception ex)
             {
@@ -100,5 +100,53 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
+        public ResponseApp ListarById(int id) {
+
+            ResponseApp response = Utils.BadResponse(null);
+
+            try
+            {
+                var listado = context.TestadoDocente.Where(e => e.IdEstado == id).ToList();
+                if (listado.Count > 0)
+                {
+                    response = Utils.OkResponse(listado); 
+                }
+                else {
+                    response.Message = "NO EXISTE NINGUN ESTADO DOCENTE CON EL ID";
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                response = Utils.BadResponse($"ERROR AL ELIMINAR DOCENTE: {ex.Message}");
+                throw new Exception($"ERROR AL LISTAR ESTADOCENTE: {ex.Message}");
+            }
+            return response;
+        }
+
+        public ResponseApp ListarByNombre(String  nombre)
+        {
+
+            ResponseApp response = Utils.BadResponse(null);
+
+            try
+            {
+                var listado = context.TestadoDocente.Where(e => e.Nombre == nombre).ToList();
+                if (listado.Count > 0)
+                {
+                    response = Utils.OkResponse(listado);
+                }
+                else
+                {
+                    response.Message = "NO EXISTE ESTADOS CON LOS PARAMETROS PROPORCIONADO";
+                }
+            }
+            catch (Exception ex)
+            {
+                response = Utils.BadResponse($"ERROR AL ELIMINAR DOCENTE: {ex.Message}");
+                throw new Exception($"ERROR AL LISTAR ESTADOCENTE: {ex.Message}");
+            }
+            return response;
+        }
     }
 }

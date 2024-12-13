@@ -17,7 +17,6 @@ namespace certificados.models.Entitys.dbo
         public required string Nombre { get; set; }
 
         [Column("CANTIDAD")]
-        [StringLength(100)]
         public int Cantidad { get; set; }
 
         [Column("FCREACION")]

@@ -13,6 +13,7 @@ namespace certificados.web.Controllers
     /**
      * Controlador dedicado la entidad de TEXPOSITOR
      */
+    [ApiController]
     [Route("api/expositor")]
     public class ExpositorController : Controller
     {

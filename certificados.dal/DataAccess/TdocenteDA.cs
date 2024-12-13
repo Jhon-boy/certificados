@@ -14,85 +14,102 @@ namespace certificados.dal.DataAccess
     {
         private readonly AppDbContext context = appDbContext;
 
-        public ResponseApp InsertarDocente(Tdocente tdocente) {
+        public ResponseApp InsertarDocente(Tdocente tdocente)
+        {
 
             ResponseApp response = Utils.BadResponse(null);
-
-            try
+            using (var transaction = context.Database.BeginTransaction())
             {
+                try
+                {
 
-                context.Tdocente.Add(tdocente);
-                    
-                context.SaveChanges();
-                response = Utils.OkResponse(tdocente);
+                    context.Tdocente.Add(tdocente);
+                    context.SaveChanges();
+                    transaction.Commit();
+                    response = Utils.OkResponse(tdocente);
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    response = Utils.BadResponse($"ERROR AL INSERTAR PERSONA: {ex.Message}");
+                    throw new Exception($"ERROR AL INSERTAR DOCENTE: {ex.Message}");
+                }
+
+                return response;
             }
-            catch (Exception ex) {
-                response = Utils.BadResponse($"ERROR AL INSERTAR PERSONA: {ex.Message}");
-                throw new Exception($"ERROR AL INSERTAR DOCENTE: {ex.Message}");
-            }
-        
-            return response;
+
         }
 
         public ResponseApp ModificarDocente(Tdocente tdocente)
         {
             ResponseApp response = Utils.BadResponse(null);
-            try
+            using (var transaction = context.Database.BeginTransaction())
             {
-                var docenteExistente = context.Tdocente.FirstOrDefault(d => d.CodigoDocente == tdocente.CodigoDocente);
-
-                if (docenteExistente != null)
+                try
                 {
-                    docenteExistente.Titulo = tdocente.Titulo;
-                    docenteExistente.Facultad = tdocente.Facultad;
-                    docenteExistente.Carrera = tdocente.Carrera;
-                    docenteExistente.IdEstado = tdocente.IdEstado;
-                    docenteExistente.FModificacion = Utils.timeParsed(DateTime.Now);// DateTime.Now;
-                    docenteExistente.UserModificacion = tdocente.UserModificacion;
+                    var docenteExistente = context.Tdocente.FirstOrDefault(d => d.CodigoDocente == tdocente.CodigoDocente);
 
-                    context.SaveChanges();
+                    if (docenteExistente != null)
+                    {
+                        docenteExistente.Titulo = tdocente.Titulo;
+                        docenteExistente.Facultad = tdocente.Facultad;
+                        docenteExistente.Carrera = tdocente.Carrera;
+                        docenteExistente.IdEstado = tdocente.IdEstado;
+                        docenteExistente.FModificacion = Utils.timeParsed(DateTime.Now);// DateTime.Now;
+                        docenteExistente.UserModificacion = tdocente.UserModificacion;
 
-                    response = Utils.OkResponse(docenteExistente);
+                        context.SaveChanges();
+                        transaction.Commit();
+
+                        response = Utils.OkResponse(docenteExistente);
+                    }
+                    else
+                    {
+                        response = Utils.BadResponse("DOCENTE NO EXISTE");
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    response = Utils.BadResponse("DOCENTE NO EXISTE");
+                    transaction.Rollback();
+                    response = Utils.BadResponse($"ERROR AL MODIFICAR DOCENTE: {ex.Message}");
+                    throw new Exception($"ERROR AL MODIFICAR DOCENTE : {ex.Message}");
                 }
+                return response;
+
             }
-            catch (Exception ex)
-            {
-                response = Utils.BadResponse($"ERROR AL MODIFICAR DOCENTE: {ex.Message}");
-                throw new Exception($"ERROR AL MODIFICAR DOCENTE : {ex.Message}");
-            }
-            return response;
         }
-
 
         public ResponseApp EliminarDocente(string codigoDocente)
         {
             ResponseApp response = Utils.BadResponse(null);
-            try
+            using (var transaction = context.Database.BeginTransaction())
             {
-                var docenteExistente = context.Tdocente.FirstOrDefault(d => d.CodigoDocente == codigoDocente);
-
-                if (docenteExistente != null)
+                try
                 {
-                    context.Tdocente.Remove(docenteExistente);
-                    context.SaveChanges();
+                    var docenteExistente = context.Tdocente.FirstOrDefault(d => d.CodigoDocente == codigoDocente);
 
-                    response = Utils.OkResponse(docenteExistente);
+                    if (docenteExistente != null)
+                    {
+                        context.Tdocente.Remove(docenteExistente);
+                        context.SaveChanges();
+                        transaction.Commit();
+
+                        response = Utils.OkResponse(docenteExistente);
+                    }
+                    else
+                    {
+                        response = Utils.BadResponse("DOCENTE NO EXISTE");
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    response = Utils.BadResponse("DOCENTE NO EXISTE");
+                    transaction.Rollback();
+                    response = Utils.BadResponse($"ERROR AL ELIMINAR DOCENTE: {ex.Message}");
+                    throw new Exception($"ERROR AL ELIMINAR  DOCENTE: {ex.Message}");
                 }
+                return response;
             }
-            catch (Exception ex)
-            {
-                response = Utils.BadResponse($"ERROR AL ELIMINAR DOCENTE: {ex.Message}");
-                throw new Exception($"ERROR AL ELIMINAR  DOCENTE: {ex.Message}");
-            }
-            return response;
+
         }
 
         public ResponseApp ListarDocentes()
