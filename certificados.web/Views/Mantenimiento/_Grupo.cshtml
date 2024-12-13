@@ -1,0 +1,158 @@
+﻿@{
+    ViewData["Title"] = "Listado de Registros";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+
+    <!-- Enlace a DataTables CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
+
+    <!-- Enlace a Bootstrap (para un diseño moderno) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Enlace a jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Enlace a DataTables JS -->
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>@ViewData["Title"]</h2>
+
+        <!-- Botón para agregar un nuevo registro -->
+        <button class="btn btn-primary mb-3" id="addRecordBtn">Agregar Registro</button>
+
+        <!-- Tabla de datos -->
+        <table id="recordsTable" class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Aquí se insertarán los registros de manera dinámica -->
+                @* @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>@item.Description</td>
+                        <td>@item.Date.ToString("yyyy-MM-dd")</td>
+                        <td>
+                            <!-- Botones de acción (editar y eliminar) -->
+                            <button class="btn btn-warning btn-sm edit-btn" data-id="@item.Id">Editar</button>
+                            <button class="btn btn-danger btn-sm delete-btn" data-id="@item.Id">Eliminar</button>
+                        </td>
+                    </tr>
+                } *@
+                <tr>
+                    <td>Name</td>
+                    <td>Description</td>
+                    <td>Date.ToString("yyyy-MM-dd")</td>
+                    <td>
+                        <!-- Botones de acción (editar y eliminar) -->
+                        <button class="btn btn-warning btn-sm edit-btn" data-id="">Editar</button>
+                        <button class="btn btn-danger btn-sm delete-btn" data-id="">Eliminar</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal o formulario para agregar y editar -->
+    <div class="modal fade" id="recordModal" tabindex="-1" aria-labelledby="recordModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="recordModalLabel">Agregar/Editar Registro</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="recordForm">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Nombre</label>
+                            <input type="text" class="form-control" id="name" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Descripción</label>
+                            <input type="text" class="form-control" id="description" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="date" class="form-label">Fecha</label>
+                            <input type="date" class="form-control" id="date" required />
+                        </div>
+                        <input type="hidden" id="recordId" />
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS y JS para manejar eventos -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Inicializar DataTable
+            $('#recordsTable').DataTable({
+                responsive: true,
+                searching: true, // Filtro
+                paging: true,    // Paginación
+                lengthChange: false // No permitir cambiar la cantidad de filas
+            });
+
+            // Manejar el clic en el botón de "Agregar Registro"
+            $('#addRecordBtn').on('click', function () {
+                $('#recordModal').modal('show');
+                $('#recordForm')[0].reset();
+                $('#recordId').val('');
+            });
+
+            // Manejar el clic en el botón de "Editar"
+            $('.edit-btn').on('click', function () {
+                var recordId = $(this).data('id');
+                // Aquí deberías obtener los detalles del registro desde tu API o base de datos.
+                // Este ejemplo simplemente muestra los valores predeterminados para la demostración.
+                $('#recordModal').modal('show');
+                $('#recordId').val(recordId);
+                $('#name').val("Nombre de Ejemplo");
+                $('#description').val("Descripción de Ejemplo");
+                $('#date').val("2024-12-12");
+            });
+
+            // Manejar el clic en el botón de "Eliminar"
+            $('.delete-btn').on('click', function () {
+                var recordId = $(this).data('id');
+                if (confirm('¿Estás seguro de eliminar este registro?')) {
+                    // Realizar llamada a eliminar registro desde API o controlador
+                    console.log('Registro eliminado: ' + recordId);
+                    // Aquí eliminarías el registro y recargarías la tabla
+                }
+            });
+
+            // Manejar el envío del formulario para agregar o editar
+            $('#recordForm').on('submit', function (e) {
+                e.preventDefault();
+                var recordData = {
+                    id: $('#recordId').val(),
+                    name: $('#name').val(),
+                    description: $('#description').val(),
+                    date: $('#date').val()
+                };
+                // Aquí deberías realizar una llamada a tu controlador para guardar los datos
+                console.log('Datos guardados:', recordData);
+                $('#recordModal').modal('hide');
+            });
+        });
+    </script>
+</body>
+</html>

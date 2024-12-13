@@ -1,123 +1,67 @@
 ﻿@{
     ViewData["Title"] = "Dashboard";
 }
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Certificados</title>
-    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <title>Modern Layout</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="~/css/dashboard.css">
+    <!-- FontAwesome Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="wrapper d-flex">
-        <nav id="sidebar" class="sidebar">
-            <div class="sidebar-header p-3">
-                <img src="~/img/logo_ug_vertical.svg" alt="Logo de Dashboard" class="logo">
-            </div>
-            <ul class="list-unstyled components p-3">
-                <li>
-                    <a href="#" class="d-flex align-items-center">
-                        <i class="bi bi-gear-fill me-2"></i>
-                        <span class="d-none d-md-inline">Mantenimiento</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="d-flex align-items-center">
-                        <i class="bi bi-calendar-check-fill me-2"></i>
-                        <span class="d-none d-md-inline">Planificación</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="d-flex align-items-center">
-                        <i class="bi bi-file-earmark-check-fill me-2"></i>
-                        <span class="d-none d-md-inline">Registro</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="d-flex align-items-center">
-                        <i class="bi bi-person-check-fill me-2"></i>
-                        <span class="d-none d-md-inline">Aprobación Participantes</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="d-flex align-items-center">
-                        <i class="bi bi-award-fill me-2"></i>
-                        <span class="d-none d-md-inline">Certificación</span>
-                    </a>
-                </li>
-                <li class="">
-                    <a href="#" class="d-flex align-items-center">
-                        <i class="bi bi-search me-2"></i>
-                        <span class="d-none d-md-inline">Consultas</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-        <div class="content flex-column">
-            <header class="header p-3 d-flex justify-content-between align-items-center">
-                <div class="flex-row mb-0">
-                    <h4 class="mb-0">VICERRECTORADO ACADÉMICO</h4>
-                    <h6 class="mb-0">Sistema de Certificación</h6>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Header Section -->
+            <div class="col-12 header d-flex justify-content-between align-items-center">
+                <div>
+                    <img src="~/img/logo_ug_vertical.svg" alt="Logo" class="logo" style="max-width: 150px;">
                 </div>
-                <div class="user-profile dropdown ">
+                <div class="title text-center">
+                    <h4>VICERRECTORADO ACADÉMICO</h4>
+                    <h5>Sistema de Certificación</h5>
+                </div>
+                <div class="user-menu">
                     <button class="btn dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
                         <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=40"
                              alt="Usuario"
                              class="rounded-circle me-2">
                         <span class="d-none d-md-inline">Ruth</span>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li>
-                            <a class="dropdown-item" href="#">Cerrar sesión</a>
-                        </li>
+                    <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" href="#">Perfil</a></li>
+                        <li><a class="dropdown-item" href="#">Configuración</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#">Cerrar sesión</a></li>
                     </ul>
                 </div>
-            </header>
-            <main class="workspace p-4">
-                <div class="container-fluid">
-                    <div class="row g-4">
-                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                            <div class="card h-100 shadow-sm">
-                                <img src="~/img/decanato_formacion_academica.jpg" class="card-img-top" alt="Imagen representativa del Decanato de Formación Académica y Profesional">
-                                <div class="card-body">
-                                    <h5 class="card-title">Decanato de Formación Académica y Profesional</h5>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                            <div class="card h-100 shadow-sm">
-                                <img src="https://via.placeholder.com/400x200?text=Posgrado+y+Servicios" class="card-img-top" alt="Imagen representativa del Decanato de Posgrado y Servicios Especializados">
-                                <div class="card-body">
-                                    <h5 class="card-title">Decanato de Posgrado, Educación Continua y Servicios Especializados</h5>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                            <div class="card h-100 shadow-sm">
-                                <img src="https://via.placeholder.com/400x200?text=Investigación+e+Innovación" class="card-img-top" alt="Imagen representativa del Decanato de Investigación, Desarrollo e Innovación">
-                                <div class="card-body">
-                                    <h5 class="card-title">Decanato de Investigación, Desarrollo e Innovación</h5>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                            <div class="card h-100 shadow-sm">
-                                <img src="~/img/decanato_vinculacion.jpg" class="card-img-top" alt="Imagen representativa del Decanato de Vinculación con la Sociedad y Bienestar Universitario">
-                                <div class="card-body">
-                                    <h5 class="card-title">Decanato de Vinculación con la Sociedad y Bienestar Universitario</h5>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </main>
+            </div>
+
+            <!-- Sidebar Menu -->
+            <div class="col-3 menu">
+                <nav class="nav flex-column">
+                    <a class="nav-link" href="#"><i class="fas fa-cogs"></i> Mantenimiento</a>
+                    <a class="nav-link" href="#"><i class="fas fa-calendar-alt"></i> Planificación</a>
+                    <a class="nav-link" href="#"><i class="fas fa-edit"></i> Registro</a>
+                    <a class="nav-link" href="#"><i class="fas fa-check-circle"></i> Aprobación Participantes</a>
+                    <a class="nav-link" href="#"><i class="fas fa-certificate"></i> Certificación</a>
+                    <a class="nav-link" href="#"><i class="fas fa-search"></i> Consultas</a>
+                </nav>
+            </div>
+
+            <!-- Dynamic Content -->
+            <div class="col-9 dynamic-content">
+                <h2>Espacio de Trabajo Dinámico</h2>
+                <p>Aquí se cargará el contenido según la selección del menú.</p>
+            </div>
         </div>
     </div>
 
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
