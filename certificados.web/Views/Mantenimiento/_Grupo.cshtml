@@ -1,95 +1,100 @@
-﻿@{
-    ViewData["Title"] = "Listado de Registros";
-}
-
-<!DOCTYPE html>
-<html lang="es">
+﻿<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewData["Title"]</title>
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 
-    <!-- Enlace a DataTables CSS -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
+    <!-- Font Awesome 5 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
-    <!-- Enlace a Bootstrap (para un diseño moderno) -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Latest DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
 
-    <!-- Enlace a jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .table-container {
+            margin-top: 20px;
+        }
 
-    <!-- Enlace a DataTables JS -->
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+        .btn-agregar {
+            background-color: #007bff;
+            color: white;
+        }
+
+            .btn-agregar:hover {
+                background-color: #0056b3;
+            }
+
+        .table th, .table td {
+            vertical-align: middle;
+        }
+
+        .action-icons i {
+            font-size: 1.5rem;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-    <div class="container mt-5">
-        <h2>@ViewData["Title"]</h2>
-
-        <!-- Botón para agregar un nuevo registro -->
-        <button class="btn btn-primary mb-3" id="addRecordBtn">Agregar Registro</button>
-
-        <!-- Tabla de datos -->
-        <table id="recordsTable" class="table table-striped table-bordered">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Descripción</th>
-                    <th>Fecha</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Aquí se insertarán los registros de manera dinámica -->
-                @* @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>@item.Name</td>
-                        <td>@item.Description</td>
-                        <td>@item.Date.ToString("yyyy-MM-dd")</td>
-                        <td>
-                            <!-- Botones de acción (editar y eliminar) -->
-                            <button class="btn btn-warning btn-sm edit-btn" data-id="@item.Id">Editar</button>
-                            <button class="btn btn-danger btn-sm delete-btn" data-id="@item.Id">Eliminar</button>
-                        </td>
-                    </tr>
-                } *@
-                <tr>
-                    <td>Name</td>
-                    <td>Description</td>
-                    <td>Date.ToString("yyyy-MM-dd")</td>
-                    <td>
-                        <!-- Botones de acción (editar y eliminar) -->
-                        <button class="btn btn-warning btn-sm edit-btn" data-id="">Editar</button>
-                        <button class="btn btn-danger btn-sm delete-btn" data-id="">Eliminar</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <input type="text" id="customSearchBox" class="form-control" placeholder="Buscar">
+            </div>
+            <div class="col-md-6 text-end">
+                <button class="btn btn-agregar" data-bs-toggle="modal" data-bs-target="#addEditModal" onclick="openAddModal()">AGREGAR</button>
+            </div>
+        </div>
+        <div class="row table-container">
+            <div class="col-12">
+                <table id="example" class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Grupo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>SOFT-MA-10-1</td>
+                            <td class="text-center action-icons">
+                                <i class="fas fa-edit text-primary edit-btn" onclick="openEditModal(this)"></i>
+                                <i class="fas fa-trash-alt text-dark delete-btn" onclick="openDeleteModal(this)"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>SOFT-NO-10-2</td>
+                            <td class="text-center action-icons">
+                                <i class="fas fa-edit text-primary edit-btn" onclick="openEditModal(this)"></i>
+                                <i class="fas fa-trash-alt text-dark delete-btn" onclick="openDeleteModal(this)"></i>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>SOFT-VE-10-3</td>
+                            <td class="text-center action-icons">
+                                <i class="fas fa-edit text-primary edit-btn" onclick="openEditModal(this)"></i>
+                                <i class="fas fa-trash-alt text-dark delete-btn" onclick="openDeleteModal(this)"></i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
-    <!-- Modal o formulario para agregar y editar -->
-    <div class="modal fade" id="recordModal" tabindex="-1" aria-labelledby="recordModalLabel" aria-hidden="true">
+    <!-- Add/Edit Modal -->
+    <div class="modal fade" id="addEditModal" tabindex="-1" aria-labelledby="addEditModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="recordModalLabel">Agregar/Editar Registro</h5>
+                    <h5 class="modal-title" id="addEditModalLabel">Agregar/Editar Registro</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="recordForm">
+                    <form id="addEditForm">
                         <div class="mb-3">
-                            <label for="name" class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="name" required />
+                            <label for="grupo" class="form-label">Grupo</label>
+                            <input type="text" class="form-control" id="grupo" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Descripción</label>
-                            <input type="text" class="form-control" id="description" required />
-                        </div>
-                        <div class="mb-3">
-                            <label for="date" class="form-label">Fecha</label>
-                            <input type="date" class="form-control" id="date" required />
-                        </div>
-                        <input type="hidden" id="recordId" />
                         <button type="submit" class="btn btn-primary">Guardar</button>
                     </form>
                 </div>
@@ -97,62 +102,112 @@
         </div>
     </div>
 
-    <!-- Bootstrap JS y JS para manejar eventos -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirmar Eliminación</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de que deseas eliminar este registro?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Latest jQuery, DataTables and Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-oBqDVmMz4fnFO9gybBogGzOgQpeKBmBiFjC6fFzO9e6Fz6p6D6V5D5p6D5p6D5p6" crossorigin="anonymous"></script>
 
     <script>
         $(document).ready(function () {
-            // Inicializar DataTable
-            $('#recordsTable').DataTable({
-                responsive: true,
-                searching: true, // Filtro
-                paging: true,    // Paginación
-                lengthChange: false // No permitir cambiar la cantidad de filas
-            });
-
-            // Manejar el clic en el botón de "Agregar Registro"
-            $('#addRecordBtn').on('click', function () {
-                $('#recordModal').modal('show');
-                $('#recordForm')[0].reset();
-                $('#recordId').val('');
-            });
-
-            // Manejar el clic en el botón de "Editar"
-            $('.edit-btn').on('click', function () {
-                var recordId = $(this).data('id');
-                // Aquí deberías obtener los detalles del registro desde tu API o base de datos.
-                // Este ejemplo simplemente muestra los valores predeterminados para la demostración.
-                $('#recordModal').modal('show');
-                $('#recordId').val(recordId);
-                $('#name').val("Nombre de Ejemplo");
-                $('#description').val("Descripción de Ejemplo");
-                $('#date').val("2024-12-12");
-            });
-
-            // Manejar el clic en el botón de "Eliminar"
-            $('.delete-btn').on('click', function () {
-                var recordId = $(this).data('id');
-                if (confirm('¿Estás seguro de eliminar este registro?')) {
-                    // Realizar llamada a eliminar registro desde API o controlador
-                    console.log('Registro eliminado: ' + recordId);
-                    // Aquí eliminarías el registro y recargarías la tabla
+            var table = $('#example').DataTable({
+                paging: false,
+                info: false,
+                searching: true,
+                language: {
+                    search: "_INPUT_",
+                    searchPlaceholder: "Buscar..."
                 }
             });
 
-            // Manejar el envío del formulario para agregar o editar
-            $('#recordForm').on('submit', function (e) {
+            $('#customSearchBox').on('keyup', function () {
+                table.search(this.value).draw();
+            });
+
+            // Hide default DataTables search box
+            $('#example_filter').hide();
+
+            var editRow = null;
+            var deleteRow = null;
+
+            // Handle form submission
+            $('#addEditForm').on('submit', function (e) {
                 e.preventDefault();
-                var recordData = {
-                    id: $('#recordId').val(),
-                    name: $('#name').val(),
-                    description: $('#description').val(),
-                    date: $('#date').val()
-                };
-                // Aquí deberías realizar una llamada a tu controlador para guardar los datos
-                console.log('Datos guardados:', recordData);
-                $('#recordModal').modal('hide');
+                var grupo = $('#grupo').val();
+
+                if (editRow) {
+                    table.row(editRow).data([
+                        grupo,
+                        '<i class="fas fa-edit text-primary edit-btn" onclick="openEditModal(this)"></i><i class="fas fa-trash-alt text-dark delete-btn" onclick="openDeleteModal(this)"></i>'
+                    ]).draw(false);
+                    editRow = null;
+                } else {
+                    table.row.add([
+                        grupo,
+                        '<i class="fas fa-edit text-primary edit-btn" onclick="openEditModal(this)"></i><i class="fas fa-trash-alt text-dark delete-btn" onclick="openDeleteModal(this)"></i>'
+                    ]).draw(false);
+                }
+
+                $('#addEditModal').modal('hide');
+                $('#addEditForm')[0].reset();
+            });
+
+            // Handle delete button click
+            $('#confirmDeleteBtn').on('click', function () {
+                if (deleteRow) {
+                    table.row(deleteRow).remove().draw();
+                    deleteRow = null;
+                }
+                $('#deleteModal').modal('hide');
+            });
+
+            // Reset modal on close
+            $('#addEditModal').on('hidden.bs.modal', function () {
+                $('#addEditModalLabel').text('Agregar Registro');
+                $('#addEditForm')[0].reset();
+                editRow = null;
             });
         });
+
+        function openAddModal() {
+            $('#addEditModalLabel').text('Agregar Registro');
+            $('#addEditForm')[0].reset();
+            editRow = null;
+        }
+
+        function openEditModal(element) {
+            var table = $('#example').DataTable();
+            editRow = table.row($(element).parents('tr'));
+            var data = editRow.data();
+            $('#grupo').val(data[0]);
+            $('#addEditModalLabel').text('Editar Registro');
+            $('#addEditModal').modal('show');
+        }
+
+        function openDeleteModal(element) {
+            var table = $('#example').DataTable();
+            deleteRow = table.row($(element).parents('tr'));
+            $('#deleteModal').modal('show');
+        }
     </script>
 </body>
 </html>
