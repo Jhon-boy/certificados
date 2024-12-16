@@ -1,28 +1,29 @@
 ﻿@{
     ViewData["Title"] = "Dashboard";
 }
+
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Layout</title>
-    <!-- Bootstrap CSS -->
+    <title>Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="~/css/dashboard.css">
-    <!-- FontAwesome and Bootstrap Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/dashboard.css">
+
 </head>
+
 <body>
     <div class="container-fluid">
         <div class="row">
-            <!-- Header Section -->
-            <div class="col-12 header d-flex justify-content-between align-items-center mb-0.5">
+            <div class="col-12 header d-flex justify-content-between align-items-center mb-2">
                 <div>
                     <img src="~/img/logo_ug_vertical.svg" alt="Logo" class="logo" style="max-width: 150px;">
                 </div>
-                <div class="title text-center">
+                <div class="text-center">
                     <h4>VICERRECTORADO ACADÉMICO</h4>
                     <h5>Sistema de Certificación</h5>
                 </div>
@@ -40,64 +41,41 @@
                 </div>
             </div>
 
-            <!-- Sidebar Menu -->
-            <div class="col-3 col-md-2 p-0 sidebar">
-                <ul class="nav flex-column">
+            <div class="col-3 col-md-2 p-0 sidebar bg-dark">
+                <ul class="nav flex-column text-white">
                     <li class="nav-item">
-                        <a class="nav-link text-white" data-bs-toggle="collapse" data-bs-target="#submenu1" role="button" aria-expanded="false" aria-controls="submenu1">
-                            <i class="bi bi-wrench"></i> Mantenimiento <i class="bi bi-caret-down-fill"></i>
+                        <a class="nav-link text-white" onclick="toggleCollapse('submenu1')">
+                            <i class="bi bi-wrench"></i> Mantenimiento <i class="bi bi-caret-down-fill arrow"></i>
                         </a>
-                        <div class="collapse" id="submenu1">
+                        <div class="submenu" id="submenu1" style="display: none;">
                             <ul class="nav flex-column ms-3">
-                                <li class="nav-item">
-                                    <a class="nav-link text-white" href="#"><i class="bi bi-people"></i> Grupo</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-white" href="#"><i class="bi bi-building"></i> Decanatos</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-white" href="#"><i class="bi bi-calendar"></i> Modalidad</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-white" href="#"><i class="bi bi-file-earmark-text"></i> Tipo de Evento</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-white" href="#"><i class="bi bi-hourglass"></i> Ciclo</a>
-                                </li>
+                                <li class="nav-item"><a class="nav-link text-white" href="#"><i class="bi bi-people"></i> Grupo</a></li>
+                                <li class="nav-item"><a class="nav-link text-white" href="#"><i class="bi bi-building"></i> Decanatos</a></li>
+                                <li class="nav-item"><a class="nav-link text-white" href="#"><i class="bi bi-calendar"></i> Modalidad</a></li>
+                                <li class="nav-item"><a class="nav-link text-white" href="#"><i class="bi bi-file-earmark-text"></i> Tipo de Evento</a></li>
+                                <li class="nav-item"><a class="nav-link text-white" href="#"><i class="bi bi-hourglass"></i> Ciclo</a></li>
                             </ul>
                         </div>
                     </li>
+
+                    <li class="nav-item"><a class="nav-link text-white" href="#"><i class="bi bi-calendar-check"></i> Planificación</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#"><i class="bi bi-person-plus"></i> Registro Participante / Facilitador</a></li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#"><i class="bi bi-clipboard-check"></i> Registro Calificaciones / Asistencias</a></li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="#"><i class="bi bi-calendar-check"></i> Planificación</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="#"><i class="bi bi-person-plus"></i> Registro Participante / Facilitador</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="#"><i class="bi bi-clipboard-check"></i> Registro Calificaciones / Asistencias</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" data-bs-toggle="collapse" href="#submenu2" role="button" aria-expanded="false" aria-controls="submenu2">
-                            <i class="bi bi-clipboard-check"></i> Certificación <i class="bi bi-caret-down-fill"></i>
+                        <a class="nav-link text-white" onclick="toggleCollapse('submenu2')">
+                            <i class="bi bi-clipboard-check"></i> Certificación <i class="bi bi-caret-down-fill arrow"></i>
                         </a>
-                        <div class="collapse" id="submenu2">
+                        <div class="submenu" id="submenu2" style="display: none;">
                             <ul class="nav flex-column ms-3">
-                                <li class="nav-item">
-                                    <a class="nav-link text-white" href="#"><i class="bi bi-file-earmark-text"></i> Generar Plantilla</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-white" href="#"><i class="bi bi-file-earmark-pdf"></i> Generar Certificado</a>
-                                </li>
+                                <li class="nav-item"><a class="nav-link text-white" href="#"><i class="bi bi-file-earmark-text"></i> Generar Plantilla</a></li>
+                                <li class="nav-item"><a class="nav-link text-white" href="#"><i class="bi bi-file-earmark-pdf"></i> Generar Certificado</a></li>
                             </ul>
                         </div>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="#"><i class="bi bi-search"></i> Consultas Certificados / Eventos</a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link text-white" href="#"><i class="bi bi-search"></i> Consultas Certificados / Eventos</a></li>
                 </ul>
             </div>
 
-            <!-- Dynamic Content -->
             <div class="col-9 col-md-10 dynamic-content p-4">
                 <h2>Espacio de Trabajo Dinámico</h2>
                 <p>Aquí se cargará el contenido según la selección del menú.</p>
@@ -105,7 +83,8 @@
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/dashboard.js"></script>
 </body>
+
 </html>
