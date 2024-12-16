@@ -15,8 +15,8 @@
 }
 
     .header .logo {
-        max-width: 100px;
-        height: auto;
+        width: 120px; 
+        height: 80px;
     }
 
     .header .title {
