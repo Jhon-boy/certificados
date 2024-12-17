@@ -2,6 +2,8 @@
 using certificados.models.Entitys.dbo;
 using certificados.services.Services;
 using certificados.services.Utils;
+using certificados.web.Controllers.Mappers;
+using certificados.web.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace certificados.web.Controllers
@@ -10,75 +12,129 @@ namespace certificados.web.Controllers
     [Route("api/grupoPersona")]
     public class GrupoPersonaController : Controller
     {
-        private readonly GrupoService grupoPersonaService;
+        private readonly GrupoPersonaService grupoPersonaService;
+        private readonly GrupoService grupoService;
+        private readonly PersonaService personaService;
 
-        public GrupoPersonaController(GrupoService grupo) { 
+        public GrupoPersonaController(GrupoPersonaService grupo, GrupoService grupoService, PersonaService personaService) { 
         
-            this.grupoPersonaService = grupo;
+            this.grupoPersonaService = grupo;   
+            this.personaService = personaService;   
+            this.grupoService = grupoService;
         }
-        [HttpGet("all")]
-        public ActionResult<ResponseApp> listarEstados()
-        {
+        [HttpGet("listar")]
+        public ActionResult<ResponseApp> ListarGrupo() {
+            return grupoPersonaService.ListarGrupo();
+        }
 
-            return Ok(grupoPersonaService.ListarGrupos());
+        [HttpPost("buscarPersona")]
+        public ActionResult<ResponseApp> BuscarCedula([FromBody] Dictionary<string, object> request)
+        {
+            if (!request.ContainsKey("idGrupo") || !request.ContainsKey("cedula"))
+            {
+                return Utils.BadResponse("Faltan parámetros en la solicitud.");
+            }
+
+            string cedula = request["cedula"]?.ToString();
+            if (string.IsNullOrEmpty(cedula))
+            {
+                return Utils.BadResponse("El parámetro 'cedula' no puede estar vacío.");
+            }
+            if (!int.TryParse(request["idGrupo"]?.ToString(), out int id))
+            {
+                return Utils.BadResponse("El parámetro 'idGrupo' no es válido.");
+            }
+
+            return grupoPersonaService.BuscarCedulaId(id, cedula);
         }
+
+
+
+        [HttpPost("buscar")]
+        public ActionResult<ResponseApp> BuscarGrupo([FromBody] Dictionary<string, object> request)
+        {
+            if (!request.ContainsKey("idGrupo"))
+            {
+                return Utils.BadResponse("Faltan parámetros en la solicitud.");
+            }
+            int id;
+
+            if (!int.TryParse(request["idGrupo"]?.ToString(), out id))
+            {
+                return Utils.BadResponse("El parámetro 'id' no es válido.");
+            }
+            return grupoPersonaService.BuscarById(id);
+        }
+
         [HttpPost("crear")]
-        public ActionResult<ResponseApp> CrearGrupoPersona([FromBody] Tgrupo tgrupo)
-        {
-            if (tgrupo == null)
-            {
+        public ActionResult<ResponseApp> CrearGrupoPersona([FromBody] GrupoPersonaDTO dto) {
+            ResponseApp response = Utils.BadResponse(null);
+            if (dto == null || dto.Cedulas == null || !dto.Cedulas.Any()) {
 
-                return Utils.BadResponse("FALTA PARAMETROS");
+                return Utils.BadResponse("FALTAN PARAMETROS");
             }
 
-            return Ok(grupoPersonaService.InsertarGrupo(tgrupo));
+            try
+            {
+                List<string> cedulasInsertadas = new List<string>();
+                List<string> cedulasFallidas = new List<string>();
+                var grupoResponse = grupoService.BuscarGrupo(dto.IdGrupo);
+                if (!grupoResponse.Cod.Equals(CONSTANTES.COD_OK)) {
+                    response.Message = $"NO EXISTE EL GRUPO {dto.IdGrupo}";
+                    return response;
+                }
+                Tgrupo grupo = GrupoPersonaMapper.toEntityGrupo(grupoResponse.Data);
+                
+                foreach(var cedula in dto.Cedulas) {
+
+                    var personaResponse = personaService.ObtenerPersona(cedula);
+                    if (personaResponse.Cod.Equals(CONSTANTES.COD_OK)) { 
+                        Tpersona persona = PersonaMapper.toEntity(personaResponse.Data);
+                        TgrupoPersona tgrupoPersonaEntity = GrupoPersonaMapper.toEntity(dto, persona, grupo, cedula);
+                        if (grupoPersonaService.BuscarCedulaId(grupo.IdGrupo, cedula).Cod.Equals(CONSTANTES.COD_OK)) {
+                            continue;
+                        }
+                        var responseGrupo = grupoPersonaService.InsertarPersona(tgrupoPersonaEntity);
+                        if (responseGrupo.Cod.Equals(CONSTANTES.COD_OK)) {
+                            cedulasInsertadas.Add(cedula);
+                        } else
+                        {
+                            cedulasFallidas.Add(cedula);
+                        }
+                    } else
+                    {
+                        cedulasFallidas.Add($"NO EXISTE PERSONA CON {cedula}");
+                    }
+                }
+                response = Utils.OkResponse(new {
+                    cedulasInsertadas, 
+                    cedulasFallidas
+                });
+
+            }
+            catch (Exception ex) {
+                response = Utils.BadResponse($"ERROR AL CREAR GRUPO PERSONA: {ex.Message}");
+                throw new Exception($"ERROR AL INSERTAR GRUPO: {ex.Message}");
+            }
+            return response;
         }
-        [HttpPost("modificar")]
-        public ActionResult<ResponseApp> ModificarGrupo([FromBody] Tgrupo tgrupo)
-        {
-            if (tgrupo == null)
-            {
-
-                return Utils.BadResponse("FALTA PARAMETROS");
-            }
-
-            return Ok(grupoPersonaService.ModificarGrupo(tgrupo));
-        }
-
-        [HttpPost("id")]
-        public ActionResult<ResponseApp> listarById([FromBody] Dictionary<string, object> request)
-        {
-
-            if (!request.TryGetValue("idGrupo", out var idGrupoObj) || idGrupoObj == null)
-            {
-
-                return BadRequest(Utils.BadResponse("FALTAN PARAMETROS"));
-            }
-
-            if (!int.TryParse(idGrupoObj.ToString(), out int idGrupo))
-            {
-
-                return BadRequest(Utils.BadResponse("ID EVENTO NO VÁLIDO"));
-            }
-            return Ok(grupoPersonaService.BuscarGrupo(idGrupo));
-        }
-
         [HttpPost("eliminar")]
-        public ActionResult<ResponseApp> EliminarById([FromBody] Dictionary<string, object> request)
-        {
-
-            if (!request.TryGetValue("idGrupo", out var idGrupoObj) || idGrupoObj == null)
+        public ActionResult<ResponseApp> EliminarGrupo([FromBody] Dictionary<string, object> request) {
+            if (!request.ContainsKey("idGrupo") || !request.ContainsKey("cedula"))
             {
-
-                return BadRequest(Utils.BadResponse("FALTAN PARAMETROS"));
+                return Utils.BadResponse("Faltan parámetros en la solicitud.");
             }
 
-            if (!int.TryParse(idGrupoObj.ToString(), out int idGrupo))
+            string cedula = request["cedula"]?.ToString();
+            if (string.IsNullOrEmpty(cedula))
             {
-
-                return BadRequest(Utils.BadResponse("ID EVENTO NO VÁLIDO"));
+                return Utils.BadResponse("El parámetro 'cedula' no puede estar vacío.");
             }
-            return Ok(grupoPersonaService.EliminarGrupo(idGrupo));
+            if (!int.TryParse(request["idGrupo"]?.ToString(), out int id))
+            {
+                return Utils.BadResponse("El parámetro 'idGrupo' no es válido.");
+            }
+            return grupoPersonaService.EliminarGrupo(id, cedula );
         }
     }
 }

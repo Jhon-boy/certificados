@@ -15,77 +15,65 @@ namespace certificados.dal.DataAccess
     {
         private readonly AppDbContext context = appDbContext;
 
-        public ResponseApp InsertarGrupoPersona(TgrupoPersona tgrupoPersona) {
-
-
-            ResponseApp response = Utils.BadResponse(null);
-
-            try
-            { 
-                tgrupoPersona.FCreacion = DateTime.Now;
-                tgrupoPersona.FModificacion = DateTime.Now;
-                 
-                context.TgrupoPersona.Add(tgrupoPersona);
-                context.SaveChanges(); 
-                response = Utils.OkResponse(tgrupoPersona);
-            }
-            catch (Exception ex)
-            {
-                response = Utils.BadResponse($"ERROR AL INSERTAR GRUPO-PERSONA: {ex.Message}");
-                throw new Exception($"ERROR AL INSERTAR GRUPO - PERSONA: {ex.Message}");
-            }
-
-            return response;
-        
-        }
-
-        public ResponseApp ModificarGrupoPersona(TgrupoPersona grupoPersona)
+        public ResponseApp InsertarGrupoPersona(TgrupoPersona tgrupoPersona)
         {
             ResponseApp response = Utils.BadResponse(null);
-            try
-            { 
-                var grupoPersonaExistente = context.TgrupoPersona.FirstOrDefault(gp => gp.IdGrupoPersona == grupoPersona.IdGrupoPersona);
 
-                if (grupoPersonaExistente != null)
-                { 
-                    grupoPersonaExistente.IdGrupo = grupoPersona.IdGrupo;
-                    grupoPersonaExistente.Cedula = grupoPersona.Cedula;
-                    grupoPersonaExistente.Estado = grupoPersona.Estado;
-                    grupoPersonaExistente.FModificacion = DateTime.Now;
-                    grupoPersonaExistente.UsuarioActualizacion = grupoPersona.UsuarioActualizacion;
-                     
+            using (var transaction = context.Database.BeginTransaction())
+            {
+                try
+                {
+                    var trackedEntity = context.ChangeTracker.Entries<Tgrupo>()
+                                        .FirstOrDefault(e => e.Entity.IdGrupo == tgrupoPersona.Tgrupo.IdGrupo);
+
+                    if (trackedEntity != null)
+                    {
+                        context.Entry(trackedEntity.Entity).State = EntityState.Detached;
+                    }
+                    var trackedPersona = context.ChangeTracker.Entries<Tpersona>()
+                        .FirstOrDefault(e => e.Entity.Cedula == tgrupoPersona.Tpersona.Cedula);
+
+                    if (trackedPersona != null)
+                    {
+                        context.Entry(trackedPersona.Entity).State = EntityState.Detached;
+                    }
+
+                    context.Entry(tgrupoPersona.Tgrupo).State = EntityState.Unchanged;
+                    context.Entry(tgrupoPersona.Tpersona).State = EntityState.Unchanged;
+
+                    context.TgrupoPersona.Add(tgrupoPersona);
                     context.SaveChanges();
-                     
-                    response = Utils.OkResponse(grupoPersonaExistente);
+                    transaction.Commit();
+
+                    response = Utils.OkResponse(tgrupoPersona);
                 }
-                else
-                { 
-                    response = Utils.BadResponse("RELACIÓN GRUPO-PERSONA NO EXISTE");
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    response = Utils.BadResponse($"ERROR AL INSERTAR GRUPO-PERSONA: {ex.Message}");
+                    throw new Exception($"ERROR AL INSERTAR GRUPO - PERSONA: {ex.Message}");
                 }
+
+                return response;
             }
-            catch (Exception ex)
-            {
-                response = Utils.BadResponse($"ERROR AL MODIFICAR GRUPO-PERSONA: {ex.Message}");
-                throw new Exception($"ERROR AL MODIFICAR GRUPO - PERSONA: {ex.Message}");
-            }
-            return response;
         }
 
-        public ResponseApp EliminarGrupoPersona(int idGrupoPersona)
+
+        public ResponseApp EliminarGrupoPersona(int idGrupoPersona, string cedula)
         {
             ResponseApp response = Utils.BadResponse(null);
             try
-            { 
-                var grupoPersonaExistente = context.TgrupoPersona.FirstOrDefault(gp => gp.IdGrupoPersona == idGrupoPersona);
+            {
+                var grupoPersonaExistente = context.TgrupoPersona.FirstOrDefault(gp => gp.IdGrupoPersona == idGrupoPersona && gp.Tpersona.Cedula ==cedula);
 
                 if (grupoPersonaExistente != null)
-                { 
+                {
                     context.TgrupoPersona.Remove(grupoPersonaExistente);
-                    context.SaveChanges(); 
+                    context.SaveChanges();
                     response = Utils.OkResponse(grupoPersonaExistente);
                 }
                 else
-                { 
+                {
                     response = Utils.BadResponse("RELACIÓN GRUPO-PERSONA NO EXISTE");
                 }
             }
@@ -102,12 +90,12 @@ namespace certificados.dal.DataAccess
         {
             ResponseApp response = Utils.BadResponse(null);
             try
-            { 
+            {
                 var listaGrupoPersonas = context.TgrupoPersona
                     .Include(gp => gp.Tgrupo)
                     .Include(gp => gp.Tpersona)
                     .ToList();
-                 
+
                 response = Utils.OkResponse(listaGrupoPersonas);
             }
             catch (Exception ex)
@@ -122,19 +110,18 @@ namespace certificados.dal.DataAccess
         {
             ResponseApp response = Utils.BadResponse(null);
             try
-            {
-                // Buscar la relación por su ID
+            { 
                 var grupoPersona = context.TgrupoPersona
                     .Include(gp => gp.Tgrupo)
                     .Include(gp => gp.Tpersona)
-                    .FirstOrDefault(gp => gp.IdGrupoPersona == idGrupoPersona);
+                    .Where(gp => gp.Tgrupo.IdGrupo == idGrupoPersona).ToList();
 
                 if (grupoPersona != null)
-                { 
+                {
                     response = Utils.OkResponse(grupoPersona);
                 }
                 else
-                { 
+                {
                     response = Utils.BadResponse("RELACIÓN GRUPO-PERSONA NO EXISTE");
                 }
             }
@@ -146,6 +133,33 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
+        public ResponseApp BuscarCedulaIdGrupo(int id, string cedula) {
 
+
+            ResponseApp response = Utils.BadResponse(null);
+
+            try
+            {
+                // Buscar la relación por su ID y cedula
+                var grupoPersona = context.TgrupoPersona
+            .Include(gp => gp.Tgrupo)
+            .Include(gp => gp.Tpersona)
+            .FirstOrDefault(e => e.Tpersona.Cedula == cedula && e.Tgrupo.IdGrupo == id);
+                if (grupoPersona != null) {
+                    response = Utils.OkResponse(grupoPersona);
+                }
+                else
+                {
+                    response = Utils.BadResponse("RELACIÓN GRUPO-PERSONA NO EXISTE");
+                }
+            }
+            catch (Exception ex) {
+
+                response = Utils.BadResponse($"ERROR AL LISTAR A LA PERSONA ${cedula} con el GRUPO: {id}, error: {ex.Message}");
+                throw new Exception($"ERROR AL LISTAR A LA PERSONA ${cedula} con el GRUPO: {id}, error: {ex.Message}");
+            }
+
+            return response;
+        }
     }
 }
