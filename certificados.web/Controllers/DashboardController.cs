@@ -8,5 +8,10 @@ namespace certificados.web.Controllers
         {
             return View("Dashboard"); 
         }
+
+        public IActionResult Grupo()
+        {
+            return PartialView("~/Views/Mantenimiento/_Grupo.cshtml");
+        }
     }
 }
