@@ -1,11 +1,27 @@
 ﻿using certificados.models.Entitys.dbo;
 using certificados.services.Utils;
+using Newtonsoft.Json;
 
 namespace certificados.web.Controllers.Mappers
 {
     public class FormatoCertificadoMapper
     {
+        public static TformatoCertificado convertEntity(object data)
+        {
 
+            try
+            {
+                var formatoAux = JsonConvert.SerializeObject(data);
+                var formato = JsonConvert.DeserializeObject<TformatoCertificado>(formatoAux);
+                if (formato == null)
+                    throw new Exception("LA ENTIDAD RESULTO NULA");
+                return formato;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"ERROR AL CONVERTIR A ENTIDAD: ${ex.Message}");
+            }
+        }
         public static TformatoCertificado toEntityCreate(Dictionary<string, string> data)
         {
             return new TformatoCertificado

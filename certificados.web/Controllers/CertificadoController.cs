@@ -2,6 +2,8 @@
 using certificados.models.Entitys.dbo;
 using certificados.services.Services;
 using certificados.services.Utils;
+using certificados.web.Controllers.Mappers;
+using certificados.web.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace certificados.web.Controllers
@@ -10,22 +12,38 @@ namespace certificados.web.Controllers
     public class CertificadoController : Controller
     {
         private readonly CertificadosService certificadosService;
+        private readonly EventoService eventoService;
+        private readonly FormatoCertificadoService formatoCertificadoService;
 
-        public CertificadoController(CertificadosService certificadosService)
+        public CertificadoController(CertificadosService certificadosService, EventoService evento, FormatoCertificadoService formato)
         {
             this.certificadosService = certificadosService;
+            this.eventoService = evento;
+            this.formatoCertificadoService = formato;
         }
 
         /*
          * Endpoint para crear un CERTIFICADO
          */
         [HttpPost("crear")]
-        public ActionResult<ResponseApp> crearCertificado(Tcertificado tcertificado) {
+        public ActionResult<ResponseApp> crearCertificado([FromBody] CertificadoDTO dto) {
 
-            if (tcertificado == null) {
+            if (dto == null) {
                 return BadRequest(Utils.BadResponse(CONSTANTES.MESSAGE_DATA_ERRORS));
             }
 
+            var eventoResponse = eventoService.ListarPorId(dto.IdEvento);
+            if (!eventoResponse.Cod.Equals(CONSTANTES.COD_OK)) {
+                return Utils.BadResponse("NO EXISTE EL EVENTO");
+            }
+
+            var formatoResponse = formatoCertificadoService.ListarFormatoByID(dto.IdFormato);
+            if (!formatoResponse.Cod.Equals(CONSTANTES.COD_OK)) {
+                return Utils.BadResponse("NO EXISTE EL FORMATO");
+            }
+            Tevento evento = EventoMapper.convertEntity(eventoResponse.Data);
+            TformatoCertificado formato = FormatoCertificadoMapper.convertEntity(formatoResponse.Data);
+            Tcertificado tcertificado = CertificadoMapper.toEntity(dto, evento, formato);
             return Ok(certificadosService.CrearCertificado(tcertificado));
         }
 
@@ -33,12 +51,28 @@ namespace certificados.web.Controllers
           * Endpoint para MODIFICAR un CERTIFICADO
           */
         [HttpPost("modificar")]
-        public ActionResult<ResponseApp> modificarCertificado(Tcertificado tcertificado) {
+        public ActionResult<ResponseApp> modificarCertificado([FromBody] CertificadoDTO dto) {
 
-            if (tcertificado == null) {
+            if (dto == null)
+            {
                 return BadRequest(Utils.BadResponse(CONSTANTES.MESSAGE_DATA_ERRORS));
             }
-            return Ok(certificadosService.CrearCertificado(tcertificado));
+
+            var eventoResponse = eventoService.ListarPorId(dto.IdEvento);
+            if (!eventoResponse.Cod.Equals(CONSTANTES.COD_OK))
+            {
+                return Utils.BadResponse("NO EXISTE EL EVENTO");
+            }
+
+            var formatoResponse = formatoCertificadoService.ListarFormatoByID(dto.IdFormato);
+            if (!formatoResponse.Cod.Equals(CONSTANTES.COD_OK))
+            {
+                return Utils.BadResponse("NO EXISTE EL FORMATO");
+            }
+            Tevento evento = EventoMapper.convertEntity(eventoResponse.Data);
+            TformatoCertificado formato = FormatoCertificadoMapper.convertEntity(formatoResponse.Data);
+            Tcertificado tcertificado = CertificadoMapper.toEntity(dto, evento, formato);
+            return Ok(certificadosService.ActualizarCertificado(tcertificado));
         }
         /*
          * Endpoint para LISTATAR CERTIFICADO

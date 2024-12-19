@@ -2,6 +2,7 @@
 using certificados.models.Entitys;
 using certificados.models.Entitys.dbo;
 using certificados.services.Utils;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,70 +15,92 @@ namespace certificados.dal.DataAccess
     {
         private readonly AppDbContext context = appDbContext;
 
-        public ResponseApp InsertarCertificado(Tcertificado tcertificado) {
+        public ResponseApp InsertarCertificado(Tcertificado tcertificado)
+        {
             ResponseApp response = Utils.BadResponse(null);
-            using (var transaction = context.Database.BeginTransaction()) { 
-                try
+            using (var transaction = context.Database.BeginTransaction())
             {
-                context.Tcertificado.Add(tcertificado);
-                context.SaveChanges();
+                try
+                {
+                    DetachIfTracked(tcertificado.Tevento, tcertificado.IdEvento);
+                    DetachIfTracked(tcertificado.TformatoCertificado, tcertificado.IdFormato);
+
+                    tcertificado.Tevento = context.Tevento.Local.FirstOrDefault(e => e.Idevento == tcertificado.Tevento.Idevento)
+                        ?? context.Tevento.Find(tcertificado.IdEvento);
+
+                    tcertificado.TformatoCertificado = context.TformatoCertificado.Local.FirstOrDefault(e => e.idFormato == tcertificado.TformatoCertificado.idFormato)
+                                                        ?? context.TformatoCertificado.Find(tcertificado.IdFormato);
+
+
+                    context.Tcertificado.Add(tcertificado);
+                    context.SaveChanges();
                     transaction.Commit();
-                response = Utils.OkResponse(tcertificado);
+                    response = Utils.OkResponse(tcertificado);
 
-            }
-            catch (Exception ex) {
+                }
+                catch (Exception ex)
+                {
                     transaction.Rollback();
-                response = Utils.BadResponse("Error al insertar CERTIFICADO");
+                    response = Utils.BadResponse("Error al insertar CERTIFICADO");
 
-                throw new Exception($"ERROR AL PROCESAR LA INSERACION DE UN CERTIFICADO {ex.Message}");
+                    throw new Exception($"ERROR AL PROCESAR LA INSERACION DE UN CERTIFICADO {ex.Message}");
+                }
+                return response;
             }
-            return response;
-            }
-            
-        
+
+
         }
 
         public ResponseApp ModificarCertificado(Tcertificado certificado)
         {
             ResponseApp response = Utils.BadResponse(null);
-            using (var transaction = context.Database.BeginTransaction()) { 
+            using (var transaction = context.Database.BeginTransaction())
+            {
                 try
-            {
-                // Buscar el certificado existente
-                var certificadoExistente = context.Tcertificado.FirstOrDefault(c => c.IdCertificado == certificado.IdCertificado);
-
-                if (certificadoExistente != null)
                 {
-                    // Actualizar los campos del certificado
-                    certificadoExistente.Titulo = certificado.Titulo;
-                    certificadoExistente.Imagen = certificado.Imagen;
-                    certificadoExistente.IdEvento = certificado.IdEvento;
-                    certificadoExistente.IdFormato = certificado.IdFormato;
-                    certificadoExistente.Tipo = certificado.Tipo;
-                    certificadoExistente.Estado = certificado.Estado;
-                    certificadoExistente.FModificacion = Utils.timeParsed(DateTime.Now);
-                    certificadoExistente.UsuarioActualizacion = certificado.UsuarioActualizacion;
+                    DetachIfTracked(certificado.Tevento, certificado.IdEvento);
+                    DetachIfTracked(certificado.TformatoCertificado, certificado.IdFormato);
 
-                    // Guardar los cambios
-                    context.SaveChanges();
+                    // Buscar el certificado existente
+                    var certificadoExistente = context.Tcertificado.FirstOrDefault(c => c.IdCertificado == certificado.IdCertificado);
+
+                    if (certificadoExistente != null)
+                    {
+
+
+                        certificadoExistente.Tevento = context.Tevento.Find(certificado.Tevento.Idevento) ?? certificado.Tevento;
+                        certificadoExistente.TformatoCertificado = context.TformatoCertificado.Find(certificado.TformatoCertificado.idFormato) ?? certificado.TformatoCertificado;
+
+                        // Actualizar los campos del certificado
+                        certificadoExistente.Titulo = certificado.Titulo;
+                        certificadoExistente.Imagen = certificado.Imagen;
+                        certificadoExistente.IdEvento = certificado.IdEvento;
+                        certificadoExistente.IdFormato = certificado.IdFormato;
+                        certificadoExistente.Tipo = certificado.Tipo;
+                        certificadoExistente.Estado = certificado.Estado;
+                        certificadoExistente.FModificacion = Utils.timeParsed(DateTime.Now);
+                        certificadoExistente.UsuarioActualizacion = certificado.UsuarioActualizacion;
+
+                        // Guardar los cambios
+                        context.SaveChanges();
                         transaction.Commit();
-                    response = Utils.OkResponse(certificadoExistente);
+                        response = Utils.OkResponse(certificadoExistente);
+                    }
+                    else
+                    {
+                        // Si el certificado no existe
+                        response = Utils.BadResponse("CERTIFICADO NO EXISTE");
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    // Si el certificado no existe
-                    response = Utils.BadResponse("CERTIFICADO NO EXISTE");
-                }
-            }
-            catch (Exception ex)
-            {
                     transaction.Rollback();
                     response = Utils.BadResponse($"ERROR AL MODIFICAR CERTIFICADO: {ex.Message}");
-                throw new Exception($"ERROR AL MODIFICAR CERTIFICADO: {ex.Message}");
+                    throw new Exception($"ERROR AL MODIFICAR CERTIFICADO: {ex.Message}");
+                }
+                return response;
             }
-            return response;
-            }
-            
+
         }
 
         public ResponseApp EliminarCertificado(int idCertificado)
@@ -116,7 +139,7 @@ namespace certificados.dal.DataAccess
             ResponseApp response = Utils.BadResponse(null);
             try
             {
-      
+
                 var listaCertificados = context.Tcertificado.ToList();
 
                 // Retornar respuesta exitosa con la lista
@@ -178,5 +201,16 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
+        private void DetachIfTracked<T>(T entity, int id) where T : class
+        {
+            if (entity != null)
+            {
+                var trackedEntity = context.ChangeTracker.Entries<T>().FirstOrDefault(e => e.Entity == entity);
+                if (trackedEntity != null)
+                {
+                    trackedEntity.State = EntityState.Detached;
+                }
+            }
+        }
     }
 }

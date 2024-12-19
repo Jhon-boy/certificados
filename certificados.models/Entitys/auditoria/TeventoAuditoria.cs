@@ -41,9 +41,9 @@ namespace certificados.models.Entitys.auditoria
         [StringLength(255)]
         public string? Dominio { get; set; }
 
-        [Column("IDGRUPOPERSONA")]
+        [Column("IDGRUPO")]
         [Required]
-        public int IdGrupoPersona { get; set; }
+        public int IdGrupo { get; set; }
 
         [Column("IDMODALIDAD")]
         [Required]

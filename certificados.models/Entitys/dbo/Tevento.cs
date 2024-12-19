@@ -42,10 +42,10 @@ namespace certificados.models.Entitys.dbo
         [StringLength(255)]
         public string? Dominio { get; set; }
 
-        [Column("IDGRUPOPERSONA")]
+        [Column("IDGRUPO")]
         [Required]
-        [ForeignKey("TgrupoPersona")]
-        public int IdGrupoPersona { get; set; }
+        [ForeignKey("Tgrupo")]
+        public int IdGrupo { get; set; }
 
         [Column("IDMODALIDAD")]
         [Required]
@@ -82,7 +82,7 @@ namespace certificados.models.Entitys.dbo
         public required virtual TtipoEvento TtipoEvento { get; set; }
 
         [DeleteBehavior(DeleteBehavior.NoAction)]
-        public required virtual TgrupoPersona TgrupoPersona { get; set; }
+        public required virtual Tgrupo Tgrupo { get; set; }
 
         [DeleteBehavior(DeleteBehavior.NoAction)]
         public required virtual Tdecanato Tdecanato { get; set; }

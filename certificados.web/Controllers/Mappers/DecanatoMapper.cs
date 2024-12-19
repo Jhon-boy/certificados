@@ -1,5 +1,7 @@
 ﻿using certificados.models.Entitys.dbo;
 using certificados.services.Utils;
+using Newtonsoft.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace certificados.web.Controllers.Mappers
 {
@@ -25,6 +27,22 @@ namespace certificados.web.Controllers.Mappers
                 FModificacion = Utils.timeParsed(DateTime.Now), 
                 UsuarioActualizacion = Utils.SafeString(entity.UsuarioActualizacion)
             };
+        }
+        public static Tdecanato toEntityObject(object data) {
+
+            try
+            {
+                var json = JsonConvert.SerializeObject(data);
+                var decanato = JsonConvert.DeserializeObject<Tdecanato>(json);
+                if (decanato == null)
+                    throw new Exception("La conversión resultó en un objeto nulo");
+                return decanato;
+
+            }
+            catch (Exception ex) {
+                throw new Exception($"Error al convertir el objeto a entidad TESTADOCENTE: {ex.Message}");
+            }
+        
         }
     }
 }

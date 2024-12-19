@@ -35,7 +35,6 @@ namespace certificados.services.Services
         public ResponseApp ObtenerCertificadosByEvento(int idCertificado)
         {
 
-            ResponseApp response = Utils.Utils.BadResponse(null);
 
             return tcertificadoDA.BuscarCertificado(idCertificado);
 
@@ -45,7 +44,7 @@ namespace certificados.services.Services
         {
 
             ResponseApp response = Utils.Utils.BadResponse(null);
-            if (!eventoDA.BuscarEvento(tcertificado.IdCertificado).Cod.Equals(Utils.CONSTANTES.COD_OK))
+            if (!eventoDA.BuscarEvento(tcertificado.IdEvento).Cod.Equals(Utils.CONSTANTES.COD_OK))
             {
 
                 response = Utils.Utils.BadResponse($"NO EXISTE EL EVENTO {tcertificado.IdEvento} ASOCIADO");
