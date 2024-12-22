@@ -33,8 +33,10 @@ namespace certificados.services.Services
         }
 
         public ResponseApp CrearEvento(Tevento tevento) {
-            if (teventoDA.ListarEventosPorParametro("Periodo", tevento.Periodo).Cod.Equals(Utils.CONSTANTES.COD_OK) &&
-                teventoDA.ListarEventosPorParametro("Dominio", tevento.Dominio).Cod.Equals(Utils.CONSTANTES.COD_OK)) {
+            var listaResponse = teventoDA.ListarEventosPorParametro("Periodo", tevento.Periodo);
+            var eventoResponse = teventoDA.ListarEventosPorParametro("Dominio", tevento.Dominio);
+            if (listaResponse.Cod.Equals(Utils.CONSTANTES.COD_OK) && 
+                eventoResponse.Cod.Equals(Utils.CONSTANTES.COD_OK)) {
                 return Utils.Utils.BadResponse($"YA EXISTE UN EVENTO {tevento.Dominio} en el PERIODO: {tevento.Periodo}");
             }
             return teventoDA.InsertarEvento(tevento);
@@ -46,7 +48,7 @@ namespace certificados.services.Services
             {
                 return Utils.Utils.BadResponse($"NO  EXISTE  EVENTO {tevento.Idevento}");
             }
-            return teventoDA.InsertarEvento(tevento);
+            return teventoDA.ModificarEvento(tevento);
         }
 
         public ResponseApp EliminarEvento(int id)

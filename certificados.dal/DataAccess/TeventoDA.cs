@@ -2,6 +2,7 @@
 using certificados.models.Entitys;
 using certificados.models.Entitys.dbo;
 using certificados.services.Utils;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,8 +24,20 @@ namespace certificados.dal.DataAccess
             {
                 try
                 {
+                    DetachIfTracked(tevento.Tmodalidad, tevento.IdModalidad);
+                    DetachIfTracked(tevento.TtipoEvento, tevento.IdTipoEvento);
+                    DetachIfTracked(tevento.Tgrupo, tevento.IdGrupo);
+                    DetachIfTracked(tevento.Tdecanato, tevento.IdDecanato);
+
+                    tevento.Tmodalidad = context.Tmodalidad.Find(tevento.IdModalidad) ?? tevento.Tmodalidad;
+                    tevento.TtipoEvento = context.TtipoEvento.Find(tevento.IdTipoEvento) ?? tevento.TtipoEvento;
+                    tevento.Tgrupo = context.Tgrupo.Find(tevento.IdGrupo) ?? tevento.Tgrupo;
+                    tevento.Tdecanato = context.Tdecanato.Find(tevento.IdDecanato) ?? tevento.Tdecanato;
+
+
                     context.Tevento.Add(tevento);
                     context.SaveChanges();
+
                     transaction.Commit();
                     response = Utils.OkResponse(tevento);
                 }
@@ -40,42 +53,52 @@ namespace certificados.dal.DataAccess
             }
 
         }
-        public ResponseApp ModificarEvento(Tevento evento)
+        public ResponseApp ModificarEvento(Tevento tevento)
         {
             ResponseApp response = Utils.BadResponse(null);
+
             using (var transaction = context.Database.BeginTransaction())
             {
-
                 try
                 {
-                    var eventoExistente = context.Tevento.FirstOrDefault(e => e.Idevento == evento.Idevento);
+                    // Detach entidades relacionadas si ya están siendo rastreadas
+                    DetachIfTracked(tevento.Tmodalidad, tevento.IdModalidad);
+                    DetachIfTracked(tevento.TtipoEvento, tevento.IdTipoEvento);
+                    DetachIfTracked(tevento.Tgrupo, tevento.IdGrupo);
+                    DetachIfTracked(tevento.Tdecanato, tevento.IdDecanato);
 
-                    if (eventoExistente != null)
+                    // Buscar la entidad existente y sus relaciones
+                    var existingEvento = context.Tevento.Find(tevento.Idevento);
+                    if (existingEvento == null)
                     {
-                        eventoExistente.FechaInicio = evento.FechaInicio;
-                        eventoExistente.FechaFin = evento.FechaFin;
-                        eventoExistente.Horas = evento.Horas;
-                        eventoExistente.Lugar = evento.Lugar;
-                        eventoExistente.ConCertificado = evento.ConCertificado;
-                        eventoExistente.Periodo = evento.Periodo;
-                        eventoExistente.Tematica = evento.Tematica;
-                        eventoExistente.Dominio = evento.Dominio;
-                        eventoExistente.IdGrupoPersona = evento.IdGrupoPersona;
-                        eventoExistente.IdModalidad = evento.IdModalidad;
-                        eventoExistente.IdTipoEvento = evento.IdTipoEvento;
-                        eventoExistente.IdDecanato = evento.IdDecanato;
-                        eventoExistente.FModificacion = Utils.timeParsed(DateTime.Now);
-                        eventoExistente.UsuarioActualizacion = evento.UsuarioActualizacion;
-
-                        context.SaveChanges();
-                        transaction.Commit();
-
-                        response = Utils.OkResponse(eventoExistente);
+                        throw new Exception("Evento no encontrado.");
                     }
-                    else
-                    {
-                        response = Utils.BadResponse("EVENTO NO EXISTE");
-                    }
+
+                    // Actualizar propiedades de la entidad existente
+                    existingEvento.Tmodalidad = context.Tmodalidad.Find(tevento.IdModalidad) ?? tevento.Tmodalidad;
+                    existingEvento.TtipoEvento = context.TtipoEvento.Find(tevento.IdTipoEvento) ?? tevento.TtipoEvento;
+                    existingEvento.Tgrupo = context.Tgrupo.Find(tevento.IdGrupo) ?? tevento.Tgrupo;
+                    existingEvento.Tdecanato = context.Tdecanato.Find(tevento.IdDecanato) ?? tevento.Tdecanato;
+
+                    existingEvento.FechaInicio = tevento.FechaInicio;
+                    existingEvento.FechaFin = tevento.FechaFin;
+                    existingEvento.Horas = tevento.Horas;
+                    existingEvento.Lugar = tevento.Lugar;
+                    existingEvento.ConCertificado = tevento.ConCertificado;
+                    existingEvento.Periodo = Utils.SafeString( tevento.Periodo);
+                    existingEvento.Tematica = Utils.SafeString(tevento.Tematica);
+                    existingEvento.Dominio = Utils.SafeString(tevento.Dominio);
+                    existingEvento.UsuarioActualizacion = tevento.UsuarioActualizacion;
+                    existingEvento.FModificacion = Utils.timeParsed(DateTime.Now);
+
+                    // Marcar la entidad como modificada
+                    context.Tevento.Update(existingEvento);
+
+                    // Guardar cambios y confirmar transacción
+                    context.SaveChanges();
+                    transaction.Commit();
+
+                    response = Utils.OkResponse(existingEvento);
                 }
                 catch (Exception ex)
                 {
@@ -83,10 +106,11 @@ namespace certificados.dal.DataAccess
                     response = Utils.BadResponse($"ERROR AL MODIFICAR EVENTO: {ex.Message}");
                     throw new Exception($"ERROR AL MODIFICAR EVEMTO: {ex.Message}");
                 }
-                return response;
             }
 
+            return response;
         }
+
 
         public ResponseApp EliminarEvento(int idEvento)
         {
@@ -127,7 +151,9 @@ namespace certificados.dal.DataAccess
 
             try
             {
-                var listaEventos = context.Tevento.ToList();
+                var listaEventos = context.Tevento.Include(gp => gp.TtipoEvento)
+                    .Include(gp => gp.Tmodalidad)
+                    .Include(gp => gp.Tdecanato).ToList();
 
                 response = Utils.OkResponse(listaEventos);
             }
@@ -144,7 +170,9 @@ namespace certificados.dal.DataAccess
             ResponseApp response = Utils.BadResponse(null);
             try
             {
-                var listaEventos = context.Tevento.Where(e => e.Periodo == periodo).ToList();
+                var listaEventos = context.Tevento.Include(gp => gp.TtipoEvento)
+                    .Include(gp => gp.Tmodalidad)
+                    .Include(gp => gp.Tdecanato).Where(e => e.Periodo == periodo).ToList();
 
                 response = Utils.OkResponse(listaEventos);
             }
@@ -170,8 +198,13 @@ namespace certificados.dal.DataAccess
                 var lambda = Expression.Lambda<Func<Tevento, bool>>(equality, parameter);
 
                 // Ejecutar la consulta
-                var listaEventos = context.Tevento.Where(lambda).ToList();
-                response = Utils.OkResponse(listaEventos);
+                var listaEventos = context.Tevento.Include(gp => gp.TtipoEvento)
+                    .Include(gp => gp.Tmodalidad)
+                    .Include(gp => gp.Tdecanato).Where(lambda).ToList();
+                if (listaEventos.Count > 0) { 
+                 response = Utils.OkResponse(listaEventos);
+                }
+               
             }
             catch (Exception ex)
             {
@@ -188,7 +221,12 @@ namespace certificados.dal.DataAccess
             ResponseApp response = Utils.BadResponse(null);
             try
             {
-                var evento = context.Tevento.FirstOrDefault(e => e.Idevento == idEvento);
+                var evento = context.Tevento.
+                    Include(gp => gp.Tgrupo)
+                    .Include(gp => gp.TtipoEvento)
+                    .Include(gp => gp.Tmodalidad)
+                    .Include(gp => gp.Tdecanato)
+                    .FirstOrDefault(e => e.Idevento == idEvento);
 
                 if (evento != null)
                 {
@@ -207,5 +245,16 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
+        private void DetachIfTracked<T>(T entity, int id) where T : class
+        {
+            if (entity != null)
+            {
+                var trackedEntity = context.ChangeTracker.Entries<T>().FirstOrDefault(e => e.Entity == entity);
+                if (trackedEntity != null)
+                {
+                    trackedEntity.State = EntityState.Detached;
+                }
+            }
+        }
     }
 }
