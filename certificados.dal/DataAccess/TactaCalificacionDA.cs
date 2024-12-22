@@ -2,6 +2,7 @@
 using certificados.models.Entitys;
 using certificados.models.Entitys.dbo;
 using certificados.services.Utils;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,21 +14,32 @@ namespace certificados.dal.DataAccess
     public class TactaCalificacionDA(AppDbContext appDbContext)
     {
         private readonly AppDbContext context = appDbContext;
-        public ResponseApp InsertarActaCalificacion(TactaCalificacion tactaCalificacion) {
+        public ResponseApp InsertarActaCalificacion(TactaCalificacion tactaCalificacion)
+        {
 
             ResponseApp response = Utils.BadResponse(null);
-            try
+            using (var transaction = context.Database.BeginTransaction())
             {
-                context.TactaCalificacion.Add(tactaCalificacion);
-                context.SaveChanges(); 
-                response = Utils.OkResponse(tactaCalificacion);
+                try
+                {
+                    DetachIfTracked(tactaCalificacion.Tevento, tactaCalificacion.IdEvento);
+                    tactaCalificacion.Tevento = context.Tevento.Local.FirstOrDefault(e => e.Idevento == tactaCalificacion.Tevento.Idevento)
+                        ?? context.Tevento.Find(tactaCalificacion.IdEvento);
+
+                    context.TactaCalificacion.Add(tactaCalificacion);
+                    context.SaveChanges();
+                    transaction.Commit();
+                    response = Utils.OkResponse(tactaCalificacion);
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    response = Utils.BadResponse($"ERROR AL INSERTAR ACTA DE CALIFICACIÓN: {ex.Message}");
+                    throw new Exception($"ERROR AL INSERTAR ACTA: {ex.Message}");
+                }
+                return response;
             }
-            catch (Exception ex)
-            {
-                response = Utils.BadResponse($"ERROR AL INSERTAR ACTA DE CALIFICACIÓN: {ex.Message}");
-                throw new Exception($"ERROR AL INSERTAR ACTA: {ex.Message}");
-            }
-            return response;
+
 
         }
 
@@ -51,7 +63,7 @@ namespace certificados.dal.DataAccess
                 }
                 else
                 {
- 
+
                     response = Utils.BadResponse("ACTA DE CALIFICACIÓN NO EXISTE");
                 }
             }
@@ -120,15 +132,15 @@ namespace certificados.dal.DataAccess
         {
             ResponseApp response = Utils.BadResponse(null);
             try
-            { 
+            {
                 var acta = context.TactaCalificacion.FirstOrDefault(a => a.IdCalificacion == idCalificacion);
 
                 if (acta != null)
-                { 
+                {
                     response = Utils.OkResponse(acta);
                 }
                 else
-                { 
+                {
                     response = Utils.BadResponse("ACTA DE CALIFICACIÓN NO EXISTE");
                 }
             }
@@ -138,6 +150,17 @@ namespace certificados.dal.DataAccess
                 throw new Exception($"ERROR AL BUSCAR ID ACTA : {ex.Message}");
             }
             return response;
+        }
+        private void DetachIfTracked<T>(T entity, int id) where T : class
+        {
+            if (entity != null)
+            {
+                var trackedEntity = context.ChangeTracker.Entries<T>().FirstOrDefault(e => e.Entity == entity);
+                if (trackedEntity != null)
+                {
+                    trackedEntity.State = EntityState.Detached;
+                }
+            }
         }
     }
 }

@@ -2,6 +2,7 @@
 using certificados.models.Entitys;
 using certificados.models.Entitys.dbo;
 using certificados.services.Utils;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,11 @@ namespace certificados.dal.DataAccess
         {
             ResponseApp response = Utils.BadResponse(null);
             try
-            { 
+            {
+                DetachIfTracked(tactaAsistencia.Tevento, tactaAsistencia.IdEvento);
+                tactaAsistencia.Tevento = context.Tevento.Local.FirstOrDefault(e => e.Idevento == tactaAsistencia.Tevento.Idevento)
+                    ?? context.Tevento.Find(tactaAsistencia.IdEvento);
+
                 context.TactaAsistencia.Add(tactaAsistencia);
                 context.SaveChanges(); 
                 response = Utils.OkResponse(tactaAsistencia);
@@ -135,5 +140,16 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
+        private void DetachIfTracked<T>(T entity, int id) where T : class
+        {
+            if (entity != null)
+            {
+                var trackedEntity = context.ChangeTracker.Entries<T>().FirstOrDefault(e => e.Entity == entity);
+                if (trackedEntity != null)
+                {
+                    trackedEntity.State = EntityState.Detached;
+                }
+            }
+        }
     }
 }
