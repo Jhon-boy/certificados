@@ -1,26 +1,22 @@
 ﻿document.addEventListener('DOMContentLoaded', function () {
 
-    // Obtener los elementos del DOM
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
     const loginBtn = document.getElementById('loginBtn');
     const loginForm = document.getElementById('loginForm');
     const togglePasswordBtn = document.getElementById('togglePassword');
-    const spinner = loginBtn.querySelector('.spinner-border');
     const feedbackDiv = document.getElementById('feedback');
-
-    // Validar el formulario antes de enviarlo
     loginForm.addEventListener('submit', function (e) {
-        e.preventDefault(); // Evitar el envío del formulario por defecto
+        e.preventDefault(); // Evitar el envio del formulario por defecto
 
         // Limpiar las clases de error previas
         clearValidation();
 
-        // Validar email y contraseña
+        // Validar email y contrasena
         let isValid = validateForm();
 
         if (!isValid) {
-            return; // Si no es válido, no enviamos el formulario
+            return; // Si no es valido, no enviamos el formulario
         }
 
         // Mostrar spinner mientras se procesa el login
@@ -30,12 +26,12 @@
         loginUser(emailInput.value.trim(), passwordInput.value.trim());
     });
 
-    // Función para mostrar/ocultar la contraseña
+    // Funcion para mostrar/ocultar la contrasenia
     togglePasswordBtn.addEventListener('click', function () {
         togglePasswordVisibility();
     });
 
-    // Función para hacer la solicitud de login
+    // Funcion para hacer la solicitud de login
     async function loginUser(email, password) {
         try {
             const response = await fetch('api/usuario/login', {
@@ -65,7 +61,7 @@
         }
     }
 
-    // Función para validar el formulario
+    // Funcion para validar el formulario
     function validateForm() {
         let isValid = true;
 
@@ -77,7 +73,7 @@
             emailInput.classList.add('is-invalid');
         }
 
-        // Validar contraseña (mínimo 8 caracteres)
+        // Validar contrasenia (minimo 8 caracteres)
         const password = passwordInput.value.trim();
         if (password.length < 8) {
             isValid = false;
@@ -87,23 +83,23 @@
         return isValid;
     }
 
-    // Función para limpiar las clases de validación
+    // Funcion para limpiar las clases de validacion
     function clearValidation() {
         emailInput.classList.remove('is-invalid');
         passwordInput.classList.remove('is-invalid');
     }
 
-    // Función para mostrar el spinner
+    // Funcion para mostrar el spinner
     function showSpinner() {
         spinner.classList.remove('d-none');
     }
 
-    // Función para ocultar el spinner
+    // Funcion para ocultar el spinner
     function hideSpinner() {
         spinner.classList.add('d-none');
     }
 
-    // Función para mostrar mensajes de feedback
+    // Funcion para mostrar mensajes de feedback
     function showFeedback(message, type) {
         if (!feedbackDiv) {
             console.warn('Elemento de feedback no encontrado.');
@@ -116,13 +112,13 @@
             </div>
         `;
 
-        // Ocultar el mensaje después de unos segundos
+        // Ocultar el mensaje despuus de unos segundos
         setTimeout(() => {
             feedbackDiv.innerHTML = '';
         }, 5000);
     }
 
-    // Función para alternar la visibilidad de la contraseña
+    // Funcion para alternar la visibilidad de la contrasenia
     function togglePasswordVisibility() {
         const type = passwordInput.type === 'password' ? 'text' : 'password';
         passwordInput.type = type;
