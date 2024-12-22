@@ -18,5 +18,10 @@ namespace certificados.web.Controllers
         {
             return PartialView("~/Views/Mantenimiento/_Decanatos.cshtml");
         }
+
+        public IActionResult Modalidad()
+        {
+            return PartialView("~/Views/Mantenimiento/_Modalidad.cshtml");
+        }
     }
 }
