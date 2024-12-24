@@ -2,6 +2,7 @@
 using certificados.services.Utils;
 using certificados.web.Models.DTO;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace certificados.web.Controllers.Mappers
 {
@@ -52,5 +53,20 @@ namespace certificados.web.Controllers.Mappers
                 Estado = "APR"
             };
         }
+
+        public static List<Tpersona> listadoPersonas(object data)
+        {
+ 
+            if (data is List<TgrupoPersona> grupos)
+            { 
+                return grupos
+                    .Select(grupoPersona => grupoPersona.Tpersona)  
+                    .Where(persona => persona != null)  
+                    .ToList();  
+            }
+             
+            return new List<Tpersona>();
+        }
+ 
     }
 }

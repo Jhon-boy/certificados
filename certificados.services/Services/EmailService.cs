@@ -30,7 +30,7 @@ namespace certificados.services.Services
                 using (MailMessage correo = new MailMessage())
                 {
 
-                    correo.From = new MailAddress("certificadosenlinea@gmail.com");
+                    correo.From = new MailAddress("tvboxtelevisor95@gmail.com");
                     correo.To.Add(email);
                     correo.Subject = tipo  == 1? "MATRICULACION DE ESTUDIANTES U. GUAYAQUIL": "NOTIFICACION DE CERTIFICADOS U. GUAYAQUIL";
                     correo.Body = tipo == 1 ? BodyMatriculacion(evento) : BodyEmicion(evento);
@@ -39,7 +39,7 @@ namespace certificados.services.Services
                     if (tipo == 2 && pdf != null) {
                         correo.Attachments.Add(new Attachment(new MemoryStream(pdf), "Certificado.pdf", "application/pdf"));
                     }
-                    cliente.Credentials = new NetworkCredential("user", "password");
+                    cliente.Credentials = new NetworkCredential("tvboxtelevisor95@gmail.com", "orpt rnim gqeg vlfn");
                     cliente.EnableSsl = true;
                     cliente.Send(correo);
                     response = Utils.Utils.OkResponse($"CORREO ENVIADO A: {email}");
@@ -50,7 +50,8 @@ namespace certificados.services.Services
             catch (Exception ex)
             {
                 response.Message = $"ERROR EN EL ENVIO DE MAIL {ex.Message}";
-                throw new Exception($"ERROR EN EL ENVIO DE MAIL : {ex.Message}");
+  
+                Console.WriteLine($"ERROR AL ENVIAR MAIL: {ex.Message}");
 
             }
 

@@ -1,11 +1,17 @@
 ﻿using certificados.dal.DataAccess;
 using certificados.models.Entitys;
 using certificados.models.Entitys.dbo;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace certificados.services.Services
 {
@@ -13,17 +19,25 @@ namespace certificados.services.Services
     {
         private readonly TcertificadoDA tcertificadoDA;
         private readonly TeventoDA eventoDA;
+        private readonly EmailService emailService;
+        private readonly PersonaService personaService;
+        private readonly PdfService pdfService;
 
-        public CertificadosService(TcertificadoDA tcertificadoDA, TeventoDA eventoDA)
+        public CertificadosService(TcertificadoDA tcertificadoDA, PersonaService personaService, 
+            EmailService emailService, TeventoDA eventoDA, PdfService pdfService)
         {
             this.tcertificadoDA = tcertificadoDA;
             this.eventoDA = eventoDA;
+            this.emailService = emailService;
+            this.personaService = personaService;
+            this.pdfService = pdfService;
         }
 
-        public ResponseApp ListarCertificados() {
+        public ResponseApp ListarCertificados()
+        {
 
             return tcertificadoDA.ListarCertificados();
-      
+
         }
 
         public ResponseApp ListarCertificadosById(int idCertificado)
@@ -49,8 +63,9 @@ namespace certificados.services.Services
 
                 response = Utils.Utils.BadResponse($"NO EXISTE EL EVENTO {tcertificado.IdEvento} ASOCIADO");
             }
-            else {
-                response=  tcertificadoDA.InsertarCertificado(tcertificado);
+            else
+            {
+                response = tcertificadoDA.InsertarCertificado(tcertificado);
             }
 
             return response;
@@ -80,6 +95,107 @@ namespace certificados.services.Services
             return tcertificadoDA.EliminarCertificado(idCertificado);
 
         }
+        public ResponseApp Notificar(Tevento tevento, List<Tpersona> listaPersonas)
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            List<string> notificados = new List<string>();
+            List<string> Nonotificados = new List<string>();
 
+            foreach (var persona in listaPersonas)
+            {
+
+                try
+                {
+                    var PersonaRquest = personaService.ObtenerPersona(persona.Cedula);
+                    if (!PersonaRquest.Cod.Equals(Utils.CONSTANTES.COD_OK))
+                    {
+                        Nonotificados.Add(persona.Nombres + " " + persona.Apellidos);
+                        continue;
+                    }
+                    string jsonString = JsonSerializer.Serialize(PersonaRquest);
+
+                    var json = JsonDocument.Parse(jsonString);
+
+                    string email = json.RootElement.
+                        GetProperty("data")
+                        .GetProperty("mDatos")
+                        .GetProperty("Email").GetString();
+                     
+                    var sendEmail = emailService.SendEmail(email, 1, tevento);
+                    if (sendEmail.Cod.Equals(Utils.CONSTANTES.COD_OK))
+                    {
+
+                        notificados.Add(persona.Nombres + " " + persona.Apellidos);
+                        continue;
+                    }
+                    else
+                    {
+                        Nonotificados.Add(persona.Nombres + " " + persona.Apellidos);
+                        continue;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Nonotificados.Add(persona.Nombres + " " + persona.Apellidos + $" (Error: {ex.Message})");
+                }
+            }
+
+            dict.Add("Notificados", notificados);
+            dict.Add("NoNotificados", Nonotificados);
+
+            return Utils.Utils.OkResponse(dict);
+        }
+
+        public ResponseApp Emitir(Tevento tevento, List<Tpersona> listaPersonas)
+        {
+            Dictionary<string, object> dict = new Dictionary<string, object>();
+            List<string> notificados = new List<string>();
+            List<string> Nonotificados = new List<string>();
+
+            foreach (var persona in listaPersonas)
+            {
+
+                try
+                {
+                    var PersonaRquest = personaService.ObtenerPersona(persona.Cedula);
+                    if (!PersonaRquest.Cod.Equals(Utils.CONSTANTES.COD_OK))
+                    {
+                        Nonotificados.Add(persona.Nombres + " " + persona.Apellidos);
+                        continue;
+                    }
+                    string jsonString = JsonSerializer.Serialize(PersonaRquest);
+
+                    var json = JsonDocument.Parse(jsonString);
+
+                    string email = json.RootElement.
+                        GetProperty("data")
+                        .GetProperty("mDatos")
+                        .GetProperty("Email").GetString();
+                    var pdfCreate = 
+                     
+                    var sendEmail = emailService.SendEmail(email, 1, tevento);
+                    if (sendEmail.Cod.Equals(Utils.CONSTANTES.COD_OK))
+                    {
+
+                        notificados.Add(persona.Nombres + " " + persona.Apellidos);
+                        continue;
+                    }
+                    else
+                    {
+                        Nonotificados.Add(persona.Nombres + " " + persona.Apellidos);
+                        continue;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Nonotificados.Add(persona.Nombres + " " + persona.Apellidos + $" (Error: {ex.Message})");
+                }
+            }
+
+            dict.Add("Notificados", notificados);
+            dict.Add("NoNotificados", Nonotificados);
+
+            return Utils.Utils.OkResponse(dict);
+        }
     }
 }
