@@ -6,17 +6,19 @@
     const loginForm = document.getElementById('loginForm');
     const togglePasswordBtn = document.getElementById('togglePassword');
     const feedbackDiv = document.getElementById('feedback');
+    const spinner = document.querySelector('.spinner-border');
+
     loginForm.addEventListener('submit', function (e) {
         e.preventDefault(); // Evitar el envio del formulario por defecto
 
         // Limpiar las clases de error previas
         clearValidation();
 
-        // Validar email y contrasena
+        // Validar email y contrasenia
         let isValid = validateForm();
 
         if (!isValid) {
-            return; // Si no es valido, no enviamos el formulario
+            return; // Si no es valido no enviamos el formulario
         }
 
         // Mostrar spinner mientras se procesa el login
@@ -91,12 +93,16 @@
 
     // Funcion para mostrar el spinner
     function showSpinner() {
-        spinner.classList.remove('d-none');
+        if (spinner) {
+            spinner.classList.remove('d-none');
+        }
     }
 
     // Funcion para ocultar el spinner
     function hideSpinner() {
-        spinner.classList.add('d-none');
+        if (spinner) {
+            spinner.classList.add('d-none');
+        }
     }
 
     // Funcion para mostrar mensajes de feedback
@@ -112,7 +118,7 @@
             </div>
         `;
 
-        // Ocultar el mensaje despuus de unos segundos
+        // Ocultar el mensaje despues de unos segundos
         setTimeout(() => {
             feedbackDiv.innerHTML = '';
         }, 5000);
