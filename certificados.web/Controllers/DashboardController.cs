@@ -23,5 +23,13 @@ namespace certificados.web.Controllers
         {
             return PartialView("~/Views/Mantenimiento/_Modalidad.cshtml");
         }
+        public IActionResult TipoEvento()
+        {
+            return PartialView("~/Views/Mantenimiento/_TipoEvento.cshtml");
+        }
+        public IActionResult Ciclo()
+        {
+            return PartialView("~/Views/Mantenimiento/_Ciclo.cshtml");
+        }
     }
 }

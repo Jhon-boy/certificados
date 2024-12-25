@@ -2,7 +2,7 @@
     inicializarTabla('#tabla-grupo');
     inicializarTabla('#tabla-decanato');
     inicializarTabla('#tabla-modalidad');
-    inicializarTabla('#tabla-tipoevento');
+    inicializarTabla('#tabla-evento');
     inicializarTabla('#tabla-ciclo');
 });
 
@@ -32,7 +32,7 @@ let datos = {
     grupos: [],
     decanatos: [],
     modalidad: [],
-    tipoevento: [],
+    evento: [],
     ciclo: []
 };
 
@@ -71,7 +71,7 @@ function guardarCambios(tipo, itemEditado = null) {
     const tableSelector = `#tabla-${tipo.toLowerCase()}`;
     const dataType = tipo.toLowerCase();
 
-    const tiposValidos = ['grupo', 'decanato', 'modalidad', 'tipoevento', 'ciclo'];
+    const tiposValidos = ['grupo', 'decanato', 'modalidad', 'evento', 'ciclo'];
     if (!tiposValidos.includes(dataType)) {
         alert('Tipo inválido.');
         return;
