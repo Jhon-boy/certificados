@@ -1,0 +1,149 @@
+﻿<div class="modal fade" id="modal-editar" tabindex="-1" aria-labelledby="modal-editar-label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="btn-group" role="group" aria-label="Decanatos">
+                <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    Seleccionar Decanato
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#formModal" data-decanato="CIENCIAS BÁSICAS">Decanato de Ciencias Básicas</a></li>
+                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#formModal" data-decanato="BIOCONOCIMIENTO Y DESARROLLO INDUSTRIAL">Decanato de Bioconocimiento y Desarrollo Industrial</a></li>
+                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#formModal" data-decanato="TECNOLOGÍAS DE LA INFORMACIÓN">Decanato de Tecnologías de la Información</a></li>
+                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#formModal" data-decanato="GESTIÓN EMPRESARIAL">Decanato de Gestión Empresarial</a></li>
+                </ul>
+            </div>
+
+            <div class="modal fade" id="formModal" tabindex="-1" aria-labelledby="formModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header bg-light">
+                            <h5 class="modal-title" id="formModalLabel">Decanato:</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="tipoEvento" class="form-label">Tipo de evento:</label>
+                                        <select class="form-select" id="tipoEvento">
+                                            <option selected>Capacitación laboral o profesional</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="curso" class="form-label">Curso:</label>
+                                        <select class="form-select" id="curso">
+                                            <option selected>Herramientas de gestión para publicaciones</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="dominio" class="form-label">Dominio:</label>
+                                        <select class="form-select" id="dominio">
+                                            <option selected>CIENCIAS BÁSICAS, BIOCONOCIMIENTO Y DESARROLLO INDUSTRIAL</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="lineaInvestigacion" class="form-label">Línea de Investigación:</label>
+                                        <select class="form-select" id="lineaInvestigacion">
+                                            <option selected>CIENCIAS BÁSICAS, BIOCONOCIMIENTO Y DESARROLLO INDUSTRIAL</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="tematica" class="form-label">Temática:</label>
+                                        <select class="form-select" id="tematica">
+                                            <option selected>Metodologia</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="ciclo" class="form-label">Ciclo:</label>
+                                        <select class="form-select" id="ciclo">
+                                            <option selected>2023-2024 CI</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="facilitador" class="form-label">Facilitador:</label>
+                                        <input type="text" class="form-control" id="facilitador" value="José Antonio López Rivera">
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="modalidad" class="form-label">Modalidad:</label>
+                                        <select class="form-select" id="modalidad">
+                                            <option selected>Virtual</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="horario" class="form-label">Horario:</label>
+                                        <input type="text" class="form-control" id="horario" value="miércoles, jueves, y viernes 20h00 - 22h00">
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="fechaInicio" class="form-label">Fecha de inicio:</label>
+                                        <input type="date" class="form-control" id="fechaInicio" value="2024-10-09">
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="fechaFin" class="form-label">Fecha de fin:</label>
+                                        <input type="date" class="form-control" id="fechaFin" value="2025-01-12">
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="grupo" class="form-label">Grupo:</label>
+                                        <select class="form-select" id="grupo">
+                                            <option selected>SOFT-NO-10-3</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="horas" class="form-label">Horas:</label>
+                                        <input type="number" class="form-control" id="horas" value="50">
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-between">
+                                    <button type="submit" class="btn btn-primary">Guardar</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-4">
+    <h2>Planificaciones</h2>
+    <button class="btn btn-success mb-3" onclick="agregarPlanificacion()">Agregar Planificacion</button>
+
+    <table id="tabla-planificacion" class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Temática</th>
+                <th>Facilitador</th>
+                <th>Modalidad</th>
+                <th>Fecha Inicio</th>
+                <th>Fecha Fin</th>
+                <th>Horas</th>
+                <th>Grupo</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>

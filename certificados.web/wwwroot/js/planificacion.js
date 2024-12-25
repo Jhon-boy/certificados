@@ -1,47 +1,126 @@
-﻿$(document).ready(function () {
-    $('#planificacion-form').on('submit', function (e) {
-        e.preventDefault();
-        alert('Formulario guardado exitosamente.');
-        // Puedes agregar logica para enviar los datos al servidor aqui.
-    });
+﻿let planificaciones = [];
+
+function agregarPlanificacion() {
+    $('#modal-editar').modal('show');
+}
+
+$(document).on('click', '.dropdown-item', function () {
+    const decanato = $(this).data('decanato');
+    $('#formModalLabel').text('Decanato: ' + decanato);
+    $('#formModal').modal('show');
+    $('#tipoEvento').val('Capacitación laboral o profesional');
+    $('#curso').val('Herramientas de gestión para publicaciones');
+    $('#dominio').val(decanato);
+    $('#lineaInvestigacion').val(decanato);
+    $('#ciclo').val('2023-2024 CI');
+    $('#facilitador').val('');
+    $('#modalidad').val('Virtual');
+    $('#horario').val('');
+    $('#fechaInicio').val('');
+    $('#fechaFin').val('');
+    $('#grupo').val('');
+    $('#horas').val('');
+    $('#tematica').val('');
 });
 
-
-/* JS para realizar consultas de planificaciones */
-
-$(document).ready(function () {
-    // Inicializar DataTables
-    $('#tablaEventos').DataTable({
-        language: {
-            search: "Buscar:",
-            lengthMenu: "Mostrar _MENU_ registros por página",
-            zeroRecords: "No se encontraron registros",
-            info: "Mostrando página _PAGE_ de _PAGES_",
-            infoEmpty: "No hay registros disponibles",
-            infoFiltered: "(filtrado de _MAX_ registros totales)",
-            paginate: {
-                previous: "Anterior",
-                next: "Siguiente"
-            }
-        }
-    });
-
-    // Boton agregar planificacion
-    $('#btnAgregar').on('click', function () {
-        alert('Abrir formulario para agregar un nuevo evento.');
-        // Aquí puedes redirigir a otro formulario o mostrar un modal.
-    });
-
-    // Eventos para editar y eliminar
-    $('#tablaEventos').on('click', '.btnEditar', function () {
-        alert('Editar registro.');
-        // Implementar logica de edicion
-    });
-
-    $('#tablaEventos').on('click', '.btnEliminar', function () {
-        if (confirm('¿Estás seguro de que deseas eliminar este registro?')) {
-            // Implementar logica de eliminacion
-            alert('Registro eliminado.');
-        }
-    });
+$('#formModal form').on('submit', function (event) {
+    event.preventDefault();
+    const nuevaPlanificacion = {
+        tipoEvento: $('#tipoEvento').val(),
+        curso: $('#curso').val(),
+        dominio: $('#dominio').val(),
+        lineaInvestigacion: $('#lineaInvestigacion').val(),
+        ciclo: $('#ciclo').val(),
+        facilitador: $('#facilitador').val(),
+        modalidad: $('#modalidad').val(),
+        horario: $('#horario').val(),
+        fechaInicio: $('#fechaInicio').val(),
+        fechaFin: $('#fechaFin').val(),
+        grupo: $('#grupo').val(),
+        horas: $('#horas').val(),
+        tematica: $('#tematica').val(),
+    };
+    planificaciones.push(nuevaPlanificacion);
+    agregarFilaTabla(nuevaPlanificacion);
+    $('#formModal').modal('hide');
 });
+
+function agregarFilaTabla(planificacion) {
+    const tabla = $('#tabla-planificacion tbody');
+    const fila = `
+            <tr>
+                <td>${planificacion.tipoEvento}</td>
+                <td>${planificacion.facilitador}</td>
+                <td>${planificacion.modalidad}</td>
+                <td>${planificacion.fechaInicio}</td>
+                <td>${planificacion.fechaFin}</td>
+                <td>${planificacion.horas}</td>
+                <td>${planificacion.grupo}</td>
+                <td>${planificacion.tematica}</td>
+                <td>
+                    <button class="btn btn-info btn-sm" onclick="editarPlanificacion(${planificaciones.length - 1})">Editar</button>
+                    <button class="btn btn-danger btn-sm" onclick="eliminarPlanificacion(${planificaciones.length - 1})">Eliminar</button>
+                </td>
+            </tr>
+        `;
+    tabla.append(fila);
+}
+
+function editarPlanificacion(index) {
+    const planificacion = planificaciones[index];
+    $('#tipoEvento').val(planificacion.tipoEvento);
+    $('#curso').val(planificacion.curso);
+    $('#dominio').val(planificacion.dominio);
+    $('#lineaInvestigacion').val(planificacion.lineaInvestigacion);
+    $('#ciclo').val(planificacion.ciclo);
+    $('#facilitador').val(planificacion.facilitador);
+    $('#modalidad').val(planificacion.modalidad);
+    $('#horario').val(planificacion.horario);
+    $('#fechaInicio').val(planificacion.fechaInicio);
+    $('#fechaFin').val(planificacion.fechaFin);
+    $('#grupo').val(planificacion.grupo);
+    $('#horas').val(planificacion.horas);
+    $('#tematica').val(planificacion.tematica);
+    $('#formModalLabel').text('Editar Planificación');
+    $('#formModal').modal('show');
+
+    $('#formModal form').off('submit').on('submit', function (event) {
+        event.preventDefault();
+        planificaciones[index] = {
+            tipoEvento: $('#tipoEvento').val(),
+            curso: $('#curso').val(),
+            dominio: $('#dominio').val(),
+            lineaInvestigacion: $('#lineaInvestigacion').val(),
+            ciclo: $('#ciclo').val(),
+            facilitador: $('#facilitador').val(),
+            modalidad: $('#modalidad').val(),
+            horario: $('#horario').val(),
+            fechaInicio: $('#fechaInicio').val(),
+            fechaFin: $('#fechaFin').val(),
+            grupo: $('#grupo').val(),
+            horas: $('#horas').val(),
+            tematica: $('#tematica').val(),
+        };
+        actualizarTabla();
+        $('#formModal').modal('hide');
+    });
+}
+
+function eliminarPlanificacion(index) {
+    if (confirm('¿Estás seguro de que deseas eliminar esta planificación?')) {
+        planificaciones.splice(index, 1);
+        actualizarTabla();
+    }
+}
+
+function actualizarTabla() {
+    const tabla = $('#tabla-planificacion tbody');
+    tabla.empty();
+    planificaciones.forEach((planificacion, index) => {
+        const fila = `
+                <tr>
+                    <td>${planificacion.tipoEvento}</td>
+                    <td>${planificacion.facilitador}</td>
+                    <td>${planificacion.modalidad}</td>
+                    <td>${planificacion.fechaInicio}</td>
+                    <td>${planificacion.fechaF

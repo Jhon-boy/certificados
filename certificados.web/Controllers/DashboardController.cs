@@ -31,5 +31,9 @@ namespace certificados.web.Controllers
         {
             return PartialView("~/Views/Mantenimiento/_Ciclo.cshtml");
         }
+        public IActionResult Planificacion()
+        {
+            return PartialView("~/Views/Planificacion/_GestionPlanificacion.cshtml");
+        }
     }
 }
