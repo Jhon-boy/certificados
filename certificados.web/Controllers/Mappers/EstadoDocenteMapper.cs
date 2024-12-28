@@ -13,7 +13,7 @@ namespace certificados.web.Controllers.Mappers
             {
                 var json = JsonConvert.SerializeObject(data);
                 var estadoDocente = JsonConvert.DeserializeObject<TestadoDocente>(json);
-                if(estadoDocente == null)
+                if (estadoDocente == null)
                     throw new Exception("La conversión resultó en un objeto nulo");
                 return estadoDocente;
             }

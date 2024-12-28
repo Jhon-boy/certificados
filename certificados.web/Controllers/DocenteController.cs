@@ -3,6 +3,7 @@ using certificados.models.Entitys.dbo;
 using certificados.services.Services;
 using certificados.services.Utils;
 using certificados.web.Controllers.Mappers;
+using certificados.web.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace certificados.web.Controllers
@@ -28,7 +29,7 @@ namespace certificados.web.Controllers
           * Endpoint para crear un DOCENTE
           */
         [HttpPost("crear")]
-        public ActionResult<ResponseApp> crearDocente(Tdocente tdocente) {
+        public ActionResult<ResponseApp> crearDocente([FromBody] DocenteDTO tdocente) {
             if (tdocente == null) {
 
                 return BadRequest(Utils.BadResponse(CONSTANTES.MESSAGE_DATA_ERRORS));
@@ -51,7 +52,7 @@ namespace certificados.web.Controllers
           * Endpoint para MODIFICAR un DOCENTE
           */
         [HttpPost("modificar")]
-        public ActionResult<ResponseApp> modificarDocente(Tdocente tdocente)
+        public ActionResult<ResponseApp> modificarDocente([FromBody]  Tdocente tdocente)
         {
             if (tdocente == null)
             {
@@ -105,6 +106,20 @@ namespace certificados.web.Controllers
             }
             string codigoDocente = idDocenteObj.ToString();
             return Ok(docenteService.ElminarDocente(codigoDocente));
+        }
+
+        /*
+         * Endpoint para OBTENER un DOCENTE
+         */
+        [HttpPost("cedula")]
+        public ActionResult<ResponseApp> obtenerDocenteByCedula([FromBody] Dictionary<string, object> request)
+        {
+            if (!request.TryGetValue("cedula", out var cedulaObj) || cedulaObj == null)
+            {
+                return BadRequest(Utils.BadResponse("FALTAN PARAMETROS"));
+            }
+            string cedula = cedulaObj.ToString();
+            return Ok(docenteService.ObtenerDocentesByCedula(cedula));
         }
     }
 }

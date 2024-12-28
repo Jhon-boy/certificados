@@ -173,6 +173,34 @@ namespace certificados.dal.DataAccess
             }
             return response;
         }
+        public ResponseApp CertificadosById(int idCertificado)
+        {
+            ResponseApp response = Utils.BadResponse(null);
+            try
+            {
+
+                var listaCertificados = context.Tcertificado
+                    .Include(gp => gp.Tevento)
+                    .Include(gp => gp.Tevento.TtipoEvento)
+                    .Include(gp => gp.Tevento.Tgrupo)
+                    .Include(gp => gp.Tevento.Tdecanato)
+                    .Include(gp => gp.TformatoCertificado)
+                    
+                    .Where(c => c.IdCertificado == idCertificado)
+                    .FirstOrDefault();
+                if (listaCertificados == null)
+                    return Utils.BadResponse("NO EXISTE EL CERTIDICADO");
+
+                // Retornar respuesta exitosa con la lista
+                response = Utils.OkResponse(listaCertificados);
+            }
+            catch (Exception ex)
+            {
+                response = Utils.BadResponse($"ERROR AL LISTAR CERTIFICADOS: {ex.Message}");
+                throw new Exception($"ERROR AL listar CERTIFICADO: {ex.Message}");
+            }
+            return response;
+        }
 
         public ResponseApp BuscarCertificado(int idCertificado)
         {

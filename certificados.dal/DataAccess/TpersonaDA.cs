@@ -20,6 +20,11 @@ namespace certificados.dal.DataAccess
             {
                 try
                 {
+                    var usuarioExiste = context.Tusuario.FirstOrDefault(p => p.Email == usuario.Email);
+                    if (usuarioExiste != null) {
+                        return Utils.BadResponse("YA HAY UN USUARIO CON EL MAIL");
+                    }
+
                     context.Tpersona.Add(tpersona);
                     context.Tusuario.Add(usuario);
                     context.SaveChanges();

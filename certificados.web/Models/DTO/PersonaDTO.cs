@@ -10,7 +10,7 @@ namespace certificados.web.Models.DTO
         public required string Cedula { get; set; }
 
         [Required]
-        [StringLength(30, ErrorMessage = "Los nombres no pueden tener más de 30 caracteres.")]
+        [StringLength(35, ErrorMessage = "Los nombres no pueden tener más de 30 caracteres.")]
         public required string Nombres { get; set; }
 
         [Required]

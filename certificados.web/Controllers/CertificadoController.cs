@@ -16,15 +16,17 @@ namespace certificados.web.Controllers
         private readonly FormatoCertificadoService formatoCertificadoService;
         private readonly GrupoService grupoService;
         private readonly GrupoPersonaService grupoPersonaService;
+        private readonly DocenteService docenteService;
 
         public CertificadoController(CertificadosService certificadosService, EventoService evento, GrupoService grupoService,
-            GrupoPersonaService grupoPersonaService, FormatoCertificadoService formato)
+            GrupoPersonaService grupoPersonaService, DocenteService docenteService, FormatoCertificadoService formato)
         {
             this.certificadosService = certificadosService;
             this.eventoService = evento;
             this.formatoCertificadoService = formato;
             this.grupoPersonaService = grupoPersonaService;
             this.grupoService = grupoService;
+            this.docenteService = docenteService;
         }
 
         /*
@@ -149,7 +151,7 @@ namespace certificados.web.Controllers
         {
             if (!request.TryGetValue("idEvento", out var idEventoObj) || idEventoObj == null)
             {
-                return BadRequest(Utils.BadResponse("EVENTO PARAMETROS"));
+                return BadRequest(Utils.BadResponse(CONSTANTES.MESSAGE_DATA_ERRORS));
             }
             if (!int.TryParse(idEventoObj.ToString(), out int idEvento))
             {
@@ -175,33 +177,38 @@ namespace certificados.web.Controllers
         }
 
         [HttpPost("emitir")]
-        public ActionResult<ResponseApp> Emitir([FromBody] Dictionary<string, object> request)
+        public ActionResult<ResponseApp> Emitir([FromBody] EmitirCertificadoDTO dto)
         {
-            if (!request.TryGetValue("idEvento", out var idEventoObj) || idEventoObj == null)
-            {
-                return BadRequest(Utils.BadResponse("EVENTO PARAMETROS"));
-            }
-            if (!int.TryParse(idEventoObj.ToString(), out int idEvento))
-            {
-                return BadRequest(Utils.BadResponse("ID GRUPO NO VÁLIDO"));
-            }
-            var evento = eventoService.ListarPorId(idEvento);
-            if (!evento.Cod.Equals(CONSTANTES.COD_OK))
+            if (dto == null)
+                return BadRequest(Utils.BadResponse(CONSTANTES.MESSAGE_DATA_ERRORS));
+            
+            var certificadoRq = certificadosService.CertificadosById(dto.idCertificado);
+            if (!certificadoRq.Cod.Equals(CONSTANTES.COD_OK))
             {
                 return BadRequest(Utils.BadResponse("NO EXISTE EL EVENTO"));
             }
-            Tevento tevento = EventoMapper.convertEntity(evento.Data);
-            var grupo = grupoService.BuscarGrupo(tevento.IdGrupo);
+            Tcertificado certificado = CertificadoMapper.toEntity(certificadoRq.Data);
+
+            var grupo = grupoService.BuscarGrupo(certificado.Tevento.IdGrupo);
             if (!grupo.Cod.Equals(CONSTANTES.COD_OK))
             {
                 return BadRequest(Utils.BadResponse("NO EXISTE EL GRUPO"));
             }
 
-            var grupoResponse = grupoPersonaService.BuscarById(tevento.IdGrupo);
+            var grupoResponse = grupoPersonaService.BuscarById(certificado.Tevento.IdGrupo);
             List<Tpersona> listaPersonas = GrupoPersonaMapper.listadoPersonas(grupoResponse.Data);
+            List<Tdocente> Listadocente = new List<Tdocente>();
+            foreach (var docent in dto.docentes) {
+                var requestDocente = docenteService.ObtenerDocentesByCedula(docent);
+                if (!requestDocente.Cod.Equals(CONSTANTES.COD_OK))
+                    continue;
+                Tdocente docente = DocenteMapper.toEntity(requestDocente.Data);
+                Listadocente.Add(docente);
+                
+            }
 
-
-            return certificadosService.Notificar(tevento, listaPersonas);
+            return certificadosService.Emitir(certificado.Tevento, listaPersonas, certificado, Listadocente, certificado.Tevento.Tdecanato);
+            // return certificadosService.Notificar(tevento, listaPersonas);
         }
     }
 }

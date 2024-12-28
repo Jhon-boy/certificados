@@ -106,10 +106,10 @@ namespace certificados.dal.DataAccess
 
             try
             {
-                var listado = context.TestadoDocente.Where(e => e.IdEstado == id).ToList();
-                if (listado.Count > 0)
+                var estadoDocente = context.TestadoDocente.FirstOrDefault(e => e.IdEstado == id);
+                if (estadoDocente != null)
                 {
-                    response = Utils.OkResponse(listado); 
+                    response = Utils.OkResponse(estadoDocente); 
                 }
                 else {
                     response.Message = "NO EXISTE NINGUN ESTADO DOCENTE CON EL ID";

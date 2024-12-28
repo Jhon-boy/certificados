@@ -2,6 +2,7 @@
 using certificados.models.Entitys;
 using certificados.models.Entitys.dbo;
 using certificados.services.Utils;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,20 +17,32 @@ namespace certificados.dal.DataAccess
 
         public ResponseApp InsertarDocente(Tdocente tdocente)
         {
-
             ResponseApp response = Utils.BadResponse(null);
+
             using (var transaction = context.Database.BeginTransaction())
             {
                 try
                 {
+                    var testadoDocente = context.TestadoDocente.Find(tdocente.IdEstado);
+                    if (testadoDocente != null)
+                    {
+                        tdocente.TestadoDocente = testadoDocente;
+                    }
+
+                    var tpersona = context.Tpersona.Find(tdocente.Cedula);
+                    if (tpersona != null)
+                    {
+                        tdocente.Tpersona = tpersona;
+                    }
 
                     context.Tdocente.Add(tdocente);
                     context.SaveChanges();
                     transaction.Commit();
+
                     response = Utils.OkResponse(tdocente);
                 }
                 catch (Exception ex)
-                {
+                { 
                     transaction.Rollback();
                     response = Utils.BadResponse($"ERROR AL INSERTAR PERSONA: {ex.Message}");
                     throw new Exception($"ERROR AL INSERTAR DOCENTE: {ex.Message}");
@@ -37,8 +50,8 @@ namespace certificados.dal.DataAccess
 
                 return response;
             }
-
         }
+
 
         public ResponseApp ModificarDocente(Tdocente tdocente)
         {
@@ -117,7 +130,8 @@ namespace certificados.dal.DataAccess
             ResponseApp response = Utils.BadResponse(null);
             try
             {
-                var listaDocentes = context.Tdocente.ToList();
+                var listaDocentes = context.Tdocente.Include(gp => gp.TestadoDocente)
+                    .Include(gp => gp.Tpersona).ToList();
 
                 response = Utils.OkResponse(listaDocentes);
             }
@@ -133,7 +147,9 @@ namespace certificados.dal.DataAccess
             ResponseApp response = Utils.BadResponse(null);
             try
             {
-                var docente = context.Tdocente.FirstOrDefault(d => d.CodigoDocente == codigoDocente);
+                var docente = context.Tdocente
+                    .Include(gp => gp.TestadoDocente)
+                    .Include(gp => gp.Tpersona).FirstOrDefault(d => d.CodigoDocente == codigoDocente);
 
                 if (docente != null)
                 {
@@ -152,6 +168,31 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
+        public ResponseApp BuscarDocenteCedula(string cedula)
+        {
+            ResponseApp response = Utils.BadResponse(null);
+            try
+            {
+                var docente = context.Tdocente
+                    .Include(gp => gp.TestadoDocente)
+                    .Include(gp => gp.Tpersona).FirstOrDefault(d => d.Cedula == cedula);
+
+                if (docente != null)
+                {
+                    response = Utils.OkResponse(docente);
+                }
+                else
+                {
+                    response = Utils.BadResponse("DOCENTE NO EXISTE");
+                }
+            }
+            catch (Exception ex)
+            {
+                response = Utils.BadResponse($"ERROR AL BUSCAR DOCENTE: {ex.Message}");
+                throw new Exception($"ERROR AL BUSCAR DOCENTE: {ex.Message}");
+            }
+            return response;
+        }
 
     }
 }

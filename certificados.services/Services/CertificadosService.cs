@@ -45,6 +45,11 @@ namespace certificados.services.Services
             return tcertificadoDA.ListarCertificadosPorEvento(idCertificado);
 
         }
+        public ResponseApp CertificadosById(int idCertificado)
+        {
+            return tcertificadoDA.CertificadosById(idCertificado);
+
+        }
 
         public ResponseApp ObtenerCertificadosByEvento(int idCertificado)
         {
@@ -146,7 +151,7 @@ namespace certificados.services.Services
             return Utils.Utils.OkResponse(dict);
         }
 
-        public ResponseApp Emitir(Tevento tevento, List<Tpersona> listaPersonas)
+        public ResponseApp Emitir(Tevento tevento, List<Tpersona> listaPersonas, Tcertificado certificado, List<Tdocente> docentes, Tdecanato decanato)
         {
             Dictionary<string, object> dict = new Dictionary<string, object>();
             List<string> notificados = new List<string>();
@@ -171,9 +176,10 @@ namespace certificados.services.Services
                         GetProperty("data")
                         .GetProperty("mDatos")
                         .GetProperty("Email").GetString();
-                    var pdfCreate = 
+
+                    var pdfCreate = pdfService.GenerarCertificado(certificado.TformatoCertificado, tevento, persona, docentes, decanato);
                      
-                    var sendEmail = emailService.SendEmail(email, 1, tevento);
+                    var sendEmail = emailService.SendEmail(email, 2, tevento, pdfCreate);
                     if (sendEmail.Cod.Equals(Utils.CONSTANTES.COD_OK))
                     {
 

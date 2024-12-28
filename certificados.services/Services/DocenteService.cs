@@ -29,6 +29,11 @@ namespace certificados.services.Services
         {
             return tdocenteDA.BuscarDocente(codigoDocente);
         }
+        public ResponseApp ObtenerDocentesByCedula(string cedula)
+        {
+            return tdocenteDA.BuscarDocenteCedula(cedula);
+        }
+
 
         public ResponseApp CrearDocente(Tdocente tdocente)
         {
