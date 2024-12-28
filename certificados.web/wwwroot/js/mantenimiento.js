@@ -1,5 +1,13 @@
 ﻿$(function () {
-    $('#tabla-grupos').DataTable({
+    inicializarTabla('#tabla-grupo');
+    inicializarTabla('#tabla-decanato');
+    inicializarTabla('#tabla-modalidad');
+    inicializarTabla('#tabla-evento');
+    inicializarTabla('#tabla-ciclo');
+});
+
+function inicializarTabla(selector) {
+    $(selector).DataTable({
         language: {
             sProcessing: 'Procesando...',
             sLengthMenu: 'Mostrar _MENU_ registros',
@@ -18,200 +26,117 @@
             },
         },
     });
-});
-
-let grupos = [];
-function agregarGrupo() {
-    $('#grupo-nombre').val('');
-    $('#modal-editar-label').text('Agregar Nuevo Grupo');
-    $('#modal-editar').modal('show');
 }
-function editarRegistro(grupoNombre) {
-    const grupo = grupos.find(g => g.nombre === grupoNombre);
 
-    if (grupo) {
-        $('#grupo-nombre').val(grupo.nombre);
-        $('#modal-editar-label').text('Editar Grupo');
+let datos = {
+    grupos: [],
+    decanatos: [],
+    modalidad: [],
+    evento: [],
+    ciclo: []
+};
+
+function agregarElemento(tipo) {
+    $(`#${tipo.toLowerCase()}-nombre`).val('');
+    $('#modal-editar-label').text(`Agregar Nuevo ${tipo}`);
+    $('#modal-editar').modal('show');
+
+    $('#btn-guardar-cambios').off('click').on('click', () => guardarCambios(tipo));
+}
+
+function editarElemento(tipo, nombre) {
+    const item = obtenerElemento(tipo, nombre);
+
+    if (item) {
+        $(`#${tipo.toLowerCase()}-nombre`).val(item.nombre);
+        $('#modal-editar-label').text(`Editar ${tipo}`);
         $('#modal-editar').modal('show');
 
-        $('#btn-guardar-cambios').off('click').on('click', function () {
-            guardarCambios(grupo);
-        });
+        $('#btn-guardar-cambios').off('click').on('click', () => guardarCambios(tipo, item));
     }
 }
-function guardarCambios(grupoEditado) {
-    const nombreGrupo = $('#grupo-nombre').val();
 
-    if (!nombreGrupo) {
-        alert('El nombre del grupo es obligatorio.');
+function obtenerElemento(tipo, nombre) {
+    return datos[tipo.toLowerCase()].find(item => item.nombre === nombre);
+}
+
+function guardarCambios(tipo, itemEditado = null) {
+    const nombre = $(`#${tipo.toLowerCase()}-nombre`).val().trim();
+
+    if (!nombre) {
+        alert(`El nombre del ${tipo.toLowerCase()} es obligatorio.`);
         return;
     }
 
-    if ($('#modal-editar-label').text() === 'Agregar Nuevo Grupo') {
-        const nuevoGrupo = { nombre: nombreGrupo };
-        grupos.push(nuevoGrupo);
+    const tableSelector = `#tabla-${tipo.toLowerCase()}`;
+    const dataType = tipo.toLowerCase();
 
-        $('#tabla-grupos')
+    const tiposValidos = ['grupo', 'decanato', 'modalidad', 'evento', 'ciclo'];
+    if (!tiposValidos.includes(dataType)) {
+        alert('Tipo inválido.');
+        return;
+    }
+
+    if (!Array.isArray(datos[dataType])) {
+        datos[dataType] = [];
+    }
+
+    if ($('#modal-editar-label').text() === `Agregar Nuevo ${tipo}`) {
+        const nuevoElemento = { nombre };
+        datos[dataType].push(nuevoElemento);
+
+        $(tableSelector)
             .DataTable()
-            .row.add([
-                nombreGrupo,
-                `<div class="text-end">
-             <button class="btn btn-primary btn-sm" onclick="editarRegistro('${nombreGrupo}')">Editar</button>
-             <button class="btn btn-danger btn-sm" onclick="eliminarRegistro('${nombreGrupo}')">Eliminar</button>
-           </div>`,
-            ])
+            .row.add([nombre, generarAccionesHtml(tipo, nombre)])
             .draw();
 
-        alert(`Nuevo grupo agregado: ${nombreGrupo}`);
-    } else {
-        grupoEditado.nombre = nombreGrupo;
+        alert(`Nuevo ${tipo.toLowerCase()} agregado: ${nombre}`);
+    } else if (itemEditado) {
+        itemEditado.nombre = nombre;
 
-        const table = $('#tabla-grupos').DataTable();
+        const table = $(tableSelector).DataTable();
         table.rows().every(function () {
             const data = this.data();
-            if (data[0] === grupoEditado.nombre) {
-                data[0] = grupoEditado.nombre;
-                data[1] = `<div class="text-end">
-                      <button class="btn btn-primary btn-sm" onclick="editarRegistro('${grupoEditado.nombre}')">Editar</button>
-                      <button class="btn btn-danger btn-sm" onclick="eliminarRegistro('${grupoEditado.nombre}')">Eliminar</button>
-                    </div>`;
+            if (data[0] === itemEditado.nombre) {
+                data[0] = itemEditado.nombre;
+                data[1] = generarAccionesHtml(tipo, itemEditado.nombre);
                 this.data(data);
             }
         });
         table.draw();
 
-        alert(`Cambios guardados para: ${nombreGrupo}`);
+        alert(`Cambios guardados para: ${nombre}`);
     }
 
     $('#modal-editar').modal('hide');
 }
-function eliminarRegistro(grupoNombre) {
-    if (confirm(`¿Estás seguro de que deseas eliminar el grupo: ${grupoNombre}?`)) {
-        const grupoIndex = grupos.findIndex(g => g.nombre === grupoNombre);
 
-        if (grupoIndex !== -1) {
-            grupos.splice(grupoIndex, 1);
+function eliminarElemento(tipo, nombre) {
+    if (confirm(`¿Estás seguro de que deseas eliminar el ${tipo.toLowerCase()}: ${nombre}?`)) {
+        const dataType = tipo.toLowerCase();
+        const index = datos[dataType].findIndex(item => item.nombre === nombre);
 
-            var table = $('#tabla-grupos').DataTable();
+        if (index !== -1) {
+            datos[dataType].splice(index, 1);
+
+            const tableSelector = `#tabla-${tipo.toLowerCase()}`;
+            const table = $(tableSelector).DataTable();
             table.rows().every(function () {
-                var data = this.data();
-                if (data[0] === grupoNombre) {
+                const data = this.data();
+                if (data[0] === nombre) {
                     this.remove();
                 }
             });
             table.draw();
 
-            alert(`Grupo eliminado: ${grupoNombre}`);
+            alert(`${tipo} eliminado: ${nombre}`);
         }
     }
 }
 
-/* SCRIPTS PARA DECANATO */
-
-$(function () {
-    $('#tabla-decanatos').DataTable({
-        language: {
-            sProcessing: 'Procesando...',
-            sLengthMenu: 'Mostrar _MENU_ registros',
-            sZeroRecords: 'No se encontraron resultados',
-            sEmptyTable: 'Ningún dato disponible en esta tabla',
-            sInfo: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
-            sInfoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
-            sInfoFiltered: '(filtrado de un total de _MAX_ registros)',
-            sSearch: 'Buscar:',
-            sLoadingRecords: 'Cargando...',
-            oPaginate: {
-                sFirst: 'Primero',
-                sPrevious: 'Anterior',
-                sNext: 'Siguiente',
-                sLast: 'Último',
-            },
-        },
-    });
-});
-
-let decanatos = [];
-function agregarDecanato() {
-    $('#decanato-nombre').val('');
-    $('#modal-editar-label').text('Agregar Nuevo Decanato');
-    $('#modal-editar').modal('show');
-}
-function editarRegistroDecanato(decanatoNombre) {
-    const decanato = decanatos.find(d => d.nombre === decanatoNombre);
-
-    if (decanato) {
-        $('#decanato-nombre').val(decanato.nombre);
-        $('#modal-editar-label').text('Editar Decanato');
-        $('#modal-editar').modal('show');
-
-        $('#btn-guardar-cambios').off('click').on('click', function () {
-            guardarCambiosDecanato(decanato);
-        });
-    }
-}
-function guardarCambiosDecanato(decanatoEditado) {
-    const nombreDecanato = $('#decanato-nombre').val();
-
-    if (!nombreDecanato) {
-        alert('El nombre del decanato es obligatorio.');
-        return;
-    }
-
-    if ($('#modal-editar-label').text() === 'Agregar Nuevo Decanato') {
-        const nuevoDecanato = { nombre: nombreDecanato };
-        decanatos.push(nuevoDecanato);
-
-        $('#tabla-decanatos')
-            .DataTable()
-            .row.add([
-                nombreDecanato,
-                `<div class="text-end">
-             <button class="btn btn-primary btn-sm" onclick="editarRegistroDecanato('${nombreDecanato}')">Editar</button>
-             <button class="btn btn-danger btn-sm" onclick="eliminarRegistroDecanato('${nombreDecanato}')">Eliminar</button>
-           </div>`,
-            ])
-            .draw();
-
-        alert(`Nuevo decanato agregado: ${nombreDecanato}`);
-    } else {
-        decanatoEditado.nombre = nombreDecanato;
-
-        const table = $('#tabla-decanatos').DataTable();
-        table.rows().every(function () {
-            const data = this.data();
-            if (data[0] === decanatoEditado.nombre) {
-                data[0] = decanatoEditado.nombre;
-                data[1] = `<div class="text-end">
-                      <button class="btn btn-primary btn-sm" onclick="editarRegistroDecanato('${decanatoEditado.nombre}')">Editar</button>
-                      <button class="btn btn-danger btn-sm" onclick="eliminarRegistroDecanato('${decanatoEditado.nombre}')">Eliminar</button>
-                    </div>`;
-                this.data(data);
-            }
-        });
-        table.draw();
-
-        alert(`Cambios guardados para: ${nombreDecanato}`);
-    }
-
-    $('#modal-editar').modal('hide');
-}
-function eliminarRegistroDecanato(decanatoNombre) {
-    if (confirm(`¿Estás seguro de que deseas eliminar el decanato: ${decanatoNombre}?`)) {
-        const decanatoIndex = decanatos.findIndex(d => d.nombre === decanatoNombre);
-
-        if (decanatoIndex !== -1) {
-            decanatos.splice(decanatoIndex, 1);
-
-            var table = $('#tabla-decanatos').DataTable();
-            table.rows().every(function () {
-                var data = this.data();
-                if (data[0] === decanatoNombre) {
-                    this.remove();
-                }
-            });
-            table.draw();
-
-            alert(`Decanato eliminado: ${decanatoNombre}`);
-        }
-    }
+function generarAccionesHtml(tipo, nombre) {
+    return `<div class="text-end">
+        <button class="btn btn-primary btn-sm" onclick="editarElemento('${tipo}', '${nombre}')">Editar</button>
+        <button class="btn btn-danger btn-sm" onclick="eliminarElemento('${tipo}', '${nombre}')">Eliminar</button>
+    </div>`;
 }

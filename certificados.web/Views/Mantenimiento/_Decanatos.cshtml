@@ -1,37 +1,36 @@
-﻿<div class="container mt-5">
-    <h3 class="text-center">Lista de Decanatos</h3>
-    <button class="btn btn-success mb-3" onclick="agregarDecanato()">Agregar Decanato</button>
-    <table id="tabla-decanatos" class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>DECANATO</th>
-                <th class="text-end">ACCIONES</th>
-            </tr>
-        </thead>
-        <tbody id="tabla-decanatos-body">
-        </tbody>
-    </table>
-</div>
-
-<div class="modal fade" id="modal-editar" tabindex="-1" aria-labelledby="modal-editar-label" aria-hidden="true">
+﻿<div class="modal fade" id="modal-editar" tabindex="-1" aria-labelledby="modal-editar-label" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modal-editar-label">Editar Decanato</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                <h5 class="modal-title" id="modal-editar-label">Agregar Nuevo Decanato</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="form-editar">
-                    <div class="mb-3">
-                        <label for="decanato-nombre" class="form-label">Nombre del Decanato</label>
-                        <input type="text" class="form-control" id="decanato-nombre" required />
-                    </div>
-                </form>
+                <div class="mb-3">
+                    <label for="decanato-nombre" class="form-label">Nombre del Decanato</label>
+                    <input type="text" class="form-control" id="decanato-nombre" placeholder="Ingresa el nombre del decanato">
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary" onclick="guardarCambiosDecanato()">Guardar</button>
+                <button type="button" class="btn btn-primary" id="btn-guardar-cambios">Guardar</button>
             </div>
         </div>
     </div>
+</div>
+
+<div class="container mt-4">
+    <h2>Lista de Decanatos</h2>
+    <button class="btn btn-success mb-3" onclick="agregarElemento('Decanato')">Agregar Nuevo Decanato</button>
+
+    <table id="tabla-decanato" class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Nombre del Decanato</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
 </div>
