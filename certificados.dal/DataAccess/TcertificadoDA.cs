@@ -184,7 +184,7 @@ namespace certificados.dal.DataAccess
                     .Include(gp => gp.Tevento.TtipoEvento)
                     .Include(gp => gp.Tevento.Tgrupo)
                     .Include(gp => gp.Tevento.Tdecanato)
-                    .Include(gp => gp.TformatoCertificado)
+                    .Include(gp => gp.TformatoCertificado)  
                     
                     .Where(c => c.IdCertificado == idCertificado)
                     .FirstOrDefault();
