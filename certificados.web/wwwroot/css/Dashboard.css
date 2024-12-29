@@ -56,7 +56,7 @@ body {
     position: fixed;
     top: 0;
     left: 0;
-    background: var(--primary-color);
+    background: #1e3464;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
     z-index: 1040;
     transition: transform .3s ease-in-out;
@@ -208,19 +208,19 @@ body {
 
 /* Hover Effects */
 .nav-link:hover {
-    background: var(--hover-bg);
+    background: #155ea3;
     color: white;
 }
 
 .submenu .nav-link:hover {
-    background: rgba(255, 255, 255, .1);
+    background: #155ea3;
 }
 
 /* Submenu Animation */
 .submenu {
     display: none;
-    background-color: #495057;
-    padding-left: 20px;
+    background-color: ##1e3464;
+    padding-left: 10px;
     border-radius: 5px;
 }
 
