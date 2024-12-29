@@ -1,25 +1,21 @@
-﻿    @{
-        ViewData["Title"] = "Dashboard";
-    }
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
 
-    <!DOCTYPE html>
-    <html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Dashboard</title>
-        <link rel="stylesheet" href="~/css/Dashboard.css">
-    </head>
-    <body>
-    <!-- Botón de hamburguesa -->
-    <button class="hamburger-menu" id="hamburger-menu">
-        <i class="bi bi-list"></i>
-    </button>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="~/css/Dashboard.css">
+</head>
+<body>
 
     <!-- Sidebar -->
     <nav class="sidebar">
         <div class="logo-container text-center">
-            <img src="~/img/logoug.png" alt="Logo UG" class="logo">
+            <img src="~/img/logughorizontal.png" alt="Logo UG" class="logo">
         </div>
 
         <ul class="nav flex-column mt-4">
@@ -85,6 +81,7 @@
         </ul>
     </nav>
 
+    <!-- Header -->
     <header class="main-header">
         <div class="container-fluid h-100">
             <div class="row h-100 align-items-center">
@@ -109,8 +106,17 @@
             </div>
         </div>
     </header>
+
+    <!-- Main Content (Workspace) -->
     <main class="main-content fade-in">
-        <div class="col-9 col-md-10 dynamic-content p-4" id="dynamic-content"></div>
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-9 col-11 dynamic-content p-4" id="dynamic-content">
+                    <!-- Your dynamic content goes here -->
+                </div>
+            </div>
+        </div>
     </main>
-    </body>
-    </html>
+
+</body>
+</html>
