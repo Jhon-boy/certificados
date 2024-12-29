@@ -13,6 +13,7 @@
 
 document.addEventListener('DOMContentLoaded', function () {
     const submenuLinks = document.querySelectorAll('.nav-link[data-view]');
+    Utils.cleanRoute();
 
     const defaultView = "Inicio";
     cargarVista(defaultView);

@@ -2,6 +2,7 @@
 using certificados.models.Entitys;
 using certificados.models.Entitys.dbo;
 using certificados.services.Utils;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -175,6 +176,7 @@ namespace certificados.dal.DataAccess
 
                 if (persona != null)
                 {
+
                     var personaCompleta = new
                     {
                         Cedula = persona.Cedula,
@@ -191,10 +193,13 @@ namespace certificados.dal.DataAccess
                            .Select(usuario => new
                            {
                                Email = usuario.Email,
-                               Rol = context.Trol
-                                   .Where(rol => rol.IdRol == usuario.IdRol)
-                                   .Select(rol => rol.Nombre)
-                                   .FirstOrDefault()
+                               Rol = context.Tusuario
+                                    .Where(u => u.Cedula == cedula)
+                                    .Include(u => u.Trol) // Incluir la relación con Trol
+                                    .Select(u => u.Trol.Nombre)
+
+                                    .Distinct()
+                                    .ToList()
                            })
                    .FirstOrDefault()
                     };

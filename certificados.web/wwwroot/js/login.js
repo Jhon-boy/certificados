@@ -7,6 +7,7 @@
     const togglePasswordBtn = document.getElementById('togglePassword');
     const feedbackDiv = document.getElementById('feedback');
     const spinner = document.querySelector('.spinner-border');
+    Utils.limpiarLocalStorage();
 
     loginForm.addEventListener('submit', function (e) {
         e.preventDefault(); // Evitar el envio del formulario por defecto
@@ -48,10 +49,30 @@
 
             if (response.ok) {
                 const data = await response.json();
-                if (data.redirectTo) {
-                    window.location.href = data.redirectTo;
+
+
+                if (data.response.cod === Utils.COD_OK) {
+               
+                    const usuario = {
+                        idUsuario: data.response.data.USUARIO.idUsuario,
+                        email: data.response.data.USUARIO.email,
+                        cedula: data.response.data.USUARIO.cedula,
+                        nombre: data.response.data.PERSONA.nombres, 
+                        apellidos: data.response.data.PERSONA.apellidos,
+                        edad: data.response.data.USUARIO.edad, 
+                        roles: data.response.data.PERSONA.mDatos.rol
+                    };
+
+                    localStorage.setItem('userInfo', JSON.stringify(usuario));
+
+                    // Redirige al dashboard
+                    if (data.redirectTo) {
+                        window.location.href = data.redirectTo;
+                    } else {
+                        showFeedback('Login exitoso, redirigiendo...', 'success');
+                    }
                 } else {
-                    showFeedback('Login exitoso, redirigiendo...', 'success');
+                    showFeedback(data.response.message || 'Credenciales incorrectas.', 'danger');
                 }
             } else {
                 const errorData = await response.json();
@@ -62,6 +83,7 @@
             showFeedback('Error al conectar con el servidor. Intenta nuevamente.', 'danger');
         }
     }
+
 
     // Funcion para validar el formulario
     function validateForm() {
@@ -107,20 +129,7 @@
 
     // Funcion para mostrar mensajes de feedback
     function showFeedback(message, type) {
-        if (!feedbackDiv) {
-            return;
-        }
-
-        feedbackDiv.innerHTML = `
-            <div class="alert alert-${type}" role="alert">
-                ${message}
-            </div>
-        `;
-
-        // Ocultar el mensaje despues de unos segundos
-        setTimeout(() => {
-            feedbackDiv.innerHTML = '';
-        }, 5000);
+        Utils.showToast(message, type);
     }
 
     // Funcion para alternar la visibilidad de la contrasenia

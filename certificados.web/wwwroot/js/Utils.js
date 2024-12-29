@@ -109,14 +109,76 @@ const Utils = (() => {
             throw error;
         }
     };
+    /**
+     * Metodo que muestra la Notificacion 
+     * @param {any} message
+     * @param {any} type
+     */
+    const showToast = (message, type = 'primary') => {
+        const toastContainerId = "toastContainer";
+        let toastContainer = document.getElementById(toastContainerId);
+        if (!toastContainer) {
+            toastContainer = document.createElement("div");
+            toastContainer.id = toastContainerId;
+            toastContainer.style.position = "fixed";
+            toastContainer.style.bottom = "20px";
+            toastContainer.style.left = "50%";
+            toastContainer.style.transform = "translateX(-50%)";
+            toastContainer.style.zIndex = "1060";
+            toastContainer.style.width = "fit-content";
+            document.body.appendChild(toastContainer);
+        }
 
+        const toastHtml = `
+        <div class="toast align-items-center text-bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true"  style="width: 480px; height:65px; font-size: 1.2rem; padding: 20px;"> 
+              <div class="d-flex">
+               <center >
+                     <div class="toast-body">
+                    ${message}
+                     </div>
+                </center>  
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>`;
+
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = toastHtml.trim();
+        const toastElement = tempDiv.firstChild;
+        toastContainer.appendChild(toastElement);
+        const toast = new bootstrap.Toast(toastElement);
+        toast.show();
+        toastElement.addEventListener("hidden.bs.toast", () => {
+            toastElement.remove();
+        });
+    };
     const path = 'http://localhost:5133/api';
+    const COD_OK = 'OK';
+    //Limpia el LocalStorage
+    const limpiarLocalStorage = () => { 
+        localStorage.clear();
+    }
+    //Limpia la navegacion 
+    const cleanRoute = () => {
+        history.replaceState(null, null, '/');
+        history.pushState(null, null, '/');
+    }
+    //Vuelve al Inicio 
+    const backToIndex = () => {
+        cleanRoute();
+        window.location.href = "/Home/Index";
+        window.location.reload(true);  
+    }
 
     createLoader(); // Crea el loader al inicializar
 
     return {
         httpRequest,
-        path
+        path,
+        COD_OK,
+        showToast,
+        limpiarLocalStorage,
+        backToIndex,
+        cleanRoute
  
     };
 })();

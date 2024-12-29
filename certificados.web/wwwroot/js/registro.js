@@ -39,7 +39,7 @@ async function cargarDatos() {
         }
     } catch (error) {
         console.error('Error al cargar los datos:', error);
-        alert('Hubo un error al cargar los datos. Intenta nuevamente.');
+  
     }
 }
 
@@ -74,13 +74,12 @@ async function buscarPorCedula() {
             document.getElementById('correo').value = persona.correo;
             document.getElementById('celular').value = persona.celular;
         } else {
-            alert('No se encontró la persona con esa cédula');
+           // alert('No se encontró la persona con esa cédula');
         }
     } catch (error) {
         console.error('Error al buscar la persona:', error);
-        alert('Hubo un error al buscar la persona. Intenta nuevamente.');
     }
 }
 
-// Llamar a la funcion de buscar cuando se haga clic en el boton "Buscar"
-document.getElementById('buscarBtn').addEventListener('click', buscarPorCedula);
+//// Llamar a la funcion de buscar cuando se haga clic en el boton "Buscar"
+//document.getElementById('buscarBtn').addEventListener('click', buscarPorCedula);
