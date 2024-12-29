@@ -1,80 +1,116 @@
-﻿@{
-    ViewData["Title"] = "Dashboard";
-}
+﻿    @{
+        ViewData["Title"] = "Dashboard";
+    }
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="~/css/dashboard.css">
-</head>
-<body>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12 header d-flex justify-content-between align-items-center">
-                <div>
-                    <img src="~/img/logo_ug_vertical.svg" alt="Logo" class="logo">
-                </div>
-                <div class="text-center">
-                    <h4>VICERRECTORADO ACADÉMICO</h4>
-                    <h5>Sistema de Certificación</h5>
-                </div>
-                <div class="user-menu">
-                    <button class="btn dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
-                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=40" alt="Usuario" class="rounded-circle me-2">
-                        <span class="d-none d-md-inline">Ruth</span>
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="userDropdown">
-                        <li><a class="dropdown-item" href="#">Perfil</a></li>
-                        <li><a class="dropdown-item" href="#">Configuración</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#">Cerrar sesión</a></li>
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Dashboard</title>
+        <link rel="stylesheet" href="~/css/Dashboard.css">
+    </head>
+    <body>
+    <!-- Botón de hamburguesa -->
+    <button class="hamburger-menu" id="hamburger-menu">
+        <i class="bi bi-list"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="logo-container text-center">
+            <img src="~/img/logoug.png" alt="Logo UG" class="logo">
+        </div>
+
+        <ul class="nav flex-column mt-4">
+            <li class="nav-item"><a class="nav-link text-white" href="#" id="link-roles" data-view="Inicio"><i class="bi bi-people"></i> Home</a></li>
+
+            <li class="nav-item mt-3">
+                <a class="nav-link text-white" onclick="toggleCollapse('submenu1')">
+                    <i class="bi bi-wrench"></i> Mantenimiento <i class="bi bi-caret-down-fill arrow"></i>
+                </a>
+                <div class="submenu" id="submenu1" style="display: none;">
+                    <ul class="nav flex-column ms-3">
+                        <li class="nav-item"><a class="nav-link text-white" href="#" id="link-roles" data-view="Roles"><i class="bi bi-people"></i> Roles</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="#" id="link-usuarios" data-view="Usuarios"><i class="bi bi-people"></i> Usuarios</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="#" id="link-grupo" data-view="Grupo"><i class="bi bi-people"></i> Grupo</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="#" id="link-docente" data-view="Docente"><i class="bi bi-people"></i> Docentes</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="#" id="link-decanato" data-view="Decanato"><i class="bi bi-building"></i> Decanatos</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="#" id="link-evento" data-view="Eventos"><i class="bi bi-people"></i> Eventos</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="#" id="link-certificados" data-view="Certificados"><i class="bi bi-people"></i> Certificados</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="#" id="link-actas" data-view="Actas"><i class="bi bi-people"></i> Actas</a></li>
                     </ul>
                 </div>
-            </div>
+            </li>
 
-            <div class="col-3 col-md-2 p-0 sidebar bg-dark">
-                <ul class="nav flex-column text-white">
-                    <li class="nav-item">
-                        <a class="nav-link text-white" onclick="toggleCollapse('submenu1')">
-                            <i class="bi bi-wrench"></i> Mantenimiento <i class="bi bi-caret-down-fill arrow"></i>
-                        </a>
-                        <div class="submenu" id="submenu1" style="display: none;">
-                            <ul class="nav flex-column ms-3">
-                                <li class="nav-item"><a class="nav-link text-white" href="#" id="link-grupo" data-view="Grupo"><i class="bi bi-people"></i> Grupo</a></li>
-                                <li class="nav-item"><a class="nav-link text-white" href="#" id="link-decanato" data-view="Decanato"><i class="bi bi-building"></i> Decanatos</a></li>
-                                <li class="nav-item"><a class="nav-link text-white" href="#" id="link-modalidad" data-view="Modalidad"><i class="bi bi-calendar"></i> Modalidad</a></li>
-                                <li class="nav-item"><a class="nav-link text-white" href="#" id="link-tipoevento" data-view="TipoEvento"><i class="bi bi-file-earmark-text"></i> Tipo de Evento</a></li>
-                                <li class="nav-item"><a class="nav-link text-white" href="#" id="link-ciclo" data-view="Ciclo"><i class="bi bi-hourglass"></i> Ciclo</a></li>
-                            </ul>
-                        </div>
-                    </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="bi bi-calendar-check"></i>
+                    <span>Planificación</span>
+                </a>
+            </li>
 
-                    <li class="nav-item"><a class="nav-link text-white" href="#" id="link-planificacion" data-view="Planificacion"><i class="bi bi-calendar-check"></i> Planificación</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#" id="link-registro" data-view="Registro"><i class="bi bi-person-plus"></i> Registro Participante / Facilitador</a></li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#"><i class="bi bi-clipboard-check"></i> Registro Calificaciones / Asistencias</a></li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" onclick="toggleCollapse('submenu2')">
-                            <i class="bi bi-clipboard-check"></i> Certificación <i class="bi bi-caret-down-fill arrow"></i>
-                        </a>
-                        <div class="submenu" id="submenu2" style="display: none;">
-                            <ul class="nav flex-column ms-3">
-                                <li class="nav-item"><a class="nav-link text-white" href="#"><i class="bi bi-file-earmark-text"></i> Generar Plantilla</a></li>
-                                <li class="nav-item"><a class="nav-link text-white" href="#"><i class="bi bi-file-earmark-pdf"></i> Generar Certificado</a></li>
-                            </ul>
-                        </div>
-                    </li>
-                    <li class="nav-item"><a class="nav-link text-white" href="#"><i class="bi bi-search"></i> Consultas Certificados / Eventos</a></li>
-                </ul>
-            </div>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="bi bi-person-plus"></i>
+                    <span>Registro Participante</span>
+                </a>
+            </li>
 
-            <div class="col-9 col-md-10 dynamic-content p-4" id="dynamic-content">
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="bi bi-clipboard-check"></i>
+                    <span>Registro Calificaciones</span>
+                </a>
+            </li>
 
+            <li class="nav-item">
+                <a class="nav-link text-white" onclick="toggleCollapse('submenu2')">
+                    <i class="bi bi-clipboard-check"></i> Certificación <i class="bi bi-caret-down-fill arrow"></i>
+                </a>
+                <div class="submenu" id="submenu2" style="display: none;">
+                    <ul class="nav flex-column ms-3">
+                        <li class="nav-item"><a class="nav-link text-white" href="#"><i class="bi bi-file-earmark-text"></i> Generar Plantilla</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="#"><i class="bi bi-file-earmark-pdf"></i> Generar Certificado</a></li>
+                    </ul>
+                </div>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="bi bi-search"></i>
+                    <span>Consultas</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <header class="main-header">
+        <div class="container-fluid h-100">
+            <div class="row h-100 align-items-center">
+                <div class="col">
+                    <h4 class="mb-0">VICERRECTORADO ACADÉMICO</h4>
+                    <small class="text-muted">Sistema de Certificación</small>
+                </div>
+                <div class="col-auto">
+                    <div class="user-menu dropdown">
+                        <button class="btn dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
+                            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=40" alt="Usuario" class="me-2">
+                            <span class="me-2">Ruth</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Perfil</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Configuración</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-
-</body>
-</html>
+    </header>
+    <main class="main-content fade-in">
+        <div class="col-9 col-md-10 dynamic-content p-4" id="dynamic-content"></div>
+    </main>
+    </body>
+    </html>

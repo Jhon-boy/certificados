@@ -14,15 +14,28 @@
 document.addEventListener('DOMContentLoaded', function () {
     const submenuLinks = document.querySelectorAll('.nav-link[data-view]');
 
+    const defaultView = "Inicio";
+    cargarVista(defaultView);
+
+    const defaultLink = document.getElementById('link-inicio');
+    if (defaultLink) {
+        defaultLink.classList.add('active');
+    }
+
     submenuLinks.forEach(link => {
         link.addEventListener('click', function (e) {
             e.preventDefault();
             const viewName = link.getAttribute('data-view');
+
+            submenuLinks.forEach(link => link.classList.remove('active'));
+            link.classList.add('active');
+
             cargarVista(viewName);
         });
     });
 
     function cargarVista(viewName) {
+        console.log()
         fetch(`/Dashboard/${viewName}`)
             .then(response => {
                 if (response.ok) {
@@ -36,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .catch(error => {
                 console.error('Error al cargar la vista:', error);
-                alert('Ocurrió un error al cargar el contenido. Intenta de nuevo.');
             });
     }
 });
+

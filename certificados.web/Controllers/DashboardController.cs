@@ -9,6 +9,10 @@ namespace certificados.web.Controllers
             return View("Dashboard"); 
         }
 
+        public IActionResult Inicio()
+        {
+            return PartialView("~/Views/Inicio/_Home.cshtml");
+        }
         public IActionResult Grupo()
         {
             return PartialView("~/Views/Mantenimiento/_Grupo.cshtml");

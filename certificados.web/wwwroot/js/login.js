@@ -108,7 +108,6 @@
     // Funcion para mostrar mensajes de feedback
     function showFeedback(message, type) {
         if (!feedbackDiv) {
-            console.warn('Elemento de feedback no encontrado.');
             return;
         }
 
