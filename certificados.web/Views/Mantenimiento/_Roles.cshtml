@@ -1,0 +1,63 @@
+﻿<div class="container mt-4">
+    <h2>Lista de Roles</h2>
+    <button class="btn btn-success mb-3" onclick="agregarRol('Rol')">Agregar Nuevo Rol</button>
+
+    <table id="tabla-rol" class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Nombre del Rol</th>
+                <th>Observación</th>
+                <th>Estado</th>
+                <th>Usuario Ingreso</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Aquí se cargarán los registros de roles -->
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal para agregar/editar rol -->
+<div class="modal fade" id="modal-editar-rol" tabindex="-1" aria-labelledby="modal-editar-rol-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-editar-rol-label">Agregar Nuevo Rol</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Formulario para el rol -->
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <label for="rol-nombre" class="form-label">Nombre del Rol</label>
+                        <input type="text" class="form-control" id="rol-nombre" placeholder="Ingresa el nombre del rol">
+                    </div>
+                    <div class="col-6">
+                        <label for="rol-observacion" class="form-label">Observación</label>
+                        <textarea class="form-control" id="rol-observacion" placeholder="Ingresa una descripción del rol"></textarea>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <label for="rol-estado" class="form-label">Estado</label>
+                        <select class="form-control" id="rol-estado">
+                            <option value="true">Activo</option>
+                            <option value="false">Inactivo</option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label for="rol-usuarioingreso" class="form-label">Usuario Ingreso</label>
+                        <input type="text" class="form-control" id="rol-usuarioingreso" placeholder="Usuario ingreso">
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="btn-guardar-cambios">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>

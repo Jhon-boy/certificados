@@ -13,9 +13,21 @@ namespace certificados.web.Controllers
         {
             return PartialView("~/Views/Inicio/_Home.cshtml");
         }
+        public IActionResult Personas()
+        {
+            return PartialView("~/Views/Mantenimiento/_Personas.cshtml");
+        }
+        public IActionResult Roles()
+        {
+            return PartialView("~/Views/Mantenimiento/_Roles.cshtml");
+        }
         public IActionResult Grupo()
         {
             return PartialView("~/Views/Mantenimiento/_Grupo.cshtml");
+        }
+        public IActionResult Docente()
+        {
+            return PartialView("~/Views/Mantenimiento/_Docente.cshtml");
         }
 
         public IActionResult Decanato()
@@ -27,9 +39,13 @@ namespace certificados.web.Controllers
         {
             return PartialView("~/Views/Mantenimiento/_Modalidad.cshtml");
         }
-        public IActionResult TipoEvento()
+        public IActionResult Eventos()
         {
             return PartialView("~/Views/Mantenimiento/_TipoEvento.cshtml");
+        }        
+        public IActionResult Certificados()
+        {
+            return PartialView("~/Views/Mantenimiento/_Certificados.cshtml");
         }
         public IActionResult Ciclo()
         {
