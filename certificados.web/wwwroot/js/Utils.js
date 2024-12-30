@@ -151,7 +151,7 @@ const Utils = (() => {
             toastElement.remove();
         });
     };
-    const path = 'http://localhost:5133/api';
+    const path = 'api';
     const COD_OK = 'OK';
     //Limpia el LocalStorage
     const limpiarLocalStorage = () => { 
