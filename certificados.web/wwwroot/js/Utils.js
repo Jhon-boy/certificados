@@ -90,23 +90,25 @@ const Utils = (() => {
             const response = await fetch(url, options);
             const result = await response.json();
 
-            hideLoader();  
-
-            if (result.cod === "OK") {
+            if (result.cod === Utils.COD_OK) {
                 if (showAlert) createSuccessRequest();
                 return result;
             } else {
                 const messageClient = result.message || "Ocurrió un error inesperado.";
                 const messageTech = result.data || null;
-                showErrorModal(messageClient, messageTech); 
-                throw new Error(messageClient); 
+                showErrorModal(messageClient, messageTech);
+                throw new Error(messageClient);
             }
         } catch (error) {
-            hideLoader(); 
             const messageClient = "Error en la peticion";
             const messageTech = error;
-            showErrorModal(messageClient, messageTech); 
+            showErrorModal(messageClient, messageTech);
             throw error;
+        } finally {
+            setTimeout(() => {
+                hideLoader();  
+            }, 2000)
+          
         }
     };
     /**
