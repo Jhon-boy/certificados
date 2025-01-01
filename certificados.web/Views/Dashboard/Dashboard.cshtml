@@ -41,17 +41,39 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link  text-white" href="#">
-                    <i class="bi bi-calendar-check"></i>
-                    <span>Planificación</span>
+                <a class="nav-link  text-white" onclick="toggleCollapse('submenu3')">
+                    <i class="bi bi-calendar-check"></i> Planificación <i class="bi bi-caret-down-fill arrow"></i>
                 </a>
+                <div class="submenu" id="submenu3" style="display: none;">
+                    <ul class="nav flex-column ms-3">
+                        <li class="nav-item"><a class="nav-link text-white" href="#" id="link-addplanificacion" data-view="RegistrarPlanificacion"><i class="bi bi-clipboard-check"></i> Registrar Planificación </a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="#" id="link-manatenimientoplanificacion" data-view="MantenimientoPlanificacion"><i class="bi bi-receipt"></i> Mantenimiento </a></li>
+                    </ul>
+                </div>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link  text-white" href="#">
-                    <i class="bi bi-person-plus"></i>
-                    <span>Registro Participante</span>
+                <a class="nav-link  text-white" onclick="toggleCollapse('submenu4')">
+                    <i class="bi bi-person-plus"></i> Participante <i class="bi bi-caret-down-fill arrow"></i>
                 </a>
+                <div class="submenu" id="submenu4" style="display: none;">
+                    <ul class="nav flex-column ms-3">
+                        <li class="nav-item"><a class="nav-link text-white" href="#" id="link-registrarparticipante" data-view="RegistrarParticipante"><i class="bi bi-clipboard-check"></i> Registrar Participante </a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="#" id="link-manatenimientoparticipante" data-view="MantenimientoParticipante"><i class="bi bi-receipt"></i> Mantenimiento </a></li>
+                    </ul>
+                </div>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link  text-white" onclick="toggleCollapse('submenu5')">
+                    <i class="bi bi-person-plus"></i> Facilitador <i class="bi bi-caret-down-fill arrow"></i>
+                </a>
+                <div class="submenu" id="submenu5" style="display: none;">
+                    <ul class="nav flex-column ms-3">
+                        <li class="nav-item"><a class="nav-link text-white" href="#" id="link-registrarfacilitador" data-view="RegistrarFacilitador"><i class="bi bi-clipboard-check"></i> Registrar Facilitador </a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="#" id="link-manatenimientoparticipante" data-view="MantenimientoFacilitador"><i class="bi bi-receipt"></i> Mantenimiento </a></li>
+                    </ul>
+                </div>
             </li>
 
             <li class="nav-item">
