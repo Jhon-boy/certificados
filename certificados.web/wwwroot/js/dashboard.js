@@ -1,4 +1,6 @@
-﻿function toggleCollapse(submenuId) {
+﻿let usuarioLogeado = '';
+let userInfo;
+function toggleCollapse(submenuId) {
     const submenu = document.getElementById(submenuId);
     const arrow = submenu.previousElementSibling.querySelector('.arrow');
 
@@ -11,11 +13,24 @@
     }
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-    const submenuLinks = document.querySelectorAll('.nav-link[data-view]');
-    Utils.cleanRoute();
+function logOut() {
+    Utils.backToIndex();
 
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    Utils.cleanRoute();
+    const submenuLinks = document.querySelectorAll('.nav-link[data-view]');
+    usuarioLogeado = document.getElementById("userLog");
+    userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    //No hay Información
+    if (!userInfo) {
+        Utils.backToIndex();
+    }
+    usuarioLogeado.innerHTML = `${userInfo.nombre}`;
     const defaultView = "Inicio";
+    //Cargamos la data
+    AppData.obtenerDatos();
     cargarVista(defaultView);
 
     const defaultLink = document.getElementById('link-inicio');
@@ -35,8 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    function cargarVista(viewName) {
-        console.log()
+    function cargarVista(viewName) { 
         fetch(`/Dashboard/${viewName}`)
             .then(response => {
                 if (response.ok) {

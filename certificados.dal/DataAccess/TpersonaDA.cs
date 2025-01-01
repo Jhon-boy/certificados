@@ -131,6 +131,7 @@ namespace certificados.dal.DataAccess
             try
             {
                 var listaPersonas = context.Tpersona
+                    .Where(persona => context.Tusuario.Any(usuario => usuario.Estado == estado))
             .Select(persona => new
             {
                 Cedula = persona.Cedula,
@@ -143,20 +144,29 @@ namespace certificados.dal.DataAccess
                 UsuarioIngreso = persona.UsuarioIngreso,
                 UsuarioActualizacion = persona.UsuarioActualizacion,
                 mDatos = context.Tusuario
-                    .Where(usuario => usuario.Cedula == persona.Cedula && usuario.Estado == estado)
-                    .Select(usuario => new
-                    {
-                        Email = usuario.Email,
-                        Rol = context.Trol
-                            .Where(rol => rol.IdRol == usuario.IdRol)
-                            .Select(rol => rol.Nombre)
-                            .FirstOrDefault()
-                    })
+                           .Where(usuario => usuario.Cedula == persona.Cedula)
+                           .Select(usuario => new
+                           {
+                               Email = usuario.Email,
+                               Rol = context.Tusuario
+                                    .Where(u => u.Cedula == persona.Cedula)
+                                    .Include(u => u.Trol) // Incluir la relación con Trol
+                                    .Select(u => u.Trol.Nombre)
+
+                                    .Distinct()
+                                    .ToList()
+                           })
                     .FirstOrDefault()
             })
             .ToList();
-
+                if (listaPersonas.Count > 0) { 
                 response = Utils.OkResponse(listaPersonas);
+                }
+                else
+                {
+                    response.Message = "SIN DATOS";
+                }
+                
             }
             catch (Exception ex)
             {
