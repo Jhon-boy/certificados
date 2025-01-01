@@ -38,19 +38,42 @@ const Utils = (() => {
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
+                    
                         <p><strong>Mensaje: </strong>${messageClient}</p>
                         ${messageTech ? `<p><strong>Detalle técnico: </strong>${messageTech}</p>` : ''}
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="cerrarBtn">Cerrar</button>
                     </div>
                 </div>
             </div>
         </div>`;
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = modalHTML.trim();
-        document.body.appendChild(tempDiv.firstChild);
+        const modalElement = tempDiv.firstChild
+        document.body.appendChild(modalElement);
+
+        modalElement.querySelector("#cerrarBtn").addEventListener('click', () => {
+            closeModal(modalElement);
+        });
+        modalElement.addEventListener('click', (event) => {
+            if (event.target === modalElement) {
+                closeModal(modalElement);
+            }
+        });
+        modalElement.querySelector('#cerrarBtn').addEventListener('click', () => {
+            closeModal(modalElement);
+        });
+
     };
+    const closeModal = (modalElement) => {
+        modalElement.style.display = 'none';
+        modalElement.remove();
+        const backdrop = document.querySelector('.modal-backdrop');
+        if (backdrop) {
+            backdrop.remove();
+        }
+    }
     const showErrorModal = (messageClient, messageTech) => {
         createErrorModal(messageClient, messageTech);
         const modal = new bootstrap.Modal(document.getElementById('errorModal'));
@@ -87,6 +110,7 @@ const Utils = (() => {
     const httpRequest = async (url, options = {}, showAlert = true) => {
         showLoader();  
         try {
+
             const response = await fetch(url, options);
             const result = await response.json();
 
@@ -139,7 +163,7 @@ const Utils = (() => {
                     ${message}
                      </div>
                 </center>  
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Entenido"></button>
             </div>
         </div>`;
 
@@ -180,7 +204,8 @@ const Utils = (() => {
         showToast,
         limpiarLocalStorage,
         backToIndex,
-        cleanRoute
+        cleanRoute,
+        closeModal
  
     };
 })();
