@@ -27,7 +27,7 @@
                 </a>
                 <div class="submenu" id="submenu1" style="display: none;">
                     <ul class="nav flex-column ms-3">
-                        <li class="nav-item"><a class="nav-link text-white" href="#" id="link-roles" data-view="Roles"><i class="bi bi-shield-lock"></i> Roles</a></li>
+                        <li onclick="cargarDatosRoles()" class="nav-item"><a class="nav-link text-white" href="#" id="link-roles" data-view="Roles"><i class="bi bi-shield-lock"></i> Roles</a></li>
                         <li class="nav-item"><a class="nav-link text-white" href="#" id="link-personas" data-view="Personas"><i class="bi bi-people"></i> Usuarios</a></li>
                         <li class="nav-item"><a class="nav-link text-white" href="#" id="link-grupo" data-view="Grupo"><i class="bi bi-person-lines-fill"></i> Grupo</a></li>
                         <li class="nav-item"><a class="nav-link text-white" href="#" id="link-docente" data-view="Docente"><i class="bi bi-person-video3"></i> Docentes</a></li>
@@ -158,11 +158,12 @@
             <div class="row justify-content-center">
                 <div class="col-9 col-11 dynamic-content p-4" id="dynamic-content">
                     <!-- Your dynamic content goes here -->
-                </div>
+                </div>  
             </div>
         </div>
     </main>
     <script src="~/js/Utils.js"></script>
-    <script src="~/js/dashboard.js"></script> 
+    <script src="~/js/dashboard.js"></script>
+    <script src="~/js/roles.js"></script>
 </body>
 </html>

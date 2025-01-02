@@ -29,8 +29,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     usuarioLogeado.innerHTML = `${userInfo.nombre}`;
     const defaultView = "Inicio";
-    //Cargamos la data
-    AppData.obtenerDatos();
     cargarVista(defaultView);
 
     const defaultLink = document.getElementById('link-inicio');

@@ -1,4 +1,5 @@
 ﻿async function fetchData() {
+    /*
     try {
         const response = await fetch('URL_DE_TU_API');
         const data = await response.json();
@@ -17,7 +18,7 @@
         document.getElementById('horas').value = '';
     } catch (error) {
         console.error('Error fetching data:', error);
-    }
+    }*/
 }
 
 function populateSelect(selectId, values) {

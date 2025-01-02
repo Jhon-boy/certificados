@@ -1,155 +1,94 @@
-﻿$(function () {
-    inicializarTabla('#tabla-rol');
-});
-
-function inicializarTabla(selector) {
-    $(selector).DataTable({
-        language: {
-            sProcessing: 'Procesando...',
-            sLengthMenu: 'Mostrar _MENU_ registros',
-            sZeroRecords: 'No se encontraron resultados',
-            sEmptyTable: 'Ningún dato disponible en esta tabla',
-            sInfo: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
-            sInfoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
-            sInfoFiltered: '(filtrado de un total de _MAX_ registros)',
-            sSearch: 'Buscar:',
-            sLoadingRecords: 'Cargando...',
-            oPaginate: {
-                sFirst: 'Primero',
-                sPrevious: 'Anterior',
-                sNext: 'Siguiente',
-                sLast: 'Último',
+﻿
+async function cargarDatosRoles() {
+    // Simulamos el response de la API
+    let response;
+    try {
+        const rolesResponse = await Utils.httpRequest(
+            `${Utils.path}/rol/all`,
+            {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
             },
-        },
-    });
-}
+            true);
+        setTimeout(() => {
+            response = rolesResponse;
 
-let datosRol = { roles: [] };
+            // Accedemos al cuerpo de la tabla
+            const tablaBody = document.querySelector("#tabla-rol tbody");
 
-// Obtener los datos del formulario
-function obtenerDatosFormulario(tipo) {
-    const prefijo = tipo.toLowerCase();
-    return {
-        nombre: $(`#${prefijo}-nombre`).val().trim(),
-        observacion: $(`#${prefijo}-observacion`).val().trim(),
-        estado: $(`#${prefijo}-estado`).val().trim(),
-        usuarioIngreso: $(`#${prefijo}-usuarioingreso`).val().trim(),
-    };
+            // Limpiar la tabla antes de agregar nuevos registros
+            tablaBody.innerHTML = '';
+
+            // Verificar que los datos estén presentes
+            if (response.cod === "OK" && response.data.length > 0) {
+                // Recorrer los roles y agregarlos a la tabla
+                response.data.forEach(rol => {
+                    const estadoTexto = rol.estado ? "Activo" : "Inactivo";
+                    const usuarioIngreso = rol.usuarioIngreso || "No disponible";
+
+                    const fila = `
+                <tr>
+                    <td>${rol.nombre}</td>
+                    <td>${rol.observacion}</td>
+                    <td>${estadoTexto}</td>
+                    <td>${usuarioIngreso}</td>
+                    <td>
+                        <i class="bi bi-pencil-fill text-success me-3" style="cursor: pointer;" onclick="editarRol(${rol.idRol})" data-bs-toggle="tooltip" data-bs-placement="top" title="Editar Rol"></i>
+                        <i class="bi bi-trash-fill text-danger"  style="cursor: pointer;"  onclick="eliminarRol(${rol.idRol})" data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar Rol"></i>
+
+                    </td>
+                </tr>
+            `;
+                    // Insertamos la fila en el cuerpo de la tabla
+                    tablaBody.insertAdjacentHTML("beforeend", fila);
+                });
+                Utils.showToast('DATOS CARGADOS EXITOSAMENTE', 'success');
+                const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+                    new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+
+            } else {
+                // Si no hay roles, mostrar mensaje
+                tablaBody.innerHTML = '<tr><td colspan="5" class="text-center">No se encontraron roles.</td></tr>';
+                Utils.showToast('NO EXISTEN ROLES REGISTRADOS', 'info');
+            }
+        }, 150);
+        let  userInfo = JSON.parse(localStorage.getItem('userInfo'));
+        document.getElementById("usuarioIngreso").value = `${userInfo.nombre}`;
+        habilitarValidacio();
+
+    } catch (error) {
+        Utils.showToast("Error cargando datos iniciales", 'error');
+    }
 }
+ 
+ 
+  
 
 // Agregar nuevo rol
-function agregarRol(tipo) {
-    const prefijo = tipo.toLowerCase();
-    $(`#${prefijo}-nombre, #${prefijo}-observacion, #${prefijo}-estado, #${prefijo}-usuarioingreso`).val('');
-    $('#modal-editar-rol-label').text(`Agregar Nuevo ${tipo}`);
-    $('#modal-editar-rol').modal('show');
-
-    $('#btn-guardar-cambios').off('click').on('click', () => guardarCambios(tipo));
+function agregarRol() {
+ 
 }
+function habilitarValidacio() {
 
-// Editar rol
-function editarElemento(tipo, nombre) {
-    const item = obtenerElemento(tipo, nombre);
-
-    if (item) {
-        const prefijo = tipo.toLowerCase();
-        $(`#${prefijo}-nombre`).val(item.nombre);
-        $(`#${prefijo}-observacion`).val(item.observacion);
-        $(`#${prefijo}-estado`).val(item.estado);
-        $(`#${prefijo}-usuarioingreso`).val(item.usuarioIngreso);
-        $('#modal-editar-rol-label').text(`Editar ${tipo}`);
-        $('#modal-editar-rol').modal('show');
-
-        $('#btn-guardar-cambios').off('click').on('click', () => guardarCambios(tipo, item));
-    }
-}
-
-// Obtener un elemento específico
-function obtenerElemento(tipo, nombre) {
-    return datosRol[tipo.toLowerCase()]?.find(item => item.nombre === nombre);
-}
-
-// Guardar cambios (agregar o editar)
-function guardarCambios(tipo, itemEditado = null) {
-    const { nombre, observacion, estado, usuarioIngreso } = obtenerDatosFormulario(tipo);
-
-    if (!nombre) {
-        alert(`El campo 'Nombre' es obligatorio.`);
-        return;
-    }
-
-    const dataType = tipo.toLowerCase();
-    const tableSelector = `#tabla-${dataType}`;
-    const table = $(tableSelector).DataTable();
-
-    // Asegurarse de que el array de datos está inicializado
-    if (!Array.isArray(datosRol[dataType])) {
-        datosRol[dataType] = [];
-    }
-
-    if (!itemEditado) {
-        agregarNuevoElemento(table, dataType, { nombre, observacion, estado, usuarioIngreso });
-    } else {
-        editarElementoExistente(table, dataType, itemEditado, { nombre, observacion, estado, usuarioIngreso });
-    }
-
-    $('#modal-editar-rol').modal('hide');
-}
-
-// Agregar nuevo elemento
-function agregarNuevoElemento(table, dataType, { nombre, observacion, estado, usuarioIngreso }) {
-    const nuevoElemento = { nombre, observacion, estado, usuarioIngreso };
-
-    // Asegurarse de que el array de datos está inicializado antes de usar `push`
-    if (!Array.isArray(datosRol[dataType])) {
-        datosRol[dataType] = [];
-    }
-
-    datosRol[dataType].push(nuevoElemento);
-
-    table.row.add([nombre, observacion, estado === 'true' ? 'Activo' : 'Inactivo', usuarioIngreso, generarAccionesHtml(dataType, nombre)]).draw();
-}
-
-// Editar un elemento existente
-function editarElementoExistente(table, dataType, itemEditado, { nombre, observacion, estado, usuarioIngreso }) {
-    Object.assign(itemEditado, { nombre, observacion, estado, usuarioIngreso });
-
-    table.rows().every(function () {
-        const data = this.data();
-        if (data[0] === nombre) {
-            this.data([nombre, observacion, estado === 'true' ? 'Activo' : 'Inactivo', usuarioIngreso, generarAccionesHtml(dataType, nombre)]);
-        }
-    });
-
-    table.draw();
-}
-
-// Eliminar un elemento
-function eliminarElemento(tipo, nombre) {
-    if (confirm(`¿Estás seguro de que deseas eliminar el rol: ${nombre}?`)) {
-        const dataType = tipo.toLowerCase();
-        const index = datosRol[dataType]?.findIndex(item => item.nombre === nombre);
-
-        if (index !== -1) {
-            datosRol[dataType].splice(index, 1);
-
-            const tableSelector = `#tabla-${dataType}`;
-            const table = $(tableSelector).DataTable();
-
-            table.rows().every(function () {
-                const data = this.data();
-                if (data[0] === nombre) {
-                    this.remove();
+    (() => {
+        'use strict';
+         
+        const forms = document.querySelectorAll('.needs-validation');
+         
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
                 }
-            });
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
 
-            table.draw();
-            alert(`Rol eliminado: ${nombre}`);
-        }
-    }
 }
-
-// Generar HTML para los botones de acciones (editar y eliminar)
 function generarAccionesHtml(tipo, nombre) {
     return `
         <div class="text-end">

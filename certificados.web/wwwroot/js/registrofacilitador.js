@@ -1,6 +1,6 @@
 ﻿// Funcion para cargar los grupos y tipos de registro desde las APIs
 async function cargarDatos() {
-    try {
+   /* try {
         // Llamadas paralelas a las APIs para obtener los grupos y los tipos de registro
         const [grupoResponse, tipoRegistroResponse] = await Promise.all([
             fetch('https://api.example.com/grupos'),
@@ -40,7 +40,7 @@ async function cargarDatos() {
     } catch (error) {
         console.error('Error al cargar los datos:', error);
 
-    }
+    }*/
 }
 
 // Llamar a la funcion al cargar la pagina
