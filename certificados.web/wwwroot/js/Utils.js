@@ -121,13 +121,13 @@ const Utils = (() => {
                 const messageClient = result.message || "Ocurrió un error inesperado.";
                 const messageTech = result.data || null;
                 showErrorModal(messageClient, messageTech);
-                throw new Error(messageClient);
             }
         } catch (error) {
             const messageClient = "Error en la peticion";
             const messageTech = error;
+            hideLoader();  
             showErrorModal(messageClient, messageTech);
-            throw error;
+    
         } finally {
             setTimeout(() => {
                 hideLoader();  
@@ -135,6 +135,7 @@ const Utils = (() => {
           
         }
     };
+        
     /**
      * Metodo que muestra la Notificacion 
      * @param {any} message
@@ -205,7 +206,11 @@ const Utils = (() => {
         limpiarLocalStorage,
         backToIndex,
         cleanRoute,
-        closeModal
+        closeModal,
+        postRequest,
+        showErrorModal,
+        createSuccessRequest,
+        hideLoader
  
     };
 })();
