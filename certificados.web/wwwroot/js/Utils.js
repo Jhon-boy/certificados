@@ -206,8 +206,7 @@ const Utils = (() => {
         limpiarLocalStorage,
         backToIndex,
         cleanRoute,
-        closeModal,
-        postRequest,
+        closeModal, 
         showErrorModal,
         createSuccessRequest,
         hideLoader

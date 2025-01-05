@@ -20,7 +20,7 @@ async function cargarDatosRoles() {
             tablaBody.innerHTML = '';
 
             // Verificar que los datos estén presentes
-            if (response.cod === "OK" && response.data.length > 0) {
+            if (response.cod === Utils.COD_OK && response.data.length > 0) {
                 // Recorrer los roles y agregarlos a la tabla
                 response.data.forEach(rol => {
                     const estadoTexto = rol.estado ? "Activo" : "Inactivo";
@@ -54,7 +54,7 @@ async function cargarDatosRoles() {
                 Utils.showToast('NO EXISTEN ROLES REGISTRADOS', 'info');
             }
         }, 150);
-        let  userInfo = JSON.parse(localStorage.getItem('userInfo'));
+        let userInfo = JSON.parse(localStorage.getItem('userInfo'));
         document.getElementById("usuarioIngreso").value = `${userInfo.nombre}`;
         habilitarValidacio();
 
@@ -67,9 +67,51 @@ async function cargarDatosRoles() {
   
 
 // Agregar nuevo rol
-function agregarRol() {
+async function agregarRol(event) {
+    const form = event.target.closest("form");
  
+    if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+        form.classList.add('was-validated');
+        return false; // Detener el envío
+    }
+    event.preventDefault();
+
+    let userInfoR = JSON.parse(localStorage.getItem('userInfo'));
+    const bodyRequest = {
+        Nombre: document.getElementById('rolNombre').value,
+        Estado: document.getElementById('rolEstado').value === 'true',
+        UsuarioIngreso: userInfoR.idUsuario,
+        Observacion: document.getElementById('rolDescripcion').value,
+    };
+
+
+    try {
+        const rolesResponse = await httpRequest(`${Utils.path}/rol/crear`, "POST", bodyRequest);
+
+        if (rolesResponse.cod === Utils.COD_OK) {
+            Utils.showToast('ROL REGISTRADO EXITOSAMENTE', 'success');
+            limpiarRol();
+            cargarDatosRoles();
+        } else {
+            const messageClient = rolesResponse.message || "Ocurrió un error inesperado.";
+            const messageTech = rolesResponse.data || null;
+            showErrorModal(messageClient, messageTech);
+        }
+    } catch (error) {
+        Utils.showToast("Error al agregar el rol:", 'danger');
+    }
 }
+
+
+ 
+function limpiarRol() {
+    document.getElementById('rolNombre').value = '';
+    document.getElementById('rolEstado').value = '';
+    document.getElementById('rolDescripcion').value = '';
+}
+//Validador
 function habilitarValidacio() {
 
     (() => {
@@ -95,4 +137,29 @@ function generarAccionesHtml(tipo, nombre) {
             <button class="btn btn-primary btn-sm" onclick="editarElemento('${tipo}', '${nombre}')">Editar</button>
             <button class="btn btn-danger btn-sm" onclick="eliminarElemento('${tipo}', '${nombre}')">Eliminar</button>
         </div>`;
+}
+
+async function httpRequest(url, method, body = null) {
+    Utils.showLoader();
+    try {
+        const options = {
+            method,
+            headers: {
+                "Content-Type": "application/json",
+            },
+        };
+        if (body) {
+            options.body = JSON.stringify(body);
+        }
+
+        const response = await fetch(url, options);
+
+        return await response.json(); 
+    } catch (error) {
+        const messageClient = "Error en la petición";
+        const messageTech = error.message || error;
+        Utils.showErrorModal(messageClient, messageTech);
+    } finally {
+        setTimeout(() => Utils.hideLoader(), 2000);
+    }
 }
