@@ -4,12 +4,6 @@ let idRolAEliminar = null;
 let userInfoR = JSON.parse(localStorage.getItem('userInfo'));
 
 
-// DECLARACION DE EVENTOS
-document.getElementById('confirmarEliminacionBtn').addEventListener('click', confirmarEliminacion);
-
-
-
-
 /// DECLARACION DE FUNCIONES 
 async function cargarDatosRoles() { 
     let response;
@@ -259,7 +253,7 @@ async function confirmarEditar(event) {
         Utils.showToast("Error al confirmar la edición", 'danger');
     } finally {
         const modal = new bootstrap.Modal(document.getElementById('editarRolModal'));
-        modal.show();
+        modal.hide();
     }
 }
 
