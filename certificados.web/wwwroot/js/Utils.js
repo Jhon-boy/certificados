@@ -195,6 +195,14 @@ const Utils = (() => {
         window.location.href = "/Home/Index";
         window.location.reload(true);  
     }
+    //Formatea Fechas
+    const formatFecha = (fecha) => {
+        if (!fecha || fecha.startsWith("0001")) return "Sin modificación";
+        const [year, month, day] = fecha.split("T")[0].split("-");
+        const monthNames = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+        const monthName = monthNames[parseInt(month, 10) - 1];  
+        return `${year}/${monthName}/${day}`;
+    };
 
     createLoader(); // Crea el loader al inicializar
 
@@ -209,7 +217,9 @@ const Utils = (() => {
         closeModal, 
         showErrorModal,
         createSuccessRequest,
-        hideLoader
+        hideLoader,
+        showLoader,
+        formatFecha
  
     };
 })();

@@ -1,6 +1,17 @@
-﻿
-async function cargarDatosRoles() {
-    // Simulamos el response de la API
+﻿// DECLARACION DE VARIABLES GLOBALES
+
+let idRolAEliminar = null;
+let userInfoR = JSON.parse(localStorage.getItem('userInfo'));
+
+
+// DECLARACION DE EVENTOS
+document.getElementById('confirmarEliminacionBtn').addEventListener('click', confirmarEliminacion);
+
+
+
+
+/// DECLARACION DE FUNCIONES 
+async function cargarDatosRoles() { 
     let response;
     try {
         const rolesResponse = await Utils.httpRequest(
@@ -10,36 +21,34 @@ async function cargarDatosRoles() {
                 headers: { "Content-Type": "application/json" },
             },
             true);
+        const roles = userInfoR.roles;
         setTimeout(() => {
             response = rolesResponse;
-
-            // Accedemos al cuerpo de la tabla
+             
             const tablaBody = document.querySelector("#tabla-rol tbody");
-
-            // Limpiar la tabla antes de agregar nuevos registros
+             
             tablaBody.innerHTML = '';
-
-            // Verificar que los datos estén presentes
-            if (response.cod === Utils.COD_OK && response.data.length > 0) {
-                // Recorrer los roles y agregarlos a la tabla
+             
+            if (response.cod === Utils.COD_OK && response.data.length > 0) { 
                 response.data.forEach(rol => {
                     const estadoTexto = rol.estado ? "Activo" : "Inactivo";
                     const usuarioIngreso = rol.usuarioIngreso || "No disponible";
 
+                    const rolEsEditable = !roles.includes(rol.nombre);
                     const fila = `
                 <tr>
+                    <td>${rol.idRol}</td>
                     <td>${rol.nombre}</td>
                     <td>${rol.observacion}</td>
                     <td>${estadoTexto}</td>
-                    <td>${usuarioIngreso}</td>
+                    <td>${usuarioIngreso}</td>  
                     <td>
                         <i class="bi bi-pencil-fill text-success me-3" style="cursor: pointer;" onclick="editarRol(${rol.idRol})" data-bs-toggle="tooltip" data-bs-placement="top" title="Editar Rol"></i>
-                        <i class="bi bi-trash-fill text-danger"  style="cursor: pointer;"  onclick="eliminarRol(${rol.idRol})" data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar Rol"></i>
+                        <i class="bi bi-trash-fill text-danger" style="cursor: ${rolEsEditable ? 'pointer' : 'not-allowed'};" onclick="${rolEsEditable ? `eliminarRol(${rol.idRol})` : ''}" data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar Rol" ${rolEsEditable ? '' : 'disabled'}></i>
 
                     </td>
                 </tr>
-            `;
-                    // Insertamos la fila en el cuerpo de la tabla
+            `; 
                     tablaBody.insertAdjacentHTML("beforeend", fila);
                 });
                 Utils.showToast('DATOS CARGADOS EXITOSAMENTE', 'success');
@@ -48,8 +57,7 @@ async function cargarDatosRoles() {
                     new bootstrap.Tooltip(tooltipTriggerEl);
                 });
 
-            } else {
-                // Si no hay roles, mostrar mensaje
+            } else { 
                 tablaBody.innerHTML = '<tr><td colspan="5" class="text-center">No se encontraron roles.</td></tr>';
                 Utils.showToast('NO EXISTEN ROLES REGISTRADOS', 'info');
             }
@@ -65,8 +73,7 @@ async function cargarDatosRoles() {
  
  
   
-
-// Agregar nuevo rol
+ 
 async function agregarRol(event) {
     const form = event.target.closest("form");
  
@@ -78,7 +85,6 @@ async function agregarRol(event) {
     }
     event.preventDefault();
 
-    let userInfoR = JSON.parse(localStorage.getItem('userInfo'));
     const bodyRequest = {
         Nombre: document.getElementById('rolNombre').value,
         Estado: document.getElementById('rolEstado').value === 'true',
@@ -91,13 +97,12 @@ async function agregarRol(event) {
         const rolesResponse = await httpRequest(`${Utils.path}/rol/crear`, "POST", bodyRequest);
 
         if (rolesResponse.cod === Utils.COD_OK) {
-            Utils.showToast('ROL REGISTRADO EXITOSAMENTE', 'success');
-            limpiarRol();
+            Utils.showToast('ROL REGISTRADO EXITOSAMENTE', 'info');
             cargarDatosRoles();
         } else {
             const messageClient = rolesResponse.message || "Ocurrió un error inesperado.";
             const messageTech = rolesResponse.data || null;
-            showErrorModal(messageClient, messageTech);
+            Utils.showErrorModal(messageClient, messageTech);
         }
     } catch (error) {
         Utils.showToast("Error al agregar el rol:", 'danger');
@@ -110,6 +115,14 @@ function limpiarRol() {
     document.getElementById('rolNombre').value = '';
     document.getElementById('rolEstado').value = '';
     document.getElementById('rolDescripcion').value = '';
+
+    // Obtén el formulario
+    const form = document.querySelector('.needs-validation');
+
+    if (form) {
+        // Elimina las clases relacionadas con la validación
+        form.classList.remove('was-validated');
+    }
 }
 //Validador
 function habilitarValidacio() {
@@ -139,11 +152,139 @@ function generarAccionesHtml(tipo, nombre) {
         </div>`;
 }
 
+function eliminarRol(idRol) {
+    idRolAEliminar = idRol;
+    
+    const modal = new bootstrap.Modal(document.getElementById('confirmarEliminacionModal'));
+    modal.show(); 
+}
+async function confirmarEliminacion( ) { 
+    if (!idRolAEliminar) {
+        Utils.showToast("ID de rol no válido", "danger");
+        return;
+    }
+
+    try {
+        const response = await httpRequest(`${Utils.path}/rol/eliminar`, "POST", { idRol: idRolAEliminar });
+
+        if (response && response.cod === Utils.COD_OK) {
+            Utils.showToast("Rol eliminado exitosamente", "success");
+            cargarDatosRoles();
+        } else {
+            const messageClient = response.message || "Error al eliminar el rol.";
+            const messageTech = response.data || null;
+            Utils.showErrorModal(messageClient, messageTech);
+        }
+    } catch (error) {
+        Utils.showToast("Error al realizar la eliminación", "danger");
+    } finally {
+        idRolAEliminar = null;
+        const modal = bootstrap.Modal.getInstance(document.getElementById('confirmarEliminacionModal'));
+        modal.hide();
+    }
+}
+async function editarRol(idRol) { 
+    try {
+        const rol = await obtenerRolPorId(idRol);
+
+        // Cargar los datos en el modal
+        
+        document.getElementById('rolIdEdit').value = rol.idRol;
+        document.getElementById('rolNombreEdit').value = rol.nombre;
+        document.getElementById('rolEstadoEdit').value = rol.estado ? "true" : "false";
+
+        document.getElementById('usuarioIngresoEdit').value = rol.usuarioIngreso;
+        document.getElementById('rolDescripcionEdit').value = rol.observacion;
+            
+        const modal = new bootstrap.Modal(document.getElementById('editarRolModal'));
+        modal.show();
+
+    } catch (error) {
+        console.error("Error al obtener los datos del rol:", error);
+        Utils.showToast("Error al cargar los datos del rol", 'danger');
+    }
+
+}
+async  function obtenerRolPorId(id) {
+
+    try {
+        const rolesResponse = await httpRequest(`${Utils.path}/rol/id`, "POST", { idRol: id });
+
+        if (rolesResponse.cod === Utils.COD_OK) {
+            return rolesResponse.data;
+        } else {
+            const messageClient = rolesResponse.message || "Ocurrió un error inesperado.";
+            const messageTech = rolesResponse.data || null;
+            Utils.showErrorModal(messageClient, messageTech);
+        }
+    } catch (error) {
+        Utils.showToast("Error al agregar el rol:", 'danger');
+    }
+}
+async function confirmarEditar(event) {
+
+    event.preventDefault();
+    const form = event.target; 
+    if (!form.checkValidity()) {
+        form.classList.add('was-validated'); 
+        return;  
+    }
+
+    try {
+        const idRol = document.getElementById('rolIdEdit').value;
+        const nombre = document.getElementById('rolNombreEdit').value;
+        const estado = document.getElementById('rolEstadoEdit').value;
+        const observacion = document.getElementById('rolDescripcionEdit').value;
+
+        const data = {
+            idRol: idRol,
+            Nombre: nombre,
+            Estado: estado === "true",
+            Observacion: observacion,
+            UsuarioActualizacion: userInfoR.idUsuario
+        };
+
+
+        const response = await httpRequest(`${Utils.path}/rol/modificar`, "POST", data);
+
+        if (response.cod === Utils.COD_OK) {
+            Utils.showToast("Rol actualizado con éxito", 'info');
+            cargarDatosRoles();
+        } else {
+            const messageClient = rolesResponse.message || "Ocurrió un error inesperado.";
+            const messageTech = rolesResponse.data || null;
+            Utils.showErrorModal(messageClient, messageTech);
+        }
+    } catch (error) {
+        Utils.showToast("Error al confirmar la edición", 'danger');
+    } finally {
+        const modal = new bootstrap.Modal(document.getElementById('editarRolModal'));
+        modal.show();
+    }
+}
+
+async function buscarRol() {
+    const idRol = document.getElementById('buscar-rol').value;
+    const rol = await obtenerRolPorId(idRol);
+
+
+
+    // Asignar valores a los campos
+    document.getElementById('idRolFind').value = rol.idRol || "-";
+    document.getElementById('rolNombreFind').value = rol.nombre || "-";
+    document.getElementById('estadoRolFind').value = rol.estado ? "Activo" : "Inactivo";
+    document.getElementById('usuarioIngresoFind').value = rol.usuarioIngreso;
+    document.getElementById('fechaInicio').value = Utils.formatFecha(rol.fCreacion);
+    document.getElementById('fechaActualizacion').value = Utils.formatFecha(rol.fModificacion);
+    document.getElementById('usuarioActualizacion').value = rol.usuarioActualizacion || "-";
+    document.getElementById('rolDescripcionFind').value = rol.observacion || "-";
+}
+
 async function httpRequest(url, method, body = null) {
     Utils.showLoader();
     try {
         const options = {
-            method,
+            method, 
             headers: {
                 "Content-Type": "application/json",
             },

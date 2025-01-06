@@ -78,7 +78,7 @@ namespace certificados.dal.DataAccess
 
                 if (rolExistente != null)
                 {
-                    context.Trol.Remove(rolExistente);
+                    rolExistente.Estado = false;
                     context.SaveChanges();
                     response = Utils.OkResponse(rolExistente);
                 }

@@ -3,6 +3,7 @@ using certificados.models.Entitys.dbo;
 using certificados.services.Services;
 using certificados.services.Utils;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace certificados.web.Controllers
 {
@@ -17,21 +18,50 @@ namespace certificados.web.Controllers
             this.rolService = rolService;
         }
         [HttpPost("crear")]
-        public ActionResult<ResponseApp> crearRol([FromBody] Trol dto) {
-            if (dto == null) {
-
+        public ActionResult<ResponseApp> crearRol([FromBody] Dictionary<string, object> requestBody) {
+            if (requestBody == null || !requestBody.Any())
+            {
                 return Utils.BadResponse(CONSTANTES.MESSAGE_DATA_ERRORS);
             }
-            
+            var dto = new Trol
+            {
+                Nombre = requestBody["Nombre"]?.ToString(),
+                Estado = true,
+                UsuarioIngreso = requestBody["UsuarioIngreso"]?.ToString(),
+                Observacion = requestBody["Observacion"]?.ToString(),
+            };
+
             return Ok(rolService.CrearRol(dto));
         }
         [HttpPost("modificar")]
-        public ActionResult<ResponseApp> modificarRol([FromBody] Trol dto) {
+        public ActionResult<ResponseApp> modificarRol([FromBody] Dictionary<string, JsonElement> requestBody) {
 
-            if (dto == null) {
+            if (requestBody == null || !requestBody.Any())
+            {
                 return Utils.BadResponse(CONSTANTES.MESSAGE_DATA_ERRORS);
             }
+            var dto = new Trol
+            {
+                IdRol = int.Parse(requestBody["idRol"].ToString()),
+                Nombre = requestBody["Nombre"].GetString(),
+                Estado = requestBody["Estado"].ToString().ToLower() == "true",
+                UsuarioActualizacion = requestBody["UsuarioActualizacion"].ToString(),
+                Observacion = requestBody["Observacion"].ToString(), 
+            };
             return Ok(rolService.ModificarRol(dto));
+        }
+
+        [HttpPost("eliminar")]
+        public ActionResult<ResponseApp> eliminarRol([FromBody] Dictionary<string, object> requestBody)
+        {
+            if (!requestBody.TryGetValue("idRol", out var idRolObj) ||
+             idRolObj == null ||
+             !int.TryParse(idRolObj.ToString(), out int idRol))
+                {
+                    return BadRequest(Utils.BadResponse("FALTA PARAMETROS"));
+                }
+
+            return Ok(rolService.EliminarRol(idRol));
         }
 
         [HttpGet("all")]
