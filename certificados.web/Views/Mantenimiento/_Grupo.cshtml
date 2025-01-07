@@ -1,36 +1,102 @@
-﻿<div class="modal fade" id="modal-editar" tabindex="-1" aria-labelledby="modal-editar-label" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modal-editar-label">Agregar Nuevo Grupo</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label for="grupo-nombre" class="form-label">Nombre del Grupo</label>
-                    <input type="text" class="form-control" id="grupo-nombre" placeholder="Ingresa el nombre del grupo">
+﻿<div class="container mt-4">
+    <!-- Tabs para el formulario y la tabla -->
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link text-dark active" id="tabla-tab" data-bs-toggle="tab" href="#tabla" role="tab" aria-controls="tabla" aria-selected="true">Listar Grupos</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link text-dark" id="formulario-tab" data-bs-toggle="tab" href="#formulario" role="tab" aria-controls="formulario" aria-selected="false">Agregar Grupo</a>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="myTabContent">
+        <br />
+        <!-- Contenido de la pestaña de la tabla -->
+        <div class="tab-pane fade show active m-1" id="tabla" role="tabpanel" aria-labelledby="tabla-tab">
+            <table id="tabla-grupo" class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID Grupo</th>
+                        <th>Nombre del Grupo</th>
+                        <th>Cantidad</th>
+                        <th>Usuario Ingreso</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Aquí se mostrarán los datos de los grupos -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Contenido de la pestaña del formulario -->
+        <div class="tab-pane fade" id="formulario" role="tabpanel" aria-labelledby="formulario-tab">
+            <!-- Formulario de Agregar Grupo -->
+            <form id="form-grupo" class="border border-2 p-4 rounded" onsubmit="return handleAgregarGrupo(event)">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="grupo-nombre" class="form-label">Nombre del Grupo</label>
+                        <input type="text" class="form-control" id="grupo-nombre" name="grupo-nombre" placeholder="Ingresa el nombre del grupo" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="grupo-cantidad" class="form-label">Cantidad</label>
+                        <input type="number" class="form-control" id="grupo-cantidad" name="grupo-cantidad" placeholder="Ingresa la cantidad" required>
+                    </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary" id="btn-guardar-cambios">Guardar</button>
-            </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="grupo-usuario" class="form-label">Usuario Ingreso</label>
+                        <input type="text" class="form-control" id="grupo-usuario" name="grupo-usuario" placeholder="Ingresa el usuario que registró el grupo" disabled required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <input type="hidden" id="grupo-id" name="grupo-id">
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="btn btn-primary mx-2">Guardar</button>
+                    <button type="button" class="btn btn-secondary mx-2" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
-<div class="container mt-4">
-    <h2>Lista de Grupos</h2>
-    <button class="btn btn-success mb-3" onclick="agregarElemento('Grupo')">Agregar Nuevo Grupo</button>
-
-    <table id="tabla-grupo" class="table table-striped table-bordered">
-        <thead>
-            <tr>
-                <th>Nombre del Grupo</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-        </tbody>
-    </table>
+<!-- Modal de edición con formulario -->
+<div class="modal fade" id="modal-editar" tabindex="-1" aria-labelledby="modal-editar-label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-editar-label">Editar Grupo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Formulario de Edición del Grupo -->
+                <form id="form-editar-grupo" class="border border-2 p-4 rounded" onsubmit="return handleEditarGrupo(event)">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="grupo-nombre-editar" class="form-label">Nombre del Grupo</label>
+                            <input type="text" class="form-control" id="grupo-nombre-editar" name="grupo-nombre-editar" placeholder="Ingresa el nombre del grupo" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="grupo-cantidad-editar" class="form-label">Cantidad</label>
+                            <input type="number" class="form-control" id="grupo-cantidad-editar" name="grupo-cantidad-editar" placeholder="Ingresa la cantidad" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="grupo-usuario-editar" class="form-label">Usuario Ingreso</label>
+                            <input type="text" class="form-control" id="grupo-usuario-editar" name="grupo-usuario-editar" placeholder="Ingresa el usuario que registró el grupo" disabled required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <input type="hidden" id="grupo-id-editar" name="grupo-id-editar">
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" class="btn btn-primary mx-2">Guardar Cambios</button>
+                        <button type="button" class="btn btn-secondary mx-2" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>

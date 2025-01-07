@@ -3,11 +3,12 @@ using certificados.models.Entitys.dbo;
 using certificados.services.Services;
 using certificados.services.Utils;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace certificados.web.Controllers
 {
     [ApiController]
-    [Route("api/grupo")]
+    [Route("api/grupo/")]
     public class GrupoController : Controller
     {
         private readonly GrupoService grupoPersonaService;
@@ -22,27 +23,50 @@ namespace certificados.web.Controllers
 
             return Ok(grupoPersonaService.ListarGrupos());
         }
+
         [HttpPost("crear")]
-        public ActionResult<ResponseApp> CrearGrupoPersona([FromBody] Tgrupo tgrupo)
+        public ActionResult<ResponseApp> CrearGrupoPersona([FromBody] Dictionary<string, object> requestBody)
         {
-            if (tgrupo == null)
+            if (requestBody == null || !requestBody.Any())
             {
-
-                return Utils.BadResponse("FALTA PARAMETROS");
+                return Utils.BadResponse(CONSTANTES.MESSAGE_DATA_ERRORS);
             }
 
-            return Ok(grupoPersonaService.InsertarGrupo(tgrupo));
+            var jsonNombre = (JsonElement)requestBody["Nombre"];
+            var jsonCantidad = (JsonElement)requestBody["Cantidad"];
+            var jsonUsuarioIngreso = (JsonElement)requestBody["UsuarioIngreso"];
+
+            var dto = new Tgrupo
+            {
+                Nombre = jsonNombre.GetString(),
+                Cantidad = jsonCantidad.GetInt32(),
+                UsuarioIngreso = jsonUsuarioIngreso.ValueKind == JsonValueKind.Number ? jsonUsuarioIngreso.GetInt32().ToString() : jsonUsuarioIngreso.GetString(),
+            };
+
+            return Ok(grupoPersonaService.InsertarGrupo(dto));
         }
+
         [HttpPost("modificar")]
-        public ActionResult<ResponseApp> ModificarGrupo([FromBody] Tgrupo tgrupo)
+        public ActionResult<ResponseApp> ModificarGrupo([FromBody] Dictionary<string, JsonElement> requestBody)
         {
-            if (tgrupo == null)
+            if (requestBody == null || !requestBody.Any())
             {
-
-                return Utils.BadResponse("FALTA PARAMETROS");
+                return Utils.BadResponse(CONSTANTES.MESSAGE_DATA_ERRORS);
             }
+            var jsonIdGrupo = (JsonElement)requestBody["idGrupo"];
+            var jsonNombre = (JsonElement)requestBody["Nombre"];
+            var jsonCantidad = (JsonElement)requestBody["Cantidad"];
+            var jsonUsuarioActualizacion = (JsonElement)requestBody["UsuarioActualizacion"];
 
-            return Ok(grupoPersonaService.ModificarGrupo(tgrupo));
+            var dto = new Tgrupo
+            {
+                IdGrupo = int.Parse(jsonIdGrupo.ToString()),
+                Nombre = jsonNombre.GetString(),
+                Cantidad = jsonCantidad.GetInt32(),
+                UsuarioActualizacion = jsonUsuarioActualizacion.ValueKind == JsonValueKind.Number ? jsonUsuarioActualizacion.GetInt32().ToString() : jsonUsuarioActualizacion.GetString(),
+            };
+
+            return Ok(grupoPersonaService.ModificarGrupo(dto));
         }
 
         [HttpPost("id")]
