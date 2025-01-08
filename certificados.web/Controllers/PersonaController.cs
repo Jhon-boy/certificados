@@ -12,7 +12,6 @@ namespace certificados.web.Controllers
     /**
      * Controlador dedicado la entidad de TPERSONA
      */
-    [ApiController]
     [Route("api/personas")]
     public class PersonaController : Controller
     {
@@ -159,6 +158,16 @@ namespace certificados.web.Controllers
                 return BadRequest(Utils.BadResponse(CONSTANTES.MESSAGE_DATA_ERRORS));
             }
             return Ok(personaService.ObtenerPersona(cedula.ToString()));
+        }
+        [HttpPost("eliminar")]
+        public ActionResult<ResponseApp> Eliminarersonas([FromBody] Dictionary<string, object> requestBody)
+        {
+
+            if (!requestBody.TryGetValue("cedula", out var cedula))
+            {
+                return BadRequest(Utils.BadResponse(CONSTANTES.MESSAGE_DATA_ERRORS));
+            }
+            return personaService.ELiminarPersona(cedula.ToString());
         }
     }
 }

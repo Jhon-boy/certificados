@@ -1,4 +1,168 @@
-﻿<div class="modal fade" id="modal-editar-persona" tabindex="-1" aria-labelledby="modal-editar-persona-label" aria-hidden="true">
+﻿@section Scripts {
+    <script src="~/js/personas.js"></script>
+}
+
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active text-dark" id="home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Ver Usuarios</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link text-dark" id="add-tab" data-bs-toggle="tab" data-bs-target="#nav-add" type="button" role="tab" aria-controls="nav-add" aria-selected="false">Agregar Usuario</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link text-dark" id="search-tab" data-bs-toggle="tab" data-bs-target="#nav-search" type="button" role="tab" aria-controls="nav-search" aria-selected="false">Buscar Usuario</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link text-dark" id="add-m-tab" data-bs-toggle="tab" data-bs-target="#nav-add-m" type="button" role="tab" aria-controls="nav-add-m" aria-selected="false">Agregar Usuario Masivo</button>
+    </li>
+</ul>
+
+<div class="tab-content" id="nav-tabContent">
+
+    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+
+        <div class="container mt-4">
+
+            <table id="tabla-persona" class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Cédula</th>
+                        <th>Nombres</th> 
+                        <th>Edad</th>
+                        <th>Género</th>
+                        <th>Email</th>
+                        <th>Rol</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Aquí se cargarán los registros de personas -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- TAB para AGREGAR -->
+    <div class="tab-pane fade" id="nav-add" role="tabpanel" aria-labelledby="add-tab" tabindex="0">
+        <div class=" card mx-2 p4 container mt-4">
+            <form id="personaForm" class="needs-validation px-3 py-3" novalidate onsubmit="return savePersona(event)">
+                <div class="row">
+                    <!-- Primera fila: Cédula, Edad, Género -->
+                    <div class="col-md-4 mb-3 position-relative">
+                        <label for="cedula" class="form-label">Cédula</label>
+                        <input  pattern="[0-9]{10}" maxlength="10" type="text" id="cedula" class="form-control" placeholder="Ingrese la cédula" required>
+                        <div class="invalid-tooltip">Escribe la cédula</div>
+                    </div>
+                    <div class="col-md-4 mb-3 position-relative">
+                        <label for="edad" class="form-label">Edad</label>
+                        <input min="0" max="120" type="number" id="edad" class="form-control" placeholder="Ingrese la edad" required>
+                        <div class="invalid-tooltip">Escribe la edad</div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="genero" class="form-label">Género</label>
+                        <select id="genero" class="form-select" required>
+                            <option value="M">Masculino</option>
+                            <option value="F">Femenino</option>
+                        </select>
+                        <div class="invalid-tooltip">Selecciona un género</div>
+                    </div>
+                </div>
+
+                <!-- Segunda fila: Nombres, Apellidos -->
+                <div class="row">
+                    <div class="col-md-6 mb-3 position-relative">
+                        <label for="nombres" class="form-label">Nombres</label>
+                        <input maxlength="35 type=" text" id="nombres" class="form-control" placeholder="Ingrese los nombres" required>
+                        <div class="invalid-tooltip">Escribe los nombres</div>
+                    </div>
+                    <div class="col-md-6 mb-3 position-relative">
+                        <label for="apellidos" class="form-label">Apellidos</label>
+                        <input maxlength="35 type="text" id="apellidos" class="form-control" placeholder="Ingrese los apellidos" required>
+                        <div class="invalid-tooltip">Escribe los apellidos</div>
+                    </div>
+                </div>
+
+                <!-- Tercera fila: Email, Contraseña, Rol -->
+                <div class="row">
+                    <div class="col-md-4 mb-3 position-relative">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" id="email" class="form-control" placeholder="Ingrese el email" required>
+                        <div class="invalid-tooltip">Selecciona un email</div>
+                    </div>
+                    <div class="col-md-4 mb-3 position-relative">
+                        <label for="clave" class="form-label">Asignacion automatica Contraseña</label>
+                        <input type="text" id="clave" class="form-control" placeholder="Ingrese la contraseña" disabled>
+                    </div>
+                    <div class="col-md-4 mb-3 position-relative">
+                        <label for="idRol" class="form-label">Rol</label>
+                        <select id="idRol" class="form-select" required>
+                            <option value="">Seleccione un rol</option>
+                        </select>
+                        <div class="invalid-tooltip">Selecciona un rol</div>
+                    </div>
+                </div>
+
+                <!-- Campo oculto: Usuario Ingreso -->
+                <div class="row">
+                    <div class="col-md-3 position-relative" style="display: none;">
+                        <label for="usuarioIngreso" class="form-label">Usuario Ingreso</label>
+                        <input type="text" class="form-control" id="usuarioIngreso" disabled>
+                    </div>
+                </div>
+
+                <!-- Botones -->
+                <div class="col-12 d-flex mb-2 justify-content-center">
+                    <button type="submit" class="btn btn-primary me-3">Guardar</button>
+                    <button class="btn btn-danger" type="button" onclick="resetPersonaForm()">Cancelar</button>
+                </div>
+            </form>
+
+        </div>
+
+    </div>
+
+    <div class="tab-pane fade" id="nav-search" role="tabpanel" aria-labelledby="search-tab" tabindex="0">
+       <center>
+            <div class="p-3 w-50 my-2 bg-white shadow-sm">
+                <label for="buscar-rol" class="form-label ">
+                    Buscar por ID del Rol
+                </label>
+                <div class="input-group my-2">
+                    <input type="text" id="buscar-rol" class="form-control form-control-sm" placeholder="Ingresa el ID del rol" required>
+                    <button class="btn btn-primary" type="button" onclick="buscarRol()">  Buscar  </button>
+                </div>
+            </div>
+       </center>
+    </div>
+    <div class="tab-pane fade" id="nav-add-m" role="tabpanel" aria-labelledby="add-m-tab" tabindex="0">
+       <div class="card">
+            <div class="input-group">
+                <input type="file" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
+                <button class="btn btn-outline-secondary" type="button" id="inputGroupFileAddon04">Button</button>
+            </div>
+       </div>
+    </div>
+
+</div>
+<!--Modal para Eliminar Persona-->
+<div class="modal fade" id="confirmarEliminacionModal" tabindex="-1" aria-labelledby="confirmarEliminacionLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmarEliminacionLabel">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Está seguro que desea eliminar este usuario?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" onclick="confirmarEliminacionPersona()">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modal-editar-persona" tabindex="-1" aria-labelledby="modal-editar-persona-label" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -66,25 +230,4 @@
     </div>
 </div>
 
-<div class="container mt-4">
-    <h2>Lista de Personas</h2>
-    <button class="btn btn-success mb-3" onclick="agregarPersona('Persona')">Agregar Nueva Persona</button>
-
-    <table id="tabla-persona" class="table table-striped table-bordered">
-        <thead>
-            <tr>
-                <th>Cédula</th>
-                <th>Nombres</th>
-                <th>Apellidos</th>
-                <th>Edad</th>
-                <th>Género</th>
-                <th>Email</th>
-                <th>Rol</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Aquí se cargarán los registros de personas -->
-        </tbody>
-    </table>
-</div>
+<script src="~/js/personas.js" asp-append-version="true"></script>

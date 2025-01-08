@@ -70,7 +70,7 @@ namespace certificados.dal.DataAccess
                         usuarioExiste.FModificacion = Utils.timeParsed(DateTime.Now);
                         usuarioExiste.UsuarioActualizacion = usuario.UsuarioActualizacion;
                         // Guardar los cambios
-                        context.SaveChanges(); 
+                        context.SaveChanges();
                         transaction.Commit();
 
                         // Retornar respuesta exitosa
@@ -159,14 +159,14 @@ namespace certificados.dal.DataAccess
                     .FirstOrDefault()
             })
             .ToList();
-                if (listaPersonas.Count > 0) { 
-                response = Utils.OkResponse(listaPersonas);
+                if (listaPersonas.Count > 0) {
+                    response = Utils.OkResponse(listaPersonas);
                 }
                 else
                 {
                     response.Message = "SIN DATOS";
                 }
-                
+
             }
             catch (Exception ex)
             {
@@ -212,6 +212,46 @@ namespace certificados.dal.DataAccess
                                     .ToList()
                            })
                    .FirstOrDefault()
+                    };
+
+                    // Retornar respuesta exitosa
+                    response = Utils.OkResponse(personaCompleta);
+                }
+                else
+                {
+                    // Si la persona no existe
+                    response = Utils.BadResponse("PERSONA NO EXISTE");
+                }
+            }
+            catch (Exception ex)
+            {
+                response = Utils.BadResponse($"ERROR AL BUSCAR PERSONA: {ex.Message}");
+                throw new Exception($"ERROR AL BUSCAR PERSONA: {ex.Message}");
+            }
+            return response;
+        }
+        public ResponseApp BuscarPersonaEntidad(string cedula)
+        {
+            ResponseApp response = Utils.BadResponse(null);
+            try
+            {
+                // Buscar la persona por su cédula
+                var persona = context.Tpersona.FirstOrDefault(p => p.Cedula == cedula);
+
+                if (persona != null)
+                {
+
+                    var personaCompleta = new
+                    {
+                        Cedula = persona.Cedula,
+                        Nombres = persona.Nombres,
+                        Apellidos = persona.Apellidos,
+                        Edad = persona.Edad,
+                        Genero = persona.Genero,
+                        FechaCreacion = persona.FechaCreacion,
+                        FechaModificacion = persona.FechaModificacion,
+                        UsuarioIngreso = persona.UsuarioIngreso,
+                        UsuarioActualizacion = persona.UsuarioActualizacion,
                     };
 
                     // Retornar respuesta exitosa

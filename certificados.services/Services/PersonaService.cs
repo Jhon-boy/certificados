@@ -57,21 +57,20 @@ namespace certificados.services.Services
             ResponseApp response = Utils.Utils.BadResponse(null);
             try
             {
-                var buscarUsuario = personaDataAcces.BuscarPersona(cedula);
+                var buscarUsuario = personaDataAcces.BuscarPersonaEntidad(cedula);
                 if (!buscarUsuario.Cod.Equals(CONSTANTES.COD_OK))
                 {
                     return buscarUsuario;
                 }
-                if (buscarUsuario.Data is Tpersona persona)
-                {
-                 Tpersona personaResponse = buscarUsuario.Data as Tpersona;
-                var eliminarUsuario = usuarioService.EliminarUsuario(personaResponse.Cedula);
-                if (!eliminarUsuario.Cod.Equals(CONSTANTES.COD_OK))
-                {
-                    response.Message = "ERROR AL ELIMINAR USUARIO";
-                    return response;  
-                }
-                response =  personaDataAcces.EliminarPersona(cedula);
+                if (buscarUsuario.Data !=null) {
+                     Tpersona personaResponse = buscarUsuario.Data as Tpersona;
+                    var eliminarUsuario = usuarioService.EliminarUsuario(personaResponse.Cedula);
+                    if (!eliminarUsuario.Cod.Equals(CONSTANTES.COD_OK))
+                    {
+                        response.Message = "ERROR AL ELIMINAR USUARIO";
+                        return response;  
+                    }
+                        response = eliminarUsuario;
                 }
                 else {
                     response.Message = "LA PERSONA NO ES VÁLIDA O NO SE ENCONTRÓ";
