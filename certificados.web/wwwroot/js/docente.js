@@ -1,165 +1,243 @@
-﻿$(function () {
-    inicializarTabla('#tabla-docente');
-});
-
-function inicializarTabla(selector) {
-    $(selector).DataTable({
-        language: {
-            sProcessing: 'Procesando...',
-            sLengthMenu: 'Mostrar _MENU_ registros',
-            sZeroRecords: 'No se encontraron resultados',
-            sEmptyTable: 'Ningún dato disponible en esta tabla',
-            sInfo: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
-            sInfoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
-            sInfoFiltered: '(filtrado de un total de _MAX_ registros)',
-            sSearch: 'Buscar:',
-            sLoadingRecords: 'Cargando...',
-            oPaginate: {
-                sFirst: 'Primero',
-                sPrevious: 'Anterior',
-                sNext: 'Siguiente',
-                sLast: 'Último',
+﻿// Función para cargar datos de docentes
+async function cargarDatosDocentes() {
+    try {
+        const response = await Utils.httpRequest(
+            `${Utils.path}/docente/all`,
+            {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
             },
-        },
-    });
-}
+            true
+        );
 
-let datosDocente = { docentes: [] };
+        setTimeout(() => {
+            const tablaBody = document.querySelector("#tabla-docente tbody");
+            tablaBody.innerHTML = '';
 
-// Obtener los datos del formulario
-function obtenerDatosFormulario(tipo) {
-    const prefijo = tipo.toLowerCase();
-    return {
-        codigo: $(`#${prefijo}-codigo`).val().trim(),
-        cedula: $(`#${prefijo}-cedula`).val().trim(),
-        titulo: $(`#${prefijo}-titulo`).val().trim(),
-        facultad: $(`#${prefijo}-facultad`).val().trim(),
-        carrera: $(`#${prefijo}-carrera`).val().trim(),
-        estado: $(`#${prefijo}-estado`).val().trim(),
-        usuarioIngreso: $(`#${prefijo}-usuarioingreso`).val().trim(),
-    };
-}
+            if (response.cod === Utils.COD_OK && response.data.length > 0) {
+                response.data.forEach(docente => {
+                    const fila = `
+                        <tr>
+                            <td>${docente.codigoDocente}</td>
+                            <td>${docente.cedula}</td>
+                            <td>${docente.titulo}</td>
+                            <td>${docente.facultad}</td>
+                            <td>${docente.carrera}</td>
+                            <td>${docente.idEstado === 2 ? 'Activo' : 'Inactivo'}</td>
+                            <td>${docente.usuarioIngreso || 'No disponible'}</td>
+                            <td>
+                                <i class="bi bi-pencil-fill text-success me-3" 
+                                   style="cursor: pointer;" 
+                                   onclick="editarDocente('${docente.codigoDocente}')" 
+                                   data-bs-toggle="tooltip" 
+                                   data-bs-placement="top" 
+                                   title="Editar Docente"></i>
+                                <i class="bi bi-trash-fill text-danger" 
+                                   style="cursor: pointer;" 
+                                   onclick="eliminarDocente('${docente.codigoDocente}')" 
+                                   data-bs-toggle="tooltip" 
+                                   data-bs-placement="top" 
+                                   title="Eliminar Docente"></i>
+                            </td>
+                        </tr>
+                    `;
+                    tablaBody.insertAdjacentHTML("beforeend", fila);
+                });
 
-// Agregar nuevo docente
-function agregarDocente() {
-    const prefijo = "docente";
-    $(`#${prefijo}-codigo, #${prefijo}-cedula, #${prefijo}-titulo, #${prefijo}-facultad, #${prefijo}-carrera, #${prefijo}-estado, #${prefijo}-usuarioingreso`).val('');
-    $('#modal-editar-docente-label').text('Agregar Nuevo Docente');
-    $('#modal-editar-docente').modal('show');
+                // Establecer usuario actual en el formulario
+                document.getElementById("docente-usuarioingreso").value = userInfo.nombre;
 
-    $('#btn-guardar-cambios').off('click').on('click', () => guardarCambios('Docente'));
-}
+                Utils.showToast('DATOS CARGADOS EXITOSAMENTE', 'success');
 
-// Editar docente
-function editarElemento(tipo, codigo) {
-    const item = obtenerElemento(tipo, codigo);
+                // Inicializar tooltips
+                const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+                    new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+            } else {
+                tablaBody.innerHTML = '<tr><td colspan="8" class="text-center">No se encontraron docentes.</td></tr>';
+                Utils.showToast('NO EXISTEN DOCENTES REGISTRADOS', 'info');
+            }
+        }, 150);
 
-    if (item) {
-        const prefijo = tipo.toLowerCase();
-        $(`#${prefijo}-codigo`).val(item.codigo);
-        $(`#${prefijo}-cedula`).val(item.cedula);
-        $(`#${prefijo}-titulo`).val(item.titulo);
-        $(`#${prefijo}-facultad`).val(item.facultad);
-        $(`#${prefijo}-carrera`).val(item.carrera);
-        $(`#${prefijo}-estado`).val(item.estado);
-        $(`#${prefijo}-usuarioingreso`).val(item.usuarioIngreso);
-        $('#modal-editar-docente-label').text(`Editar Docente`);
-        $('#modal-editar-docente').modal('show');
-
-        $('#btn-guardar-cambios').off('click').on('click', () => guardarCambios(tipo, item));
+    } catch (error) {
+        Utils.showToast("Error cargando datos iniciales", 'error');
     }
 }
 
-// Obtener un elemento específico
-function obtenerElemento(tipo, codigo) {
-    return datosDocente[tipo.toLowerCase()]?.find(item => item.codigo === codigo);
+// Manejador para crear nuevo docente
+async function handleAgregarDocente(event) {
+    const form = event.target.closest("form");
+
+    if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+        form.classList.add('was-validated');
+        return false;
+    }
+    event.preventDefault();
+
+    const bodyRequest = {
+        codigoDocente: document.getElementById('docente-codigo').value,
+        cedula: document.getElementById('docente-cedula').value,
+        titulo: document.getElementById('docente-titulo').value,
+        facultad: document.getElementById('docente-facultad').value,
+        carrera: document.getElementById('docente-carrera').value,
+        estado: parseInt(document.getElementById('docente-estado').value),
+        usuarioIngreso: userInfo.idUsuario
+    };
+
+    try {
+        const response = await Utils.httpRequest(
+            `${Utils.path}/docente/crear`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(bodyRequest)
+            },
+            true
+        );
+
+        if (response.cod === Utils.COD_OK) {
+            Utils.showToast('DOCENTE REGISTRADO EXITOSAMENTE', 'info');
+            cargarDatosDocentes();
+            form.reset();
+            form.classList.remove('was-validated');
+
+            // Cambiar a la pestaña de la tabla
+            const tablaTab = document.querySelector('#tabla-tab');
+            const tab = new bootstrap.Tab(tablaTab);
+            tab.show();
+        } else {
+            const messageClient = response.message || "Ocurrió un error inesperado.";
+            const messageTech = response.data || null;
+            Utils.showErrorModal(messageClient, messageTech);
+        }
+    } catch (error) {
+        Utils.showToast("Error al agregar el docente", 'danger');
+    }
 }
 
-// Guardar cambios (agregar o editar)
-function guardarCambios(tipo, itemEditado = null) {
-    const { codigo, cedula, titulo, facultad, carrera, estado, usuarioIngreso } = obtenerDatosFormulario(tipo);
+// Función para editar docente
+async function editarDocente(id) {
+    try {
+        const response = await Utils.httpRequest(
+            `${Utils.path}/docente/id`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ codigoDocente: id })
+            },
+            true
+        );
 
-    if (!codigo || !cedula || !titulo) {
-        alert(`Los campos 'Código Docente', 'Cédula' y 'Título' son obligatorios.`);
+        if (response.cod === Utils.COD_OK) {
+            const docente = response.data;
+            document.getElementById('docente-id-editar').value = docente.id;
+            document.getElementById('docente-codigo-editar').value = docente.codigoDocente;
+            document.getElementById('docente-cedula-editar').value = docente.cedula;
+            document.getElementById('docente-titulo-editar').value = docente.titulo;
+            document.getElementById('docente-facultad-editar').value = docente.facultad;
+            document.getElementById('docente-carrera-editar').value = docente.carrera;
+            document.getElementById('docente-estado-editar').value = docente.idEstado;
+            document.getElementById('docente-usuarioingreso-editar').value = docente.usuarioIngreso;
+
+            const modal = new bootstrap.Modal(document.getElementById('modal-editar-docente'));
+            modal.show();
+        } else {
+            Utils.showToast("Error al cargar datos del docente", 'danger');
+        }
+    } catch (error) {
+        Utils.showToast("Error al obtener los datos del docente", 'danger');
+    }
+}
+
+// Manejador para guardar edición
+async function handleEditarDocente(event) {
+    const form = event.target.closest("form");
+
+    if (!form.checkValidity()) {
+        form.classList.add('was-validated');
         return;
     }
+    event.preventDefault();
 
-    const dataType = tipo.toLowerCase();
-    const tableSelector = `#tabla-${dataType}`;
-    const table = $(tableSelector).DataTable();
+    const bodyRequest = {
+        idDocente: document.getElementById('docente-id-editar').value,
+        codigoDocente: document.getElementById('docente-codigo-editar').value,
+        cedula: document.getElementById('docente-cedula-editar').value,
+        titulo: document.getElementById('docente-titulo-editar').value,
+        facultad: document.getElementById('docente-facultad-editar').value,
+        carrera: document.getElementById('docente-carrera-editar').value,
+        estado: parseInt(document.getElementById('docente-estado-editar').value),
+        usuarioActualizacion: userInfo.idUsuario
+    };
 
-    // Asegurarse de que el array de datos está inicializado
-    if (!Array.isArray(datosDocente[dataType])) {
-        datosDocente[dataType] = [];
-    }
+    try {
+        const response = await Utils.httpRequest(
+            `${Utils.path}/docente/modificar`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(bodyRequest)
+            },
+            true
+        );
 
-    if (!itemEditado) {
-        agregarNuevoElemento(table, dataType, { codigo, cedula, titulo, facultad, carrera, estado, usuarioIngreso });
-    } else {
-        editarElementoExistente(table, dataType, itemEditado, { codigo, cedula, titulo, facultad, carrera, estado, usuarioIngreso });
-    }
-
-    $('#modal-editar-docente').modal('hide');
-}
-
-// Agregar nuevo elemento
-function agregarNuevoElemento(table, dataType, { codigo, cedula, titulo, facultad, carrera, estado, usuarioIngreso }) {
-    const nuevoElemento = { codigo, cedula, titulo, facultad, carrera, estado, usuarioIngreso };
-
-    // Asegurarse de que el array de datos está inicializado antes de usar `push`
-    if (!Array.isArray(datosDocente[dataType])) {
-        datosDocente[dataType] = [];
-    }
-
-    datosDocente[dataType].push(nuevoElemento);
-
-    table.row.add([codigo, cedula, titulo, facultad, carrera, estado === '1' ? 'Activo' : 'Inactivo', usuarioIngreso, generarAccionesHtml(dataType, codigo)]).draw();
-}
-
-// Editar un elemento existente
-function editarElementoExistente(table, dataType, itemEditado, { codigo, cedula, titulo, facultad, carrera, estado, usuarioIngreso }) {
-    Object.assign(itemEditado, { codigo, cedula, titulo, facultad, carrera, estado, usuarioIngreso });
-
-    table.rows().every(function () {
-        const data = this.data();
-        if (data[0] === codigo) {
-            this.data([codigo, cedula, titulo, facultad, carrera, estado === '1' ? 'Activo' : 'Inactivo', usuarioIngreso, generarAccionesHtml(dataType, codigo)]);
+        if (response.cod === Utils.COD_OK) {
+            Utils.showToast("Docente actualizado exitosamente", 'info');
+            cargarDatosDocentes();
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modal-editar-docente'));
+            modal.hide();
+        } else {
+            const messageClient = response.message || "Ocurrió un error inesperado.";
+            const messageTech = response.data || null;
+            Utils.showErrorModal(messageClient, messageTech);
         }
+    } catch (error) {
+        Utils.showToast("Error al actualizar el docente", 'danger');
+    }
+}
+
+// Función para eliminar docente
+async function eliminarDocente(id) {
+    if (!confirm('¿Está seguro que desea eliminar este docente?')) return;
+
+    try {
+        const response = await Utils.httpRequest(
+            `${Utils.path}/docente/eliminar`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ idDocente: id })
+            },
+            true
+        );
+
+        if (response.cod === Utils.COD_OK) {
+            Utils.showToast("Docente eliminado exitosamente", 'success');
+            cargarDatosDocentes();
+        } else {
+            const messageClient = response.message || "Error al eliminar el docente.";
+            const messageTech = response.data || null;
+            Utils.showErrorModal(messageClient, messageTech);
+        }
+    } catch (error) {
+        Utils.showToast("Error al eliminar el docente", 'danger');
+    }
+}
+
+// Función para habilitar validación
+function habilitarValidacion() {
+    'use strict';
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+        form.addEventListener('submit', event => {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
     });
-
-    table.draw();
-}
-
-// Eliminar un elemento
-function eliminarElemento(tipo, codigo) {
-    if (confirm(`¿Estás seguro de que deseas eliminar el docente con código: ${codigo}?`)) {
-        const dataType = tipo.toLowerCase();
-        const index = datosDocente[dataType]?.findIndex(item => item.codigo === codigo);
-
-        if (index !== -1) {
-            datosDocente[dataType].splice(index, 1);
-
-            const tableSelector = `#tabla-${dataType}`;
-            const table = $(tableSelector).DataTable();
-
-            table.rows().every(function () {
-                const data = this.data();
-                if (data[0] === codigo) {
-                    this.remove();
-                }
-            });
-
-            table.draw();
-            alert(`Docente eliminado: Código ${codigo}`);
-        }
-    }
-}
-
-// Generar HTML para los botones de acciones (editar y eliminar)
-function generarAccionesHtml(tipo, codigo) {
-    return `
-        <div class="text-end">
-            <button class="btn btn-primary btn-sm" onclick="editarElemento('${tipo}', '${codigo}')">Editar</button>
-            <button class="btn btn-danger btn-sm" onclick="eliminarElemento('${tipo}', '${codigo}')">Eliminar</button>
-        </div>`;
 }
