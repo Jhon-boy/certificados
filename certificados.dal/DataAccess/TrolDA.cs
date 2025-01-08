@@ -22,7 +22,7 @@ namespace certificados.dal.DataAccess
                 insertRol.FCreacion = Utils.timeParsed(DateTime.Now);
                 insertRol.UsuarioIngreso = Utils.SafeString(tRol.UsuarioIngreso);
                 insertRol.Estado = tRol.Estado;
-                context.Trol.Add(tRol);
+                context.Trol.Add(insertRol);
                 context.SaveChanges();
                 response = Utils.OkResponse(tRol);
 

@@ -29,6 +29,7 @@ namespace certificados.web.Controllers
                 Estado = true,
                 UsuarioIngreso = requestBody["UsuarioIngreso"]?.ToString(),
                 Observacion = requestBody["Observacion"]?.ToString(),
+                FCreacion = Utils.timeParsed(DateTime.Now)
             };
 
             return Ok(rolService.CrearRol(dto));

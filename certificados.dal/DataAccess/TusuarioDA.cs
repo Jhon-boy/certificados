@@ -116,7 +116,7 @@ namespace certificados.dal.DataAccess
 
                 if (usuarioExistente != null)
                 {
-                    context.Tusuario.Remove(usuarioExistente);
+                    usuarioExistente.Estado = "INA"; 
                     context.SaveChanges();
                     response = Utils.OkResponse(null);
                 }
