@@ -30,11 +30,11 @@
                         <li onclick="cargarDatosRoles()" class="nav-item"><a class="nav-link text-white" href="#" id="link-roles" data-view="Roles"><i class="bi bi-shield-lock"></i> Roles</a></li>
                         <li onclick="cargarDatospersonas()" class="nav-item"><a class="nav-link text-white" href="#" id="link-personas" data-view="Personas"><i class="bi bi-people"></i> Usuarios</a></li>
                         <li onclick="cargarDatosGrupos()" class="nav-item"><a class="nav-link text-white" href="#" id="link-grupo" data-view="Grupo"><i class="bi bi-person-lines-fill"></i> Grupo</a></li>
-                        <li class="nav-item"><a class="nav-link text-white" href="#" id="link-docente" data-view="Docente"><i class="bi bi-person-video3"></i> Docentes</a></li>
+                        <li onclick="cargarDatosDocentes()" class="nav-item"><a class="nav-link text-white" href="#" id="link-docente" data-view="Docente"><i class="bi bi-person-video3"></i> Docentes</a></li>
                         <li class="nav-item"><a class="nav-link text-white" href="#" id="link-decanato" data-view="Decanato"><i class="bi  bi-layers-fill"></i> Decanatos</a></li>
                         <li class="nav-item"><a class="nav-link text-white" href="#" id="link-evento" data-view="Eventos"><i class="bi bi-play-btn"></i> Eventos</a></li>
                         <li class="nav-item"><a class="nav-link text-white" href="#" id="link-certificados" data-view="Certificados"><i class="bi bi-clipboard-check"></i> Certificados</a></li>
-                        <li class="nav-item"><a class="nav-link text-white" href="#" id="link-actas" data-view="Actas"><i class="bi bi-receipt"></i> Actas</a></li>
+                        <li onclick="cargarDatosModalidades()" class="nav-item"><a class="nav-link text-white" href="#" id="link-modalidad" data-view="Modalidad"><i class="bi bi-receipt"></i> Modalidad</a></li>
                     </ul>
                 </div>
             </li>
@@ -167,5 +167,7 @@
     <script src="~/js/roles.js" asp-append-version="true"></script>
     <script src="~/js/personas.js" asp-append-version="true"></script>
     <script src="~/js/grupo.js" asp-append-version="true"></script>
+    <script src="~/js/docente.js" asp-append-version="true"></script>
+    <script src="~/js/modalidad.js" asp-append-version="true"></script>
 </body>
 </html>

@@ -5,13 +5,14 @@ using certificados.services.Utils;
 using certificados.web.Controllers.Mappers;
 using certificados.web.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace certificados.web.Controllers
 {
     /**
     * Controlador dedicado la entidad de TDOCENTE
     */
-    [Route("api/docente")]
+    [Route("api/docente/")]
     public class DocenteController : Controller
     {
         private readonly DocenteService docenteService;
@@ -29,13 +30,22 @@ namespace certificados.web.Controllers
           * Endpoint para crear un DOCENTE
           */
         [HttpPost("crear")]
-        public ActionResult<ResponseApp> crearDocente([FromBody] DocenteDTO tdocente) {
-            if (tdocente == null) {
-
-                return BadRequest(Utils.BadResponse(CONSTANTES.MESSAGE_DATA_ERRORS));
+        public ActionResult<ResponseApp> crearDocente([FromBody] Dictionary<string, object> requestBody) {
+            if (requestBody == null || !requestBody.Any())
+            {
+                return Utils.BadResponse(CONSTANTES.MESSAGE_DATA_ERRORS);
             }
-            var estadoResponse = estadoDocenteService.ListarById(tdocente.IdEstado);
-            var personaResponse = personaService.ObtenerPersona(tdocente.Cedula);
+
+            var codDocente = (JsonElement)requestBody["codigoDocente"];
+            var cedula = (JsonElement)requestBody["cedula"];
+            var titulo = (JsonElement)requestBody["titulo"];
+            var facultad = (JsonElement)requestBody["facultad"];
+            var carrera = (JsonElement)requestBody["carrera"];
+            var estado = (JsonElement)requestBody["estado"];
+            var usuarioIngreso = (JsonElement)requestBody["usuarioIngreso"];
+
+            var estadoResponse = estadoDocenteService.ListarById(int.Parse(estado.ToString()));
+            var personaResponse = personaService.ObtenerPersona(cedula.ToString());
 
             if (!estadoResponse.Cod.Equals(CONSTANTES.COD_OK) || !personaResponse.Cod.Equals(CONSTANTES.COD_OK))
             {
@@ -43,24 +53,45 @@ namespace certificados.web.Controllers
             }
             Tpersona persona = PersonaMapper.toEntity(personaResponse.Data);
             TestadoDocente estadoDocente = EstadoDocenteMapper.toEntity(estadoResponse.Data);
-            //sino transformar en mis entidades
 
-            return Ok(docenteService.CrearDocente(DocenteMapper.toEntityCreate(tdocente, estadoDocente, persona)));
+            var docente = new Tdocente
+            {
+                CodigoDocente = codDocente.GetString(),
+                Cedula = cedula.GetString(),
+                Titulo = titulo.GetString(),
+                Facultad = facultad.GetString(),
+                Carrera = carrera.GetString(),
+                IdEstado = int.Parse(estado.ToString()),
+                UsuarioIngreso = usuarioIngreso.ValueKind == JsonValueKind.Number ? usuarioIngreso.GetInt32().ToString() : usuarioIngreso.GetString(),
+                TestadoDocente = estadoDocente,
+                Tpersona = persona
+            };
+
+            return Ok(docenteService.CrearDocente(docente));
         }
 
         /*
           * Endpoint para MODIFICAR un DOCENTE
           */
         [HttpPost("modificar")]
-        public ActionResult<ResponseApp> modificarDocente([FromBody]  Tdocente tdocente)
+        public ActionResult<ResponseApp> modificarDocente([FromBody] Dictionary<string, JsonElement> requestBody)
         {
-            if (tdocente == null)
+            if (requestBody == null || !requestBody.Any())
             {
-
-                return BadRequest(Utils.BadResponse(CONSTANTES.MESSAGE_DATA_ERRORS));
+                return Utils.BadResponse(CONSTANTES.MESSAGE_DATA_ERRORS);
             }
-            var estadoResponse = estadoDocenteService.ListarById(tdocente.IdEstado);
-            var personaResponse = personaService.ObtenerPersona(tdocente.Cedula);
+
+            var idDocente = (JsonElement)requestBody["idDocente"];
+            var codDocente = (JsonElement)requestBody["codigoDocente"];
+            var cedula = (JsonElement)requestBody["cedula"];
+            var titulo = (JsonElement)requestBody["titulo"];
+            var facultad = (JsonElement)requestBody["facultad"];
+            var carrera = (JsonElement)requestBody["carrera"];
+            var estado = (JsonElement)requestBody["estado"];
+            var userModificacion = (JsonElement)requestBody["usuarioActualizacion"];
+
+            var estadoResponse = estadoDocenteService.ListarById(int.Parse(estado.ToString()));
+            var personaResponse = personaService.ObtenerPersona(cedula.ToString());
 
             if (!estadoResponse.Cod.Equals(CONSTANTES.COD_OK) || !personaResponse.Cod.Equals(CONSTANTES.COD_OK))
             {
@@ -69,7 +100,20 @@ namespace certificados.web.Controllers
             Tpersona persona = PersonaMapper.toEntity(personaResponse.Data);
             TestadoDocente estadoDocente = EstadoDocenteMapper.toEntity(estadoResponse.Data);
 
-            return Ok(docenteService.CrearDocente(DocenteMapper.toEntityUpdate(tdocente, estadoDocente, persona)));
+            var docente = new Tdocente
+            {
+                CodigoDocente = codDocente.GetString(),
+                Cedula = cedula.GetString(),
+                Titulo = titulo.GetString(),
+                Facultad = facultad.GetString(),
+                Carrera = carrera.GetString(),
+                IdEstado = int.Parse(estado.ToString()),
+                UserModificacion = userModificacion.ValueKind == JsonValueKind.Number ? userModificacion.GetInt32().ToString() : userModificacion.GetString(),
+                TestadoDocente = estadoDocente,
+                Tpersona = persona
+            };
+
+            return Ok(docenteService.ActualizarDocente(docente));
         }
 
         /*
@@ -86,11 +130,11 @@ namespace certificados.web.Controllers
         [HttpPost("id")]
         public ActionResult<ResponseApp> obtenerDocenteById([FromBody] Dictionary<string, object> request)
         {
-            if (!request.TryGetValue("idDocente", out var idDocenteObj) || idDocenteObj == null)
+            if (!request.TryGetValue("codigoDocente", out var codigoDocenteObj) || codigoDocenteObj == null)
             {
                 return BadRequest(Utils.BadResponse("FALTAN PARAMETROS"));
             }
-            string codigoDocente = idDocenteObj.ToString();
+            string codigoDocente = codigoDocenteObj.ToString();
             return Ok(docenteService.ObtenerDocentesById(codigoDocente));
         }
 
