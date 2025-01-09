@@ -121,17 +121,68 @@
     </div>
 
     <div class="tab-pane fade" id="nav-search" role="tabpanel" aria-labelledby="search-tab" tabindex="0">
-       <center>
+        <center>
             <div class="p-3 w-50 my-2 bg-white shadow-sm">
-                <label for="buscar-rol" class="form-label ">
-                    Buscar por ID del Rol
+                <label for="buscar-persona" class="form-label">
+                    Buscar por cédula
                 </label>
                 <div class="input-group my-2">
-                    <input type="text" id="buscar-rol" class="form-control form-control-sm" placeholder="Ingresa el ID del rol" required>
-                    <button class="btn btn-primary" type="button" onclick="buscarRol()">  Buscar  </button>
+                    <input type="text" id="buscar-persona" class="form-control form-control-sm" placeholder="Ingresa la cédula" required>
+                    <button class="btn btn-primary" type="button" onclick="BuscarPersona()">Buscar</button>
                 </div>
             </div>
-       </center>
+            <div class="card mx-2 my-2 p-3 shadow">
+                <form id="form-persona">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label for="persona-nombres" class="form-label">Nombres</label>
+                            <input type="text" id="persona-nombres" class="form-control" disabled readonly>
+                        </div>
+                        <div class="col-6">
+                            <label for="persona-apellidos" class="form-label">Apellidos</label>
+                            <input type="text" id="persona-apellidos" class="form-control" disabled readonly>
+                        </div>
+                        <div class="col-4">
+                            <label for="persona-cedula" class="form-label">Cédula</label>
+                            <input type="text" id="persona-cedula" class="form-control" disabled readonly>
+                        </div>
+                        <div class="col-4">
+                            <label for="persona-edad" class="form-label">Edad</label>
+                            <input type="number" id="persona-edad" class="form-control" disabled  readonly>
+                        </div>
+                        <div class="col-4">
+                            <label for="persona-genero" class="form-label">Género</label>
+                            <input type="text" id="persona-genero" class="form-control" disabled  readonly>
+                        </div>
+                        <div class="col-4">
+                            <label for="persona-email" class="form-label">Correo Electrónico</label>
+                            <input type="email" id="persona-email" class="form-control" disabled readonly>
+                        </div>
+                        <div class="col-4">
+                            <label for="persona-rol" class="form-label">Rol</label>
+                            <input type="text" id="persona-rol" class="form-control" disabled readonly>
+                        </div>
+                        <div class="col-4">
+                            <label for="persona-usuario-ingreso" class="form-label">Usuario Ingreso</label>
+                            <input type="text" id="persona-usuario-ingreso" class="form-control" disabled readonly>
+                        </div>
+                        <div class="col-4">
+                            <label for="persona-usuario-actualizacion" class="form-label">Usuario Actualización</label>
+                            <input type="text" id="persona-usuario-actualizacion" class="form-control" disabled readonly>
+                        </div>
+                        <div class="col-3">
+                            <label for="persona-fecha-creacion" class="form-label">Fecha de Creación</label>
+                            <input type="text" id="persona-fecha-creacion" class="form-control" disabled readonly>
+                        </div>
+                        <div class="col-3">
+                            <label for="persona-fecha-modificacion" class="form-label">Fecha de Modificación</label>
+                            <input type="text" id="persona-fecha-modificacion" class="form-control" disabled readonly>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </center>
+
     </div>
     <div class="tab-pane fade" id="nav-add-m" role="tabpanel" aria-labelledby="add-m-tab" tabindex="0">
        <div class="card">
@@ -175,7 +226,7 @@
                 <div class="row mb-3">
                     <div class="col-6">
                         <label for="persona-cedula" class="form-label">Cédula</label>
-                        <input type="text" class="form-control" id="persona-cedula" placeholder="Ingresa la cédula">
+                        <input type="text" class="form-control" id="persona-cedula" readonly placeholder="Ingresa la cédula">
                     </div>
                     <div class="col-6">
                         <label for="persona-nombres" class="form-label">Nombres</label>
@@ -188,21 +239,7 @@
                         <label for="persona-apellidos" class="form-label">Apellidos</label>
                         <input type="text" class="form-control" id="persona-apellidos" placeholder="Ingresa los apellidos">
                     </div>
-                    <div class="col-6">
-                        <label for="persona-edad" class="form-label">Edad</label>
-                        <input type="number" class="form-control" id="persona-edad" placeholder="Ingresa la edad">
-                    </div>
-                </div>
 
-                <div class="row mb-3">
-                    <div class="col-6">
-                        <label for="persona-genero" class="form-label">Género</label>
-                        <select class="form-control" id="persona-genero">
-                            <option value="M">Masculino</option>
-                            <option value="F">Femenino</option>
-                            <option value="O">Otro</option>
-                        </select>
-                    </div>
                     <div class="col-6">
                         <label for="persona-email" class="form-label">Email</label>
                         <input type="email" class="form-control" id="persona-email" placeholder="Ingresa el correo electrónico">
@@ -210,13 +247,30 @@
                 </div>
 
                 <div class="row mb-3">
-                    <div class="col-6">
+                    <div class="col-3">
+                        <label for="persona-genero" class="form-label">Género</label>
+                        <select class="form-control" id="persona-genero">
+                            <option value="M">Masculino</option>
+                            <option value="F">Femenino</option>
+                            <option value="O">Otro</option>
+                        </select>
+                    </div>
+
+                    <div class="col-3">
+                        <label for="persona-edad" class="form-label">Edad</label>
+                        <input type="number" class="form-control" id="persona-edad" placeholder="Ingresa la edad">
+                    </div>
+
+                    <div class="col-3">
                         <label for="persona-rol" class="form-label">Rol</label>
                         <select id="persona-rol" class="form-select" required>
                             <option value="">Seleccione un rol</option>
                         </select>
                     </div>
-                    <div class="col-4">
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-3">
                         <label for="estadopersona" class="form-label">Estado</label>
                         <select id="estadopersona" class="form-select" required>
                             <option value="ACT">Activar</option>
@@ -224,8 +278,12 @@
                         </select>
                     </div>
                     <div class="col-4">
-                        <label for="userIngreso" class="form-label">Estado</label>
-                        <input type="hidden" class="form-control" id="userIngreso" placeholder="Ingresa el correo electrónico">
+                        <label for="userIngreso" class="form-label">Usuario Ingreso</label>
+                        <input type="text" class="form-control" id="userIngreso" readonly placeholder="Ingresa el correo electrónico">
+                    </div>
+                    <div class="col-4">
+                        <label for="userIngreso" class="form-label">Usuario Actualizacion</label>
+                        <input type="text" class="form-control" id="userActualizar" readonly placeholder="Ingresa el correo electrónico">
                     </div>
                 </div>
             </div>

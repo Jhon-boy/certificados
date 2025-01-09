@@ -2,8 +2,7 @@
 let idPersonaAEliminarP = null;
 let userInfoPersona = JSON.parse(localStorage.getItem('userInfo'));
 let modalEliminarPersona;
-let roles;
-
+let roles; 
 async function cargarDatospersonas() {
     let response;
     try {
@@ -81,26 +80,48 @@ async function cargarDatospersonas() {
 
 }
 async function cargarRoles() {
-    const rolesResponse = await Utils.httpRequest(
-        `${Utils.path}/rol/all`,
-        {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-        },
-        false);
-    if (rolesResponse.cod === Utils.COD_OK && Array.isArray(rolesResponse.data)) {
-        roles = rolesResponse.data.filter((rol) => rol.estado);
-        const rolesSelect = document.getElementById("idRol");
-        roles.forEach((rol) => {
-            const option = document.createElement("option");
-            option.value = rol.idRol;
-            option.textContent = rol.nombre;
-            rolesSelect.appendChild(option); 
-        });
-    } else {
-        Utils.showToast("No se pudieron obtener los roles", "error");
+    try {
+        // Realiza la petición para obtener los roles
+        const rolesResponse = await Utils.httpRequest(
+            `${Utils.path}/rol/all`,
+            {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            },
+            false
+        );
+
+        if (rolesResponse.cod === Utils.COD_OK && Array.isArray(rolesResponse.data)) {
+            const roles = rolesResponse.data.filter((rol) => rol.estado);
+
+            // Selecciona ambos selects por sus IDs
+            const selectAgregar = document.getElementById("idRol"); // Select del formulario
+            const selectEditar = document.getElementById("persona-rol"); // Select del modal
+
+            // Limpia las opciones existentes en ambos selects
+            [selectAgregar, selectEditar].forEach((select) => {
+                if (select) {
+                    select.innerHTML = '<option value="">Seleccione un rol</option>';
+                    // Agrega las opciones de roles
+                    roles.forEach((rol) => {
+                        const option = document.createElement("option");
+                        option.value = rol.idRol;
+                        option.textContent = rol.nombre;
+                        select.appendChild(option);
+                    });
+                } else {
+                    console.error("No se encontró el select:", select);
+                }
+            });
+        } else {
+            Utils.showToast("No se pudieron obtener los roles", "error");
+        }
+    } catch (error) {
+        console.error("Error al cargar los roles:", error);
+        Utils.showToast("Error al cargar los roles", "error");
     }
 }
+
 function eliminarPersona(cedula) {
     
     esAdmin = userInfoPersona.cedula;
@@ -111,37 +132,52 @@ function eliminarPersona(cedula) {
     modalEliminarPersona.show();
     idPersonaAEliminarP = String( cedula);
 }
-async function editarpersona(cedula) {
-    try {
 
+async function editarpersona(cedula) {
+    try { 
         const response = await httpRequest(`${Utils.path}/personas/id`, "POST", { id: cedula });
+         
+        await cargarRoles();
 
         if (response && response.cod === Utils.COD_OK) {
             const persona = response.data;
-            
+             
             document.getElementById("persona-cedula").value = persona.cedula || "";
             document.getElementById("persona-nombres").value = persona.nombres || "";
             document.getElementById("persona-apellidos").value = persona.apellidos || "";
             document.getElementById("persona-edad").value = persona.edad || "";
             document.getElementById("persona-genero").value = persona.genero || "";
             document.getElementById("persona-email").value = persona.mDatos?.email || "";
-            document.getElementById("persona-rol").value = persona.mDatos?.rol || "";
             document.getElementById("userIngreso").value = persona.usuarioIngreso || "";
+            document.getElementById("userActualizar").value = userInfoPersona.nombre || "";
+             
+            const selectRol = document.getElementById("persona-rol");
+            const rolUsuario = persona.mDatos?.rol || "";
+             
+            const optionMatch = Array.from(selectRol.options).find((option) =>
+                option.textContent.toLowerCase() === rolUsuario || option.value.toLowerCase() === rolUsuario
+            );
+
+            if (optionMatch) {
+                selectRol.value = optionMatch.value; // Seleccionar la opción encontrada
+            } else {
+                console.warn("No se encontró un rol que coincida con:", rolUsuario);
+            }
              
             const modalEditarPersona = new bootstrap.Modal(document.getElementById("modal-editar-persona"));
             modalEditarPersona.show();
-
         } else {
-            const messageClient = response.message || "Error al eliminar el Persona.";
+            const messageClient = response.message || "Error al cargar los datos de la persona.";
             const messageTech = response.data || null;
             Utils.showErrorModal(messageClient, messageTech);
         }
-
     } catch (error) {
-        console.log(error)
+        console.error("Error al cargar los datos de la persona:", error);
         Utils.showToast("Error al cargar los datos", "danger");
     }
 }
+
+
 async function confirmarEliminacionPersona() {
     if (!idPersonaAEliminarP) {
         Utils.showToast("ID de rol no válido", "danger");
@@ -168,17 +204,17 @@ async function confirmarEliminacionPersona() {
 
 }
 async function confirmarEditarPersona() {
-    const cedulaE = document.getElementById("persona-cedula").value;
-    const nombresE = document.getElementById("persona-nombres").value;
-    const apellidosE = document.getElementById("persona-apellidos").value;
-    const edadE = parseInt(document.getElementById("persona-edad").value, 10);
-    const generoE = document.getElementById("persona-genero").value;
-    const emailE = document.getElementById("persona-email").value;
-    const claveE = `${nombres} ${apellidos}` ; // Opcional, agrega si es necesario
+    const cedulaE = document.getElementById("persona-cedula").value.trim();
+    const nombresE = document.getElementById("persona-nombres").value.trim();
+    const apellidosE = document.getElementById("persona-apellidos").value.trim();
+    const edadE = parseInt(document.getElementById("persona-edad").value.trim(), 10);
+    const generoE = document.getElementById("persona-genero").value.trim();
+    const emailE = document.getElementById("persona-email").value.trim();
+    const claveE = "DEFECTO"; // Opcional, agrega si es necesario
     const rolSelectE = document.getElementById("persona-rol");
     const estadoEditFormE = document.getElementById("estadopersona");
-    const estadoEditE = estadoEditFormE.value;
-    const userIngresoE = document.getElementById("userIngreso");
+    const estadoEditE = estadoEditFormE.value.trim();
+    const userIngresoE = document.getElementById("userIngreso").value.trim();
     const idRolE = parseInt(rolSelectE.value, 10);
     // Validar los campos
 
@@ -188,32 +224,28 @@ async function confirmarEditarPersona() {
         "apellidos": `${apellidosE}`,
         "edad": `${edadE}`,
         "genero": `${generoE}`,
+        "usuarioIngreso": `${userIngresoE}`,
+        "usuarioActualizacion": `${userInfoPersona.idUsuario}`,
         "email": `${emailE}`,
         "clave": `${claveE}`,
         "idRol": `${idRolE}`,
-        "usuarioIngreso": `${userIngresoE}`,
-        "usuarioActualizacion": `${userInfoPersona.idUsuario}`,
-        "estado": `${estadoEditE}`,
+        "estado": `${estadoEditE}`
     };
-    console.log(JSON.stringify(payloadEdit));
 
-    try { 
+    const modalE = bootstrap.Modal.getInstance(document.getElementById('modal-editar-persona'));
+    try {
         const responseEdit = await Utils.httpRequest(
             `${Utils.path}/personas/modificar`,
             {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json; charset=utf-8" },
                 body: JSON.stringify(payloadEdit),
-            },
-            true
-        );
+            }, true);
 
 
         if (responseEdit && responseEdit.cod === Utils.COD_OK) {
             Utils.showToast("Persona actualizada correctamente", "success");
-
-            const modal = bootstrap.Modal.getInstance(document.getElementById('modal-editar-persona'));
-            modal.hide();
+            modalE.hide();
             cargarDatospersonas();
         } else {
             const messageClient = responseEdit.message || "Error al actualizar la persona.";
@@ -222,6 +254,8 @@ async function confirmarEditarPersona() {
         }
     } catch (error) {
         Utils.showToast("Error al realizar la actualización", "danger");
+    } finally {
+        modalE.hide();
     }
 }
 
@@ -257,6 +291,41 @@ function validarEntrada({ cedula, nombres, apellidos, edad, genero, email, idRol
         return false;
     }
     return true;
+}
+
+//Funcion para Buscar una persona
+async function BuscarPersona() {
+    const cedulaABuscar = document.getElementById('buscar-persona').value;
+
+    if (!cedulaABuscar) {
+        Utils.showToast("Por favor, ingresa una cédula válida", "danger");
+        return;
+    }
+
+    try {
+        const buscarPersona = await httpRequest(`${Utils.path}/personas/id`, "POST", { id: cedulaABuscar });
+
+        if (buscarPersona.cod === "OK" && buscarPersona.data) {
+            const persona = buscarPersona.data;
+
+            document.getElementById("persona-nombres").value = persona.nombres || "";
+            document.getElementById("persona-apellidos").value = persona.apellidos || "";
+            document.getElementById("persona-cedula").value = persona.cedula || "";
+            document.getElementById("persona-edad").value = persona.edad || "";
+            document.getElementById("persona-genero").value = persona.genero === "M" ? "Masculino" : "Femenino";
+            document.getElementById("persona-email").value = persona.mDatos?.email || "";
+            document.getElementById("persona-rol").value = persona.mDatos?.rol || "";
+            document.getElementById("persona-usuario-ingreso").value = persona.usuarioIngreso || "";
+            document.getElementById("persona-usuario-actualizacion").value = persona.usuarioActualizacion || "No Actualizado";
+            document.getElementById("persona-fecha-creacion").value = Utils.formatFecha(persona.fechaCreacion);
+            document.getElementById("persona-fecha-modificacion").value = Utils.formatFecha(persona.fechaModificacion);
+        } else {
+            Utils.showToast(buscarPersona.message || "No se encontraron datos para esta cédula", "warning");
+        }
+    } catch (error) {
+        console.error("Error al buscar la persona:", error);
+        Utils.showToast("Error al buscar la persona", "danger");
+    }
 }
 
 function validarEmail(email) {
