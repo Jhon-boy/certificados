@@ -162,11 +162,13 @@
     </div>
 </div>
 
+
+<!--Modal para Editar Persona-->
 <div class="modal fade" id="modal-editar-persona" tabindex="-1" aria-labelledby="modal-editar-persona-label" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modal-editar-persona-label">Agregar Nueva Persona</h5>
+                <h5 class="modal-title" id="modal-editar-persona-label">Editar Persona</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -209,22 +211,27 @@
 
                 <div class="row mb-3">
                     <div class="col-6">
-                        <label for="persona-clave" class="form-label">Contraseña</label>
-                        <input type="password" class="form-control" id="persona-clave" placeholder="Ingresa la contraseña">
-                    </div>
-                    <div class="col-6">
                         <label for="persona-rol" class="form-label">Rol</label>
-                        <select class="form-control" id="persona-rol">
-                            <option value="1">Administrador</option>
-                            <option value="2">Usuario</option>
-                            <option value="3">Invitado</option>
+                        <select id="persona-rol" class="form-select" required>
+                            <option value="">Seleccione un rol</option>
                         </select>
+                    </div>
+                    <div class="col-4">
+                        <label for="estadopersona" class="form-label">Estado</label>
+                        <select id="estadopersona" class="form-select" required>
+                            <option value="ACT">Activar</option>
+                            <option value="INA">Inactivar</option>
+                        </select>
+                    </div>
+                    <div class="col-4">
+                        <label for="userIngreso" class="form-label">Estado</label>
+                        <input type="hidden" class="form-control" id="userIngreso" placeholder="Ingresa el correo electrónico">
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary" id="btn-guardar-cambios">Guardar</button>
+            <div class="modal-footer col-12 d-flex mb-2 justify-content-center">
+                <button type="button" class="btn btn-secondary me-3" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="btn-guardar-cambios" onclick="confirmarEditarPersona()">Guardar</button>
             </div>
         </div>
     </div>

@@ -66,7 +66,7 @@ namespace certificados.dal.DataAccess
                         personaExistente.UsuarioActualizacion = tpersona.UsuarioActualizacion;
 
                         usuarioExiste.Email = usuario.Email;
-                        usuarioExiste.Clave = usuario.Clave;
+                        //usuarioExiste.Clave = usuario.Clave; no se actualiza la clave aqui
                         usuarioExiste.FModificacion = Utils.timeParsed(DateTime.Now);
                         usuarioExiste.UsuarioActualizacion = usuario.UsuarioActualizacion;
                         // Guardar los cambios

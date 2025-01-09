@@ -3,7 +3,7 @@ let idPersonaAEliminarP = null;
 let userInfoPersona = JSON.parse(localStorage.getItem('userInfo'));
 let modalEliminarPersona;
 let roles;
- 
+
 async function cargarDatospersonas() {
     let response;
     try {
@@ -95,23 +95,52 @@ async function cargarRoles() {
             const option = document.createElement("option");
             option.value = rol.idRol;
             option.textContent = rol.nombre;
-            rolesSelect.appendChild(option);
+            rolesSelect.appendChild(option); 
         });
     } else {
         Utils.showToast("No se pudieron obtener los roles", "error");
     }
 }
 function eliminarPersona(cedula) {
-    console.log(cedula);
+    
     esAdmin = userInfoPersona.cedula;
     if (String(esAdmin) == String(cedula)) {
         Utils.showToast('No puede eliminar al Administrador', 'warning');
+        return;
     }
     modalEliminarPersona.show();
     idPersonaAEliminarP = String( cedula);
 }
-function editarpersona(cedula) {
+async function editarpersona(cedula) {
+    try {
 
+        const response = await httpRequest(`${Utils.path}/personas/id`, "POST", { id: cedula });
+
+        if (response && response.cod === Utils.COD_OK) {
+            const persona = response.data;
+            
+            document.getElementById("persona-cedula").value = persona.cedula || "";
+            document.getElementById("persona-nombres").value = persona.nombres || "";
+            document.getElementById("persona-apellidos").value = persona.apellidos || "";
+            document.getElementById("persona-edad").value = persona.edad || "";
+            document.getElementById("persona-genero").value = persona.genero || "";
+            document.getElementById("persona-email").value = persona.mDatos?.email || "";
+            document.getElementById("persona-rol").value = persona.mDatos?.rol || "";
+            document.getElementById("userIngreso").value = persona.usuarioIngreso || "";
+             
+            const modalEditarPersona = new bootstrap.Modal(document.getElementById("modal-editar-persona"));
+            modalEditarPersona.show();
+
+        } else {
+            const messageClient = response.message || "Error al eliminar el Persona.";
+            const messageTech = response.data || null;
+            Utils.showErrorModal(messageClient, messageTech);
+        }
+
+    } catch (error) {
+        console.log(error)
+        Utils.showToast("Error al cargar los datos", "danger");
+    }
 }
 async function confirmarEliminacionPersona() {
     if (!idPersonaAEliminarP) {
@@ -137,6 +166,102 @@ async function confirmarEliminacionPersona() {
         modalEliminarPersona.hide();
     }
 
+}
+async function confirmarEditarPersona() {
+    const cedulaE = document.getElementById("persona-cedula").value;
+    const nombresE = document.getElementById("persona-nombres").value;
+    const apellidosE = document.getElementById("persona-apellidos").value;
+    const edadE = parseInt(document.getElementById("persona-edad").value, 10);
+    const generoE = document.getElementById("persona-genero").value;
+    const emailE = document.getElementById("persona-email").value;
+    const claveE = `${nombres} ${apellidos}` ; // Opcional, agrega si es necesario
+    const rolSelectE = document.getElementById("persona-rol");
+    const estadoEditFormE = document.getElementById("estadopersona");
+    const estadoEditE = estadoEditFormE.value;
+    const userIngresoE = document.getElementById("userIngreso");
+    const idRolE = parseInt(rolSelectE.value, 10);
+    // Validar los campos
+
+    const payloadEdit = {
+        "cedula": `${cedulaE}`,
+        "nombres": `${nombresE}`,
+        "apellidos": `${apellidosE}`,
+        "edad": `${edadE}`,
+        "genero": `${generoE}`,
+        "email": `${emailE}`,
+        "clave": `${claveE}`,
+        "idRol": `${idRolE}`,
+        "usuarioIngreso": `${userIngresoE}`,
+        "usuarioActualizacion": `${userInfoPersona.idUsuario}`,
+        "estado": `${estadoEditE}`,
+    };
+    console.log(JSON.stringify(payloadEdit));
+
+    try { 
+        const responseEdit = await Utils.httpRequest(
+            `${Utils.path}/personas/modificar`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payloadEdit),
+            },
+            true
+        );
+
+
+        if (responseEdit && responseEdit.cod === Utils.COD_OK) {
+            Utils.showToast("Persona actualizada correctamente", "success");
+
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modal-editar-persona'));
+            modal.hide();
+            cargarDatospersonas();
+        } else {
+            const messageClient = responseEdit.message || "Error al actualizar la persona.";
+            const messageTech = responseEdit.data || null;
+            Utils.showErrorModal(messageClient, messageTech);
+        }
+    } catch (error) {
+        Utils.showToast("Error al realizar la actualización", "danger");
+    }
+}
+
+// Función para validar la entrada del formulario
+function validarEntrada({ cedula, nombres, apellidos, edad, genero, email, idRol }) {
+    console.log(cedula)
+    if (!cedula || cedula.trim() === "") {
+        Utils.showToast("La cédula es obligatoria", "warning");
+        return false;
+    }
+    if (!nombres || nombres.trim() === "") {
+        Utils.showToast("Los nombres son obligatorios", "warning");
+        return false;
+    }
+    if (!apellidos || apellidos.trim() === "") {
+        Utils.showToast("Los apellidos son obligatorios", "warning");
+        return false;
+    }
+    if (isNaN(edad) || edad <= 0) {
+        Utils.showToast("La edad debe ser un número válido", "warning");
+        return false;
+    }
+    if (!genero || genero.trim() === "") {
+        Utils.showToast("El género es obligatorio", "warning");
+        return false;
+    }
+    if (!email || !validarEmail(email)) {
+        Utils.showToast("El correo electrónico no es válido", "warning");
+        return false;
+    }
+    if (idRol <= 0 || isNaN(idRol)) {
+        Utils.showToast("Debes seleccionar un rol válido", "warning");
+        return false;
+    }
+    return true;
+}
+
+function validarEmail(email) {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
 }
 
 
@@ -203,8 +328,9 @@ async function savePersona(event) {
         Utils.showToast("Error al guardar la persona", "danger");
     }
 }
+
 //Valdidaciones
-function validarEntrada({ cedula, nombres, apellidos, edad, genero, email, clave }) {
+function validarEntrada({ cedula, nombres, apellidos, edad, genero, email }) {
     if (!/^\d{10}$/.test(cedula)) {
         Utils.showToast("La cédula debe contener exactamente 10 dígitos", "warning");
         return false;
@@ -232,11 +358,6 @@ function validarEntrada({ cedula, nombres, apellidos, edad, genero, email, clave
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         Utils.showToast("El email no tiene un formato válido", "warning");
-        return false;
-    }
-
-    if (!clave || clave.length < 6) {
-        Utils.showToast("La contraseña debe tener al menos 6 caracteres", "warning");
         return false;
     }
 
