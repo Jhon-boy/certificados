@@ -3,11 +3,12 @@ using certificados.models.Entitys.dbo;
 using certificados.services.Services;
 using certificados.services.Utils;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace certificados.web.Controllers
 {
     [ApiController]
-    [Route("api/modalidad")]
+    [Route("api/modalidad/")]
     public class ModalidadController:Controller
     {
         private readonly ModalidadService modalidadService;
@@ -20,29 +21,54 @@ namespace certificados.web.Controllers
         [HttpGet("all")]
         public ActionResult<ResponseApp> listarModalidad()
         {
-
             return Ok(modalidadService.ListarModalidades());
         }
+
         [HttpPost("crear")]
-        public ActionResult<ResponseApp> crearModalidad([FromBody] Tmodalidad tmodalidad) {
+        public ActionResult<ResponseApp> crearModalidad([FromBody] Dictionary<string, object> requestBody) {
 
-            if (tmodalidad == null) {
-
-                return Utils.BadResponse("FALTA PARAMETROS");
+            if (requestBody == null || !requestBody.Any())
+            {
+                return Utils.BadResponse(CONSTANTES.MESSAGE_DATA_ERRORS);
             }
-            return Ok(modalidadService.InsertarModalidad(tmodalidad));
+
+            var nombre = (JsonElement)requestBody["Nombre"];
+            var descripcion = (JsonElement)requestBody["Descripcion"];
+            var usuarioIngreso = (JsonElement)requestBody["UsuarioIngreso"];
+
+            var modalidad = new Tmodalidad
+            {
+
+                Nombre = nombre.GetString(),
+                Descripcion = descripcion.GetString(),
+                UsusarioIngreso = usuarioIngreso.ValueKind == JsonValueKind.Number ? usuarioIngreso.GetInt32().ToString() : usuarioIngreso.GetString(),
+            };
+
+            return Ok(modalidadService.InsertarModalidad(modalidad));
         }
 
         [HttpPost("modificar")]
-        public ActionResult<ResponseApp> modificarModalidad([FromBody] Tmodalidad tmodalidad)
+        public ActionResult<ResponseApp> modificarModalidad([FromBody] Dictionary<string, object> requestBody)
         {
-
-            if (tmodalidad == null)
+            if (requestBody == null || !requestBody.Any())
             {
-
-                return Utils.BadResponse("FALTA PARAMETROS");
+                return Utils.BadResponse(CONSTANTES.MESSAGE_DATA_ERRORS);
             }
-            return Ok(modalidadService.ModificarModalidad(tmodalidad));
+
+            var idModalidad = (JsonElement)requestBody["idModalidad"];
+            var nombre = (JsonElement)requestBody["Nombre"];
+            var descripcion = (JsonElement)requestBody["Descripcion"];
+            var usuarioActualizacion = (JsonElement)requestBody["UsuarioActualizacion"];
+
+            var modalidad = new Tmodalidad
+            {
+                IdModalidad = int.Parse(idModalidad.ToString()),
+                Nombre = nombre.GetString(),
+                Descripcion = descripcion.GetString(),
+                UsuarioActualizacion = usuarioActualizacion.ValueKind == JsonValueKind.Number ? usuarioActualizacion.GetInt32().ToString() : usuarioActualizacion.GetString(),
+            };
+
+            return Ok(modalidadService.ModificarModalidad(modalidad));
         }
         [HttpPost("id")]
         public ActionResult<ResponseApp> listarById([FromBody] Dictionary<string, object> request)
