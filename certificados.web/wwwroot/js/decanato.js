@@ -30,7 +30,7 @@ async function cargarDatosDecanatos() {
                             <td>${usuarioActualizacion || 'No Actualizado'}</td>
                             <td>
                                 <i class="bi bi-pencil-fill text-success me-3" style="cursor: pointer;" onclick="editarDecanato(${decanato.idDecanato})" data-bs-toggle="tooltip" data-bs-placement="top" title="Editar Decanato"></i>
-                                <i class="bi bi-trash-fill text-danger" style="cursor: pointer;" onclick="eliminarDecanato(${decanato.idDecanato})" data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar Decanato"></i>
+                                <i class="bi bi-trash-fill text-danger" style="cursor: pointer;" onclick="mostrarConfirmacionEliminar(${decanato.idDecanato})" data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar Decanato"></i>
                             </td>
                         </tr>
                     `;
@@ -39,6 +39,7 @@ async function cargarDatosDecanatos() {
 
                 Utils.showToast('DATOS CARGADOS EXITOSAMENTE', 'success');
                 const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                document.getElementById('decanato-usuario-ingreso').value = userInfoDecanato.nombre;
                 tooltipTriggerList.forEach(function (tooltipTriggerEl) {
                     new bootstrap.Tooltip(tooltipTriggerEl);
                 });
@@ -58,9 +59,10 @@ async function editarDecanato(idDecanato) {
     const decanato = await obtenerDecanatoPorId(idDecanato);
 
     if (decanato) { 
-        document.getElementById("nombre").value = decanato.nombre;
-        document.getElementById("fCreacion").value = Utils.formatFecha(decanato.fCreacion);
-        document.getElementById("usuarioActualizacion").value = userInfoDecanato.nombres; 
+        document.getElementById("idDecanatoEdit").value = idDecanato;
+        document.getElementById("nombreEdit").value = decanato.nombre;
+        document.getElementById("fCreacionEdit").value = Utils.formatFecha(decanato.fCreacion);
+        document.getElementById("usuarioActualizacionEdit").value = userInfoDecanato.nombre; 
          
         const myModal = new bootstrap.Modal(document.getElementById('editarDecanatoModal'));
         myModal.show();
@@ -68,29 +70,66 @@ async function editarDecanato(idDecanato) {
 
 }
 async function guardarCambiosDecanato() {
-    const nombre = document.getElementById("nombre").value;
-    const usuarioIngreso = document.getElementById("usuarioIngreso").value;  
-    const idDecanato = document.getElementById("idDecanato").value; 
+    const nombre = document.getElementById("nombreEdit").value;
+    const usuarioActualizacion = userInfoDecanato.idUsuario;
+    const idDecanato = parseInt(document.getElementById("idDecanatoEdit").value, 10);
 
     const data = {
-        idDecanato: idDecanato,
-        nombre: nombre,
-        usuarioActualizacion: usuarioIngreso
+        "Nombre": `${nombre}`,
+        "UsuarioActualizacion": `${usuarioActualizacion}`,
+        "IdDecanato": `${idDecanato}`
     };
-
+    const myModal = bootstrap.Modal.getInstance(document.getElementById('editarDecanatoModal'));
+    
     try {
-        const response = await httpRequest(
-            `${Utils.path}/decanato/editar`,
-            "POST",
-            data
+        const response = await Utils.httpRequest(
+            `${Utils.path}/decanato/modificar`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        }
         );
 
         if (response.cod === "OK") {
             Utils.showToast("Decanato actualizado exitosamente", "success");
-            const myModal = bootstrap.Modal.getInstance(document.getElementById('editarDecanatoModal'));
-            myModal.hide();
+            cargarDatosDecanatos();
+        } else {
+            Utils.showToast("Error al actualizar el decanato", "danger");
+        }
+    } catch (error) {
+        Utils.showToast("Error al guardar los cambios", "danger");
+    } finally {
+        myModal.hide();
+    }
+}
+
+async function crearDecanato(event) {
+    event.preventDefault();
+    const nombre = document.getElementById("decanato-nombre").value;
+    const usuarioIngreso = userInfoDecanato.idUsuario;
+
+    const data = { 
+        "nombre": `${nombre}`,
+        "usuarioIngreso": `${usuarioIngreso}`
+    };
+    
+    try {
+        const responseCrear = await Utils.httpRequest(
+            `${Utils.path}/decanato/crear`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+             }
+        );
+
+        if (responseCrear.cod === "OK") {
+            Utils.showToast("Decanato actualizado exitosamente", "success");
+            document.getElementById("decanato-nombre").value = "";
             cargarDatosDecanatos();  
         } else {
+            const messageClient = responseCrear.message || "Error al actualizar la persona.";
+            const messageTech = responseCrear.data || null;
+            Utils.showErrorModal(messageClient, messageTech);
             Utils.showToast("Error al actualizar el decanato", "danger");
         }
     } catch (error) {
@@ -99,9 +138,43 @@ async function guardarCambiosDecanato() {
 }
 
 
+async function mostrarConfirmacionEliminar(idDecanato) {
+    const modalEliminar = new bootstrap.Modal(document.getElementById('confirmarEliminarModal'));
+    const confirmarBtn = document.getElementById('confirmarEliminarBtn');
+
+    // Limpiamos cualquier evento previo para evitar duplicaciones
+    confirmarBtn.onclick = () => eliminarDecanato(idDecanato);
+
+    modalEliminar.show();
+}
 async function eliminarDecanato(idDecanato) {
 
-   
+
+    const data = {
+        "idDecanato": `${idDecanato}`,
+    }; 
+    try {
+        const response = await Utils.httpRequest(
+            `${Utils.path}/decanato/eliminar`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        }
+        );
+
+        if (response.cod === "OK") {
+            Utils.showToast("Decanato actualizado exitosamente", "success");
+            cargarDatosDecanatos();
+        } else {
+            Utils.showToast("Error al actualizar el decanato", "danger");
+        }
+    } catch (error) {
+        Utils.showToast("Error al guardar los cambios", "danger");
+    } finally {
+        const modalEliminar = bootstrap.Modal.getInstance(document.getElementById('confirmarEliminarModal'));
+        modalEliminar.hide();
+    }
+     
 }
 async function BuscarDecanato() {
     const idAbuscar = document.getElementById('buscar-decanato').value;
