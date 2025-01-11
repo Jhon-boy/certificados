@@ -30,6 +30,7 @@ namespace certificados.models.Context
         public DbSet<Trol> Trol { get; set; }
         public DbSet<TtipoEvento> TtipoEvento { get; set; }
         public DbSet<Tusuario> Tusuario { get; set; }
+        public DbSet<Tciclo> Tciclo { get; set; }
 
         /* Para mapear entidades auditoria */
 
@@ -51,6 +52,7 @@ namespace certificados.models.Context
         public DbSet<TrolAuditoria> TrolAuditoria { get; set; }
         public DbSet<TtipoEventoAuditoria> TtipoEventoAuditoria { get; set; }
         public DbSet<TusuarioAuditoria> TusuarioAuditoria { get; set; }
+        public DbSet<TcicloAuditoria> TcicloAuditoria { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -73,6 +75,7 @@ namespace certificados.models.Context
             modelBuilder.Entity<Trol>().ToTable("Trol", schema: "dbo");
             modelBuilder.Entity<TtipoEvento>().ToTable("TtipoEvento", schema: "dbo");
             modelBuilder.Entity<Tusuario>().ToTable("Tusuario", schema: "dbo");
+            modelBuilder.Entity<Tciclo>().ToTable("Tciclo", schema: "dbo");
 
             modelBuilder.Entity<TactaAsistenciaAuditoria>().ToTable("TactaAsistencia", schema: "auditoria");
             modelBuilder.Entity<TactaCalificacionAuditoria>().ToTable("TactaCalificacion", schema: "auditoria");
@@ -92,6 +95,7 @@ namespace certificados.models.Context
             modelBuilder.Entity<TrolAuditoria>().ToTable("Trol", schema: "auditoria");
             modelBuilder.Entity<TtipoEventoAuditoria>().ToTable("TtipoEvento", schema: "auditoria");
             modelBuilder.Entity<TusuarioAuditoria>().ToTable("Tusuario", schema: "auditoria");
+            modelBuilder.Entity<TcicloAuditoria>().ToTable("TcicloAuditoria", schema: "auditoria");
         }
     }
 }
