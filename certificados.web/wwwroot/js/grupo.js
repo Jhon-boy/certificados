@@ -93,7 +93,7 @@ async function handleAgregarGrupo(event) {
         if (response.cod === Utils.COD_OK) {
             Utils.showToast('GRUPO REGISTRADO EXITOSAMENTE', 'info');
             cargarDatosGrupos();
-            limpiarFormulario();
+            limpiarFormularioGrupo();
             // Cambiar a la pestaña de la tabla
             const tablaTab = document.querySelector('#tabla-tab');
             const tab = new bootstrap.Tab(tablaTab);
@@ -210,7 +210,7 @@ async function eliminarGrupo(id) {
 }
 
 // Función para limpiar formulario
-function limpiarFormulario() {
+function limpiarFormularioGrupo() {
     document.getElementById('grupo-nombre').value = '';
     document.getElementById('grupo-cantidad').value = '';
     document.getElementById('grupo-usuario').value = userInfo.nombre;
