@@ -44,18 +44,18 @@
     <!-- TAB para AGREGAR -->
     <div class="tab-pane fade" id="nav-add" role="tabpanel" aria-labelledby="add-tab" tabindex="0">
         <div class=" card mx-2 p4 container mt-4">
-            <form id="personaForm" class="needs-validation px-3 py-3" novalidate onsubmit="return savePersona(event)">
+            <form id="personaForm" class="px-3 py-3" novalidate onsubmit="return savePersona(event)">
                 <div class="row">
                     <!-- Primera fila: Cédula, Edad, Género -->
                     <div class="col-md-4 mb-3 position-relative">
                         <label for="cedula" class="form-label">Cédula</label>
                         <input  pattern="[0-9]{10}" maxlength="10" type="text" id="cedula" class="form-control" placeholder="Ingrese la cédula" required>
-                        <div class="invalid-tooltip">Escribe la cédula</div>
+                      
                     </div>
                     <div class="col-md-4 mb-3 position-relative">
                         <label for="edad" class="form-label">Edad</label>
                         <input min="0" max="120" type="number" id="edad" class="form-control" placeholder="Ingrese la edad" required>
-                        <div class="invalid-tooltip">Escribe la edad</div>
+                    
                     </div>
                     <div class="col-md-4 mb-3">
                         <label for="genero" class="form-label">Género</label>
@@ -72,12 +72,12 @@
                     <div class="col-md-6 mb-3 position-relative">
                         <label for="nombres" class="form-label">Nombres</label>
                         <input maxlength="35 type=" text" id="nombres" class="form-control" placeholder="Ingrese los nombres" required>
-                        <div class="invalid-tooltip">Escribe los nombres</div>
+                
                     </div>
                     <div class="col-md-6 mb-3 position-relative">
                         <label for="apellidos" class="form-label">Apellidos</label>
                         <input maxlength="35 type="text" id="apellidos" class="form-control" placeholder="Ingrese los apellidos" required>
-                        <div class="invalid-tooltip">Escribe los apellidos</div>
+                     
                     </div>
                 </div>
 
@@ -86,7 +86,7 @@
                     <div class="col-md-4 mb-3 position-relative">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" id="email" class="form-control" placeholder="Ingrese el email" required>
-                        <div class="invalid-tooltip">Selecciona un email</div>
+              
                     </div>
                     <div class="col-md-4 mb-3 position-relative">
                         <label for="clave" class="form-label">Asignacion automatica Contraseña</label>
@@ -96,8 +96,7 @@
                         <label for="idRol" class="form-label">Rol</label>
                         <select id="idRol" class="form-select" required>
                             <option value="">Seleccione un rol</option>
-                        </select>
-                        <div class="invalid-tooltip">Selecciona un rol</div>
+                        </select> 
                     </div>
                 </div>
 
@@ -112,7 +111,7 @@
                 <!-- Botones -->
                 <div class="col-12 d-flex mb-2 justify-content-center">
                     <button type="submit" class="btn btn-primary me-3">Guardar</button>
-                    <button class="btn btn-danger" type="button" onclick="resetPersonaForm()">Cancelar</button>
+                    <button class="btn btn-danger" type="button" onclick="resetPersonaForm(event)">Cancelar</button>
                 </div>
             </form>
 

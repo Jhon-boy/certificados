@@ -16,6 +16,11 @@ namespace certificados.dal.DataAccess
             ResponseApp response = Utils.BadResponse(null);
             try
             {
+                var existeRol = context.Trol.Any(e => e.Nombre.ToLower() == tRol.Nombre.ToLower());
+                if (existeRol) {
+                     response.Message = "El nombre de este ROL ya Existe";
+                    return response;
+                }
                 Trol insertRol = new Trol();
                 insertRol.Nombre = Utils.SafeString(tRol.Nombre);
                 insertRol.Observacion = Utils.SafeString(tRol.Observacion);
@@ -102,7 +107,7 @@ namespace certificados.dal.DataAccess
 
             try
             {
-                var listaRoles = context.Trol.ToList();
+                var listaRoles = context.Trol.Where(e => e.Estado == true).ToList();
                 if (listaRoles.Any())
                 {
                     response = Utils.OkResponse(listaRoles);

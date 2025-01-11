@@ -148,9 +148,10 @@ namespace certificados.dal.DataAccess
                            .Select(usuario => new
                            {
                                Email = usuario.Email,
+                               Estado = usuario.Estado,
                                Rol = context.Tusuario
                                     .Where(u => u.Cedula == persona.Cedula)
-                                    .Include(u => u.Trol) // Incluir la relación con Trol
+                                    .Include(u => u.Trol)  
                                     .Select(u => u.Trol.Nombre)
 
                                     .Distinct()

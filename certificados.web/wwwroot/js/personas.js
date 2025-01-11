@@ -28,6 +28,9 @@ async function cargarDatospersonas() {
             if (response.cod === Utils.COD_OK && response.data.length > 0) {
 
                 response.data.forEach(persona => {
+                    if (persona.mDatos.estado != 'ACT') {
+                        return;
+                    }
                     const genero = persona.genero == 'M'
                         ? '<i class="bi bi-person-standing text-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Masculino"></i>'
                         : '<i class="bi bi-person-standing-dress text-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Femenino"></i>';
@@ -335,14 +338,11 @@ function validarEmail(email) {
 
 
 async function savePersona(event) {
-    const form = event.target.closest("form");
-    if (!form.checkValidity()) {
-        event.preventDefault();
-        event.stopPropagation();
-        form.classList.add('was-validated');
+    event.preventDefault();
+    if (!validarFormularioPersona()) {
+ 
         return false; 
     }
-    event.preventDefault();
     const cedula = document.getElementById("cedula").value;
     const nombres = document.getElementById("nombres").value;
     const apellidos = document.getElementById("apellidos").value;
@@ -387,7 +387,7 @@ async function savePersona(event) {
 
         if (responseRequest.cod === Utils.COD_OK) {
             Utils.showToast("Persona guardada con éxito", "success");
-            resetPersonaForm();
+            resetPersonaForm(event);
             cargarDatospersonas();
         } else {
             Utils.showToast(responseRequest.message || "Error al guardar la persona", "danger");
@@ -474,28 +474,11 @@ function habilitarValidacioPersonas() {
 
 }
 //Validar entrada
-function resetPersonaForm() {
-    const form = document.getElementById("personaForm");
-    if (!form) {
-        console.error("Formulario 'personaForm' no encontrado.");
-        return;
-    }
-
-    // Limpiar manualmente todos los campos del formulario
-    form.querySelectorAll("input, select").forEach(element => {
-        if (element.type === "checkbox" || element.type === "radio") {
-            element.checked = false;
-        } else {
-            element.value = ""; 
-        }
-    });
-     
-    form.querySelectorAll(".is-invalid").forEach(element => {
-        element.classList.remove("is-invalid");
-    });
-    form.querySelectorAll(".is-valid").forEach(element => {
-        element.classList.remove("is-valid");
-    });
+function resetPersonaForm(event) {
+    event.preventDefault();
+    document.getElementById("personaForm").reset();
+    const campos = ["cedula", "edad", "genero", "nombres", "apellidos", "email", "idRol"];
+    campos.forEach(campo => document.getElementById(campo).classList.remove("is-invalid"));
 }
 
 
@@ -506,4 +489,63 @@ function generarAccionesHtml(tipo, cedula) {
             <button class="btn btn-primary btn-sm" onclick="editarElemento('${tipo}', '${cedula}')">Editar</button>
             <button class="btn btn-danger btn-sm" onclick="eliminarElemento('${tipo}', '${cedula}')">Eliminar</button>
         </div>`;
+}
+
+function validarFormularioPersona() {
+    const cedula = document.getElementById("cedula").value.trim();
+    const edad = document.getElementById("edad").value.trim();
+    const genero = document.getElementById("genero").value;
+    const nombres = document.getElementById("nombres").value.trim();
+    const apellidos = document.getElementById("apellidos").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const rol = document.getElementById("idRol").value;
+     
+    const campos = ["cedula", "edad", "genero", "nombres", "apellidos", "email", "idRol"];
+    campos.forEach(campo => document.getElementById(campo).classList.remove("is-invalid"));
+
+    let isValid = true;
+
+    if (!cedula || !/^\d{10}$/.test(cedula)) {
+        document.getElementById("cedula").classList.add("is-invalid");
+        Utils.showErrorModal("La cédula debe tener exactamente 10 dígitos numéricos.");
+        return false;
+    }
+
+    if (!edad || isNaN(edad) || edad < 0 || edad > 120) {
+        document.getElementById("edad").classList.add("is-invalid");
+         Utils.showErrorModal("La edad debe estar entre 0 y 120.");
+        return false;
+    }
+
+    if (!genero) {
+        document.getElementById("genero").classList.add("is-invalid");
+         Utils.showErrorModal("Selecciona un género.");
+         return false;
+    }
+
+    if (!nombres) {
+        document.getElementById("nombres").classList.add("is-invalid");
+         Utils.showErrorModal("El campo 'Nombres' es obligatorio.");
+         return false;
+    }
+
+    if (!apellidos) {
+        document.getElementById("apellidos").classList.add("is-invalid");
+         Utils.showErrorModal("El campo 'Apellidos' es obligatorio.");
+         return false;
+    }
+
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+        document.getElementById("email").classList.add("is-invalid");
+         Utils.showErrorModal("El correo electrónico no es válido.");
+         return false;
+    }
+
+    if (!rol) {
+        document.getElementById("idRol").classList.add("is-invalid");
+         Utils.showErrorModal("Selecciona un rol.");
+         return false;
+    }
+
+    return isValid;
 }
