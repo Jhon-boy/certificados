@@ -1,8 +1,8 @@
-﻿// Función para cargar datos de modalidades
-async function cargarDatosModalidades() {
+﻿// Función para cargar datos de ciclos
+async function cargarDatosCiclos() {
     try {
         const response = await Utils.httpRequest(
-            `${Utils.path}/modalidad/all`,
+            `${Utils.path}/ciclo/all`,
             {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
@@ -11,30 +11,30 @@ async function cargarDatosModalidades() {
         );
 
         setTimeout(() => {
-            const tablaBody = document.querySelector("#tabla-modalidad tbody");
+            const tablaBody = document.querySelector("#tabla-ciclo tbody");
             tablaBody.innerHTML = '';
 
             if (response.cod === Utils.COD_OK && response.data.length > 0) {
-                response.data.forEach(modalidad => {
+                response.data.forEach(ciclo => {
                     const fila = `
                         <tr>
-                            <td>${modalidad.idModalidad}</td>
-                            <td>${modalidad.nombre}</td>
-                            <td>${modalidad.descripcion}</td>
-                            <td>${modalidad.ususarioIngreso || 'No disponible'}</td>
+                            <td>${ciclo.idCiclo}</td>
+                            <td>${ciclo.nombre}</td>
+                            <td>${ciclo.descripcion}</td>
+                            <td>${ciclo.usuarioIngreso || 'No disponible'}</td>
                             <td>
                                 <i class="bi bi-pencil-fill text-success me-3" 
                                    style="cursor: pointer;" 
-                                   onclick="editarModalidad(${modalidad.idModalidad})" 
+                                   onclick="editarCiclo(${ciclo.idCiclo})" 
                                    data-bs-toggle="tooltip" 
                                    data-bs-placement="top" 
-                                   title="Editar Modalidad"></i>
+                                   title="Editar Ciclo"></i>
                                 <i class="bi bi-trash-fill text-danger" 
                                    style="cursor: pointer;" 
-                                   onclick="eliminarModalidad(${modalidad.idModalidad})" 
+                                   onclick="eliminarCiclo(${ciclo.idCiclo})" 
                                    data-bs-toggle="tooltip" 
                                    data-bs-placement="top" 
-                                   title="Eliminar Modalidad"></i>
+                                   title="Eliminar Ciclo"></i>
                             </td>
                         </tr>
                     `;
@@ -43,7 +43,7 @@ async function cargarDatosModalidades() {
                 Utils.showToast('DATOS CARGADOS EXITOSAMENTE', 'success');
 
                 // Establecer usuario actual en el formulario
-                document.getElementById("modalidad-usuario").value = userInfo.nombre;
+                document.getElementById("ciclo-usuario").value = userInfo.nombre;
 
                 // Inicializar tooltips
                 const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
@@ -51,8 +51,8 @@ async function cargarDatosModalidades() {
                     new bootstrap.Tooltip(tooltipTriggerEl);
                 });
             } else {
-                tablaBody.innerHTML = '<tr><td colspan="5" class="text-center">No se encontraron modalidades.</td></tr>';
-                Utils.showToast('NO EXISTEN MODALIDADES REGISTRADAS', 'info');
+                tablaBody.innerHTML = '<tr><td colspan="4" class="text-center">No se encontraron ciclos.</td></tr>';
+                Utils.showToast('NO EXISTEN CICLOS REGISTRADOS', 'info');
             }
         }, 150);
 
@@ -61,8 +61,8 @@ async function cargarDatosModalidades() {
     }
 }
 
-// Manejador para crear nueva modalidad
-async function handleAgregarModalidad(event) {
+// Manejador para crear nuevo ciclo
+async function handleAgregarCiclo(event) {
     const form = event.target.closest("form");
 
     if (!form.checkValidity()) {
@@ -74,14 +74,14 @@ async function handleAgregarModalidad(event) {
     event.preventDefault();
 
     const bodyRequest = {
-        Nombre: document.getElementById('modalidad-nombre').value,
-        Descripcion: document.getElementById('modalidad-descripcion').value,
+        Nombre: document.getElementById('ciclo-nombre').value,
+        Descripcion: document.getElementById('ciclo-descripcion').value,
         UsuarioIngreso: userInfo.idUsuario
     };
 
     try {
         const response = await Utils.httpRequest(
-            `${Utils.path}/modalidad/crear`,
+            `${Utils.path}/ciclo/crear`,
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -91,8 +91,8 @@ async function handleAgregarModalidad(event) {
         );
 
         if (response.cod === Utils.COD_OK) {
-            Utils.showToast('MODALIDAD REGISTRADA EXITOSAMENTE', 'info');
-            cargarDatosModalidades();
+            Utils.showToast('CICLO REGISTRADO EXITOSAMENTE', 'info');
+            cargarDatosCiclos();
             limpiarFormulario();
             // Cambiar a la pestaña de la tabla
             const tablaTab = document.querySelector('#tabla-tab');
@@ -104,42 +104,42 @@ async function handleAgregarModalidad(event) {
             Utils.showErrorModal(messageClient, messageTech);
         }
     } catch (error) {
-        Utils.showToast("Error al agregar la modalidad", 'danger');
+        Utils.showToast("Error al agregar el ciclo", 'danger');
     }
 }
 
-// Función para editar modalidad
-async function editarModalidad(id) {
+// Función para editar ciclo
+async function editarCiclo(id) {
     try {
         const response = await Utils.httpRequest(
-            `${Utils.path}/modalidad/id`,
+            `${Utils.path}/ciclo/id`,
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ idModalidad: id })
+                body: JSON.stringify({ idCiclo: id })
             },
             true
         );
 
         if (response.cod === Utils.COD_OK) {
-            const modalidad = response.data;
-            document.getElementById('modalidad-id-editar').value = modalidad.idModalidad;
-            document.getElementById('modalidad-nombre-editar').value = modalidad.nombre;
-            document.getElementById('modalidad-descripcion-editar').value = modalidad.descripcion;
-            document.getElementById('modalidad-usuario-editar').value = modalidad.ususarioIngreso;
+            const ciclo = response.data;
+            document.getElementById('ciclo-id-editar').value = ciclo.idCiclo;
+            document.getElementById('ciclo-nombre-editar').value = ciclo.nombre;
+            document.getElementById('ciclo-descripcion-editar').value = ciclo.descripcion;
+            document.getElementById('ciclo-usuario-editar').value = ciclo.usuarioIngreso;
 
             const modal = new bootstrap.Modal(document.getElementById('modal-editar'));
             modal.show();
         } else {
-            Utils.showToast("Error al cargar datos de la modalidad", 'danger');
+            Utils.showToast("Error al cargar datos del ciclo", 'danger');
         }
     } catch (error) {
-        Utils.showToast("Error al obtener los datos de la modalidad", 'danger');
+        Utils.showToast("Error al obtener los datos del ciclo", 'danger');
     }
 }
 
 // Manejador para guardar edición
-async function handleEditarModalidad(event) {
+async function handleEditarCiclo(event) {
     const form = event.target.closest("form");
 
     if (!form.checkValidity()) {
@@ -149,15 +149,15 @@ async function handleEditarModalidad(event) {
     event.preventDefault();
 
     const bodyRequest = {
-        idModalidad: document.getElementById('modalidad-id-editar').value,
-        Nombre: document.getElementById('modalidad-nombre-editar').value,
-        Descripcion: document.getElementById('modalidad-descripcion-editar').value,
-        UsuarioActualizacion: userInfo.idUsuario
+        idCiclo: document.getElementById('ciclo-id-editar').value,
+        Nombre: document.getElementById('ciclo-nombre-editar').value,
+        Descripcion: document.getElementById('ciclo-descripcion-editar').value,
+        UserModificacion: userInfo.idUsuario
     };
 
     try {
         const response = await Utils.httpRequest(
-            `${Utils.path}/modalidad/modificar`,
+            `${Utils.path}/ciclo/modificar`,
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -167,8 +167,8 @@ async function handleEditarModalidad(event) {
         );
 
         if (response.cod === Utils.COD_OK) {
-            Utils.showToast("Modalidad actualizada exitosamente", 'info');
-            cargarDatosModalidades();
+            Utils.showToast("Ciclo actualizado exitosamente", 'info');
+            cargarDatosCiclos();
             const modal = bootstrap.Modal.getInstance(document.getElementById('modal-editar'));
             modal.hide();
         } else {
@@ -177,43 +177,42 @@ async function handleEditarModalidad(event) {
             Utils.showErrorModal(messageClient, messageTech);
         }
     } catch (error) {
-        Utils.showToast("Error al actualizar la modalidad", 'danger');
+        Utils.showToast("Error al actualizar el ciclo", 'danger');
     }
 }
 
-// Función para eliminar modalidad
-async function eliminarModalidad(id) {
-    if (!confirm('¿Está seguro que desea eliminar esta modalidad?')) return;
+// Función para eliminar ciclo
+async function eliminarCiclo(id) {
+    if (!confirm('¿Está seguro que desea eliminar este ciclo?')) return;
 
     try {
         const response = await Utils.httpRequest(
-            `${Utils.path}/modalidad/eliminar`,
+            `${Utils.path}/ciclo/eliminar`,
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ idModalidad: id })
+                body: JSON.stringify({ idCiclo: id })
             },
             true
         );
 
         if (response.cod === Utils.COD_OK) {
-            Utils.showToast("Modalidad eliminada exitosamente", 'success');
-            cargarDatosModalidades();
+            Utils.showToast("Ciclo eliminado exitosamente", 'success');
+            cargarDatosCiclos();
         } else {
-            const messageClient = response.message || "Error al eliminar la modalidad.";
+            const messageClient = response.message || "Error al eliminar el ciclo.";
             const messageTech = response.data || null;
             Utils.showErrorModal(messageClient, messageTech);
         }
     } catch (error) {
-        Utils.showToast("Error al eliminar la modalidad", 'danger');
+        Utils.showToast("Error al eliminar el ciclo", 'danger');
     }
 }
 
 // Función para limpiar formulario
 function limpiarFormulario() {
-    document.getElementById('modalidad-nombre').value = '';
-    document.getElementById('modalidad-descripcion').value = '';
-    document.getElementById('modalidad-usuario').value = userInfo.nombre;
+    document.getElementById('ciclo-nombre').value = '';
+    document.getElementById('ciclo-descripcion').value = '';
 
     const form = document.querySelector('.needs-validation');
     if (form) {
