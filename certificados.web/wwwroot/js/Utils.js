@@ -202,7 +202,41 @@ const Utils = (() => {
         const monthNames = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
         const monthName = monthNames[parseInt(month, 10) - 1];  
         return `${year}/${monthName}/${day}`;
-    };
+    }; 
+
+    const validarFormulario = (formId)  => {
+        const form = document.getElementById(formId);
+        let isValid = true;
+         
+        form.querySelectorAll('.invalid-feedback').forEach(feedback => feedback.remove());
+        form.querySelectorAll('.is-invalid').forEach(input => input.classList.remove('is-invalid'));
+         
+        form.querySelectorAll('[required]').forEach(input => {
+            if (!input.value.trim()) {
+                isValid = false;
+                marcarError(input, "Este campo es obligatorio");
+            }
+        });
+
+        form.querySelectorAll('[pattern]').forEach(input => {
+            const pattern = new RegExp(input.getAttribute('pattern'));
+            if (!pattern.test(input.value.trim())) {
+                isValid = false;
+                marcarError(input, "Formato inválido");
+            }
+        });
+
+        return isValid;
+    }
+
+    const  marcarError = (input, mensaje)  => {
+        input.classList.add('is-invalid');
+        const feedback = document.createElement('div');
+        feedback.classList.add('invalid-feedback');
+        feedback.textContent = mensaje;
+        input.parentElement.appendChild(feedback);
+    }
+
 
     createLoader(); // Crea el loader al inicializar
 
@@ -219,7 +253,9 @@ const Utils = (() => {
         createSuccessRequest,
         hideLoader,
         showLoader,
-        formatFecha
+        formatFecha,
+        marcarError,
+        validarFormulario
  
     };
 })();

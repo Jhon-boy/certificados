@@ -88,6 +88,7 @@ async function agregarRol(event) {
 
         if (rolesResponse.cod === Utils.COD_OK) {
             Utils.showToast('ROL REGISTRADO EXITOSAMENTE', 'info');
+            limpiarRol(event);
             cargarDatosRoles();
         } else {
             const messageClient = rolesResponse.message || "Ocurrió un error inesperado.";
