@@ -43,45 +43,70 @@
                     Buscar por ID el Evento
                 </label>
                 <div class="input-group my-2">
-                    <input type="text" id="buscar-evento" class="form-control form-control-sm" placeholder="Ingresa el ID del rol" required>
-                    <button class="btn btn-primary" type="button" onclick="buscarRol()">  Buscar  </button>
+                    <input type="number" id="buscarevento" class="form-control form-control-sm" placeholder="Ingresa el ID del evento" required>
+                    <button class="btn btn-primary" type="button" onclick="buscarEvento()">  Buscar  </button>
                 </div>
             </div>
         </center> 
-            <div class="card mx-5 my-5 p-4 shadow-sm"> 
+            <div class="card mx-4 my-4 p-4 shadow-sm"> 
                     <h5 class="card-title mb-4">Evento</h5>
                     <div class="row g-3">
-                        <div class="col-md-6">
-                            <label for="fechaInicio" class="form-label">Fecha Inicio</label>
-                            <input type="text" class="form-control" id="fechaInicio" disabled readonly>
-                        </div>
-                        <div class="col-md-6">
-                            <label for="fechaFin" class="form-label">Fecha Fin</label>
-                            <input type="text" class="form-control" id="fechaFin" disabled readonly>
-                        </div>
-                        <div class="col-md-12">
-                            <label for="lugar" class="form-label">Lugar</label>
-                            <input type="text" class="form-control" id="lugar" disabled readonly>
-                        </div>
+                        
                         <div class="col-md-6">
                             <label for="tematica" class="form-label">Temática</label>
-                            <input type="text" class="form-control" id="tematica" disabled readonly>
+                            <input type="text" class="form-control" id="tematicaE" disabled readonly>
                         </div>
                         <div class="col-md-6">
                             <label for="dominio" class="form-label">Dominio</label>
-                            <input type="text" class="form-control" id="dominio" disabled readonly>
+                            <input type="text" class="form-control" id="dominioE" disabled readonly>
                         </div>
                         <div class="col-md-6">
                             <label for="modalidad" class="form-label">Modalidad</label>
-                            <input type="text" class="form-control" id="modalidad" disabled readonly>
+                            <input type="text" class="form-control" id="modalidadE" disabled readonly>
                         </div>
                         <div class="col-md-6">
                             <label for="tipoEvento" class="form-label">Tipo Evento</label>
-                            <input type="text" class="form-control" id="tipoEvento" disabled readonly>
+                            <input type="text" class="form-control" id="tipoEventoE" disabled readonly>
                         </div>
-                        <div class="col-md-12">
+                        <div class="col-md-6">
                             <label for="decanato" class="form-label">Decanato</label>
-                            <input type="text" class="form-control" id="decanato" disabled readonly>
+                            <input type="text" class="form-control" id="decanatoE" disabled readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="lugar" class="form-label">Lugar</label>
+                            <input type="text" class="form-control" id="lugarE" disabled readonly>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="fechaInicio" class="form-label">Fecha Inicio</label>
+                            <input type="text" class="form-control" id="fechaInicioE" disabled readonly>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="fechaFin" class="form-label">Fecha Fin</label>
+                            <input type="text" class="form-control" id="fechaFinE" disabled readonly>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="fechaFin" class="form-label">Con Certificado</label>
+                            <input type="text" class="form-control" id="conCertificado" disabled readonly>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="fechaFin" class="form-label">Horas</label>
+                            <input type="text" class="form-control" id="horasEvento" disabled readonly>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="tipoEvento" class="form-label">U. Ingreso</label>
+                            <input type="text" class="form-control" id="uIngresoE" disabled readonly>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="tipoEvento" class="form-label">U. Actualización</label>
+                            <input type="text" class="form-control" id="uActualizacionE" disabled readonly>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="tipoEvento" class="form-label">F. Ingreso</label>
+                            <input type="text" class="form-control" id="fIngresoEvento" disabled readonly>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="tipoEvento" class="form-label">F. Actualizacion</label>
+                            <input type="text" class="form-control" id="fActualizacionEvento" disabled readonly>
                         </div>
                     </div>
                 </div>  
@@ -106,6 +131,7 @@
                         <th>F. Registro</th>
                         <th>F. Actualizacion</th>
                         <th>U. Ingreso</th> 
+                        <th>U. Actualización</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -128,17 +154,17 @@
                 <form id="formAgregarTipo">
                     <div class="mb-3">
                         <label for="nombreTipo" class="form-label">Nombre</label>
-                        <input type="text" class="form-control" id="nombreTipo" placeholder="Ingrese el nombre" required>
+                        <input type="text" class="form-control" id="nombreTipoC" placeholder="Ingrese el nombre" required>
                     </div>
                     <div class="mb-3">
                         <label for="descripcionTipo" class="form-label">Descripción</label>
-                        <textarea class="form-control" id="descripcionTipo" placeholder="Ingrese la descripción" rows="3" required></textarea>
+                        <textarea class="form-control" id="descripcionTipoC" placeholder="Ingrese la descripción" rows="3" required></textarea>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary" id="guardarTipo">Guardar</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+                <button onclick="crearTipoEvento(event)" type="button" class="btn btn-primary" id="guardarTipo">Guardar</button>
             </div>
         </div>
     </div>
@@ -242,11 +268,11 @@
                         </div>
                         <div class="col-md-4">
                             <label for="GrupoParticipante" class="form-label">Grupo Participante</label>
-                            <input type="text" class="form-control" id="grupoParticipante" name="grupoParticipante" readonly>
+                            <input type="text" class="form-control" id="grupoParticipante" name="grupoParticipante" disabled>
                         </div>
                         <div class="col-md-3">
                             <label for="U Actualizacion" class="form-label">U. Actualizacion</label>
-                            <input type="text" class="form-control" id="uActualizacion" name="uActualizacion" readonly>
+                            <input type="text" class="form-control" id="uActualizacion" name="uActualizacion" disabled>
                         </div>
                     </div>
               
@@ -274,9 +300,14 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <label for="idTipoEventoE" class="form-label">ID del Tipo de Evento</label>
-                            <input type="text" class="form-control" id="idTipoEventoE" name="idTipoEventoE" readonly>
+                            <input type="text" class="form-control" id="idTipoEventoE" name="idTipoEventoE" disabled>
                         </div>
                         <div class="col-md-6">
+                            <label for="usuarioActualizacion" class="form-label">Usuario Actualización</label>
+                            <input type="text" class="form-control" id="usuarioActualizacion" name="usuarioActualizacion" disabled>
+                        </div>
+
+                        <div class="col-md-12">
                             <label for="nombreTipoEvento" class="form-label">Nombre</label>
                             <input type="text" class="form-control" id="nombreTipoEvento" name="nombreTipoEvento" required>
                         </div>
@@ -287,17 +318,12 @@
                             <textarea class="form-control" id="descripcionTipoEvento" name="descripcionTipoEvento" rows="3" required></textarea>
                         </div>
                     </div>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="usuarioActualizacion" class="form-label">Usuario Actualización</label>
-                            <input type="text" class="form-control" id="usuarioActualizacion" name="usuarioActualizacion" readonly>
-                        </div>
-                    </div>
+                     
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit" form="formEditarTipoEvento" class="btn btn-primary">Guardar Cambios</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                <button onclick="confirmarEditarTipoEvento(event)" type="submit" form="formEditarTipoEvento" class="btn btn-primary">Guardar Cambios</button>
             </div>
         </div>
     </div>
