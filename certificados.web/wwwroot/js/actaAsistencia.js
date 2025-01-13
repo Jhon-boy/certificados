@@ -13,24 +13,39 @@ async function inciarDatosActaAsistencia() {
         setTimeout(() => {
             const response = eventosResponse;
 
-            if (response.cod === Utils.COD_OK && response.data.length > 0) {
-                // Obtener referencia al select
-                const selectEvento = document.getElementById("eventoActaAsistencia");
-                 
-                selectEvento.innerHTML = "";
-                 
-                const defaultOption = document.createElement("option");
-                defaultOption.value = "";
-                defaultOption.textContent = "Seleccione un evento";
-                defaultOption.disabled = true;
-                defaultOption.selected = true;
-                selectEvento.appendChild(defaultOption);
-                 
+            if (response.cod === Utils.COD_OK && response.data.length > 0) { 
+                const selectEventoActaAsistencia = document.getElementById("eventoActaAsistencia");
+                selectEventoActaAsistencia.innerHTML = "";
+
+                const defaultOptionActaAsistencia = document.createElement("option");
+                defaultOptionActaAsistencia.value = "";
+                defaultOptionActaAsistencia.textContent = "Seleccione un evento";
+                defaultOptionActaAsistencia.disabled = true;
+                defaultOptionActaAsistencia.selected = true;
+                selectEventoActaAsistencia.appendChild(defaultOptionActaAsistencia);
+
                 response.data.forEach(evento => {
                     const option = document.createElement("option");
-                    option.value = evento.idevento;  
-                    option.textContent = evento.dominio; 
-                    selectEvento.appendChild(option);
+                    option.value = evento.idevento;
+                    option.textContent = evento.dominio;
+                    selectEventoActaAsistencia.appendChild(option);
+                });
+                 
+                const selectEventoActaAsistenciaAll = document.getElementById("eventoActaAsistenciaAll");
+                selectEventoActaAsistenciaAll.innerHTML = "";
+
+                const defaultOptionActaAsistenciaAll = document.createElement("option");
+                defaultOptionActaAsistenciaAll.value = "";
+                defaultOptionActaAsistenciaAll.textContent = "Seleccione un evento";
+                defaultOptionActaAsistenciaAll.disabled = true;
+                defaultOptionActaAsistenciaAll.selected = true;
+                selectEventoActaAsistenciaAll.appendChild(defaultOptionActaAsistenciaAll);
+
+                response.data.forEach(evento => {
+                    const option = document.createElement("option");
+                    option.value = evento.idevento;
+                    option.textContent = evento.dominio;
+                    selectEventoActaAsistenciaAll.appendChild(option);
                 });
 
                 Utils.showToast('DATOS CARGADOS EXITOSAMENTE', 'success');
@@ -145,4 +160,69 @@ async function buscarActaAsistencia() {
         console.log(error);
         Utils.showToast("Error al agregar el rol:", 'danger');
     }
+} async function cargarActaAsistencia() {
+    let hasData = false;  
+
+    try { 
+        const idActaReferencia = parseInt(document.getElementById('eventoActaAsistenciaAll').value, 10);
+         
+        const eventosAllResponse = await Utils.httpRequest(
+            `${Utils.path}/asistencia/all`,
+            {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            },
+            true
+        ); 
+        const tableBody = document.querySelector("#tabla-actas tbody");
+        tableBody.innerHTML = "";
+         
+        if (eventosAllResponse.cod === Utils.COD_OK && eventosAllResponse.data.length > 0) { 
+            eventosAllResponse.data.forEach(event => {
+
+                if (parseInt(event.idEvento, 10) === idActaReferencia) {
+                    hasData = true;   
+                     
+                    const row = document.createElement("tr"); 
+                    row.innerHTML = `
+                        <td>${event.idAsistencia}</td>
+                        <td>${event.idEvento}</td>
+                        <td>${event.tevento.dominio}</td>
+                        <td>${event.fCreacion}</td>
+                        <td>${event.usuarioIngreso}</td>
+                        <td>
+                            <i class="bi bi-arrow-down-square-fill text-primary me-3" style="cursor: pointer;" onclick="descargarActa('${event.actaDocumento}')" data-bs-toggle="tooltip" data-bs-placement="top" title="Descargar"></i>
+                            <i class="bi bi-trash-fill text-danger" style="cursor: pointer;" onclick="eliminarActa(${event.idAsistencia})" data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar"></i>
+                        </td>
+                    `;
+                     
+                    tableBody.appendChild(row);
+                }
+            });
+             
+            if (!hasData) {
+                Utils.showToast("El evento no tiene ningún acta registrada", 'info');
+            }
+        } else { 
+            const messageClient = eventosAllResponse.message || "Ocurrió un error inesperado.";
+            const messageTech = eventosAllResponse.data || null;
+            Utils.showErrorModal(messageClient, messageTech);
+        }
+    } catch (error) { 
+        console.log('Error:', error);
+        Utils.showToast("Error al buscar las actas del evento", 'danger');
+    }
+}
+
+async function eliminarActa(id) {
+
+}
+function descargarActa(actaDocumento) {
+    console.log('descanando');
+    const blob = new Blob([new Uint8Array(atob(actaDocumento).split("").map(char => char.charCodeAt(0)))], { type: "application/pdf" });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    const nombreDescarga = new Date().getTime();
+    link.download = `${nombreDescarga}.csv`
+    link.click();
 }
