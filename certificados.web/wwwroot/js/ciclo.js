@@ -1,8 +1,8 @@
-﻿// Función para cargar datos de grupos
-async function cargarDatosGrupos() {
+﻿// Función para cargar datos de ciclos
+async function cargarDatosCiclos() {
     try {
         const response = await Utils.httpRequest(
-            `${Utils.path}/grupo/all`,
+            `${Utils.path}/ciclo/all`,
             {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
@@ -11,30 +11,30 @@ async function cargarDatosGrupos() {
         );
 
         setTimeout(() => {
-            const tablaBody = document.querySelector("#tabla-grupo tbody");
+            const tablaBody = document.querySelector("#tabla-ciclo tbody");
             tablaBody.innerHTML = '';
 
             if (response.cod === Utils.COD_OK && response.data.length > 0) {
-                response.data.forEach(grupo => {
+                response.data.forEach(ciclo => {
                     const fila = `
                         <tr>
-                            <td>${grupo.idGrupo}</td>
-                            <td>${grupo.nombre}</td>
-                            <td>${grupo.cantidad}</td>
-                            <td>${grupo.usuarioIngreso || 'No disponible'}</td>
+                            <td>${ciclo.idCiclo}</td>
+                            <td>${ciclo.nombre}</td>
+                            <td>${ciclo.descripcion}</td>
+                            <td>${ciclo.usuarioIngreso || 'No disponible'}</td>
                             <td>
                                 <i class="bi bi-pencil-fill text-success me-3" 
                                    style="cursor: pointer;" 
-                                   onclick="editarGrupo(${grupo.idGrupo})" 
+                                   onclick="editarCiclo(${ciclo.idCiclo})" 
                                    data-bs-toggle="tooltip" 
                                    data-bs-placement="top" 
-                                   title="Editar Grupo"></i>
+                                   title="Editar Ciclo"></i>
                                 <i class="bi bi-trash-fill text-danger" 
                                    style="cursor: pointer;" 
-                                   onclick="eliminarGrupo(${grupo.idGrupo})" 
+                                   onclick="eliminarCiclo(${ciclo.idCiclo})" 
                                    data-bs-toggle="tooltip" 
                                    data-bs-placement="top" 
-                                   title="Eliminar Grupo"></i>
+                                   title="Eliminar Ciclo"></i>
                             </td>
                         </tr>
                     `;
@@ -42,27 +42,27 @@ async function cargarDatosGrupos() {
                 });
                 Utils.showToast('DATOS CARGADOS EXITOSAMENTE', 'success');
 
+                // Establecer usuario actual en el formulario
+                document.getElementById("ciclo-usuario").value = userInfo.nombre;
+
                 // Inicializar tooltips
                 const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
                 tooltipTriggerList.forEach(function (tooltipTriggerEl) {
                     new bootstrap.Tooltip(tooltipTriggerEl);
                 });
             } else {
-                tablaBody.innerHTML = '<tr><td colspan="4" class="text-center">No se encontraron grupos.</td></tr>';
-                Utils.showToast('NO EXISTEN GRUPOS REGISTRADOS', 'info');
+                tablaBody.innerHTML = '<tr><td colspan="4" class="text-center">No se encontraron ciclos.</td></tr>';
+                Utils.showToast('NO EXISTEN CICLOS REGISTRADOS', 'info');
             }
         }, 150);
-
-        // Establecer usuario actual en el formulario
-        document.getElementById("grupo-usuario").value = userInfo.nombre;
 
     } catch (error) {
         Utils.showToast("Error cargando datos iniciales", 'error');
     }
 }
 
-// Manejador para crear nuevo grupo
-async function handleAgregarGrupo(event) {
+// Manejador para crear nuevo ciclo
+async function handleAgregarCiclo(event) {
     const form = event.target.closest("form");
 
     if (!form.checkValidity()) {
@@ -74,14 +74,14 @@ async function handleAgregarGrupo(event) {
     event.preventDefault();
 
     const bodyRequest = {
-        Nombre: document.getElementById('grupo-nombre').value,
-        Cantidad: parseInt(document.getElementById('grupo-cantidad').value),
+        Nombre: document.getElementById('ciclo-nombre').value,
+        Descripcion: document.getElementById('ciclo-descripcion').value,
         UsuarioIngreso: userInfo.idUsuario
     };
 
     try {
         const response = await Utils.httpRequest(
-            `${Utils.path}/grupo/crear`,
+            `${Utils.path}/ciclo/crear`,
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -91,9 +91,9 @@ async function handleAgregarGrupo(event) {
         );
 
         if (response.cod === Utils.COD_OK) {
-            Utils.showToast('GRUPO REGISTRADO EXITOSAMENTE', 'info');
-            cargarDatosGrupos();
-            limpiarFormularioGrupo();
+            Utils.showToast('CICLO REGISTRADO EXITOSAMENTE', 'info');
+            cargarDatosCiclos();
+            limpiarFormulario();
             // Cambiar a la pestaña de la tabla
             const tablaTab = document.querySelector('#tabla-tab');
             const tab = new bootstrap.Tab(tablaTab);
@@ -104,42 +104,42 @@ async function handleAgregarGrupo(event) {
             Utils.showErrorModal(messageClient, messageTech);
         }
     } catch (error) {
-        Utils.showToast("Error al agregar el grupo", 'danger');
+        Utils.showToast("Error al agregar el ciclo", 'danger');
     }
 }
 
-// Función para editar grupo
-async function editarGrupo(id) {
+// Función para editar ciclo
+async function editarCiclo(id) {
     try {
         const response = await Utils.httpRequest(
-            `${Utils.path}/grupo/id`,
+            `${Utils.path}/ciclo/id`,
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ idGrupo: id })
+                body: JSON.stringify({ idCiclo: id })
             },
             true
         );
 
         if (response.cod === Utils.COD_OK) {
-            const grupo = response.data;
-            document.getElementById('grupo-id-editar').value = grupo.idGrupo;
-            document.getElementById('grupo-nombre-editar').value = grupo.nombre;
-            document.getElementById('grupo-cantidad-editar').value = grupo.cantidad;
-            document.getElementById('grupo-usuario-editar').value = grupo.usuarioIngreso;
+            const ciclo = response.data;
+            document.getElementById('ciclo-id-editar').value = ciclo.idCiclo;
+            document.getElementById('ciclo-nombre-editar').value = ciclo.nombre;
+            document.getElementById('ciclo-descripcion-editar').value = ciclo.descripcion;
+            document.getElementById('ciclo-usuario-editar').value = ciclo.usuarioIngreso;
 
             const modal = new bootstrap.Modal(document.getElementById('modal-editar'));
             modal.show();
         } else {
-            Utils.showToast("Error al cargar datos del grupo", 'danger');
+            Utils.showToast("Error al cargar datos del ciclo", 'danger');
         }
     } catch (error) {
-        Utils.showToast("Error al obtener los datos del grupo", 'danger');
+        Utils.showToast("Error al obtener los datos del ciclo", 'danger');
     }
 }
 
 // Manejador para guardar edición
-async function handleEditarGrupo(event) {
+async function handleEditarCiclo(event) {
     const form = event.target.closest("form");
 
     if (!form.checkValidity()) {
@@ -149,15 +149,15 @@ async function handleEditarGrupo(event) {
     event.preventDefault();
 
     const bodyRequest = {
-        idGrupo: document.getElementById('grupo-id-editar').value,
-        Nombre: document.getElementById('grupo-nombre-editar').value,
-        Cantidad: parseInt(document.getElementById('grupo-cantidad-editar').value),
-        UsuarioActualizacion: userInfo.idUsuario
+        idCiclo: document.getElementById('ciclo-id-editar').value,
+        Nombre: document.getElementById('ciclo-nombre-editar').value,
+        Descripcion: document.getElementById('ciclo-descripcion-editar').value,
+        UserModificacion: userInfo.idUsuario
     };
 
     try {
         const response = await Utils.httpRequest(
-            `${Utils.path}/grupo/modificar`,
+            `${Utils.path}/ciclo/modificar`,
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -167,8 +167,8 @@ async function handleEditarGrupo(event) {
         );
 
         if (response.cod === Utils.COD_OK) {
-            Utils.showToast("Grupo actualizado exitosamente", 'info');
-            cargarDatosGrupos();
+            Utils.showToast("Ciclo actualizado exitosamente", 'info');
+            cargarDatosCiclos();
             const modal = bootstrap.Modal.getInstance(document.getElementById('modal-editar'));
             modal.hide();
         } else {
@@ -177,43 +177,42 @@ async function handleEditarGrupo(event) {
             Utils.showErrorModal(messageClient, messageTech);
         }
     } catch (error) {
-        Utils.showToast("Error al actualizar el grupo", 'danger');
+        Utils.showToast("Error al actualizar el ciclo", 'danger');
     }
 }
 
-// Función para eliminar grupo
-async function eliminarGrupo(id) {
-    if (!confirm('¿Está seguro que desea eliminar este grupo?')) return;
+// Función para eliminar ciclo
+async function eliminarCiclo(id) {
+    if (!confirm('¿Está seguro que desea eliminar este ciclo?')) return;
 
     try {
         const response = await Utils.httpRequest(
-            `${Utils.path}/grupo/eliminar`,
+            `${Utils.path}/ciclo/eliminar`,
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ idGrupo: id })
+                body: JSON.stringify({ idCiclo: id })
             },
             true
         );
 
         if (response.cod === Utils.COD_OK) {
-            Utils.showToast("Grupo eliminado exitosamente", 'success');
-            cargarDatosGrupos();
+            Utils.showToast("Ciclo eliminado exitosamente", 'success');
+            cargarDatosCiclos();
         } else {
-            const messageClient = response.message || "Error al eliminar el grupo.";
+            const messageClient = response.message || "Error al eliminar el ciclo.";
             const messageTech = response.data || null;
             Utils.showErrorModal(messageClient, messageTech);
         }
     } catch (error) {
-        Utils.showToast("Error al eliminar el grupo", 'danger');
+        Utils.showToast("Error al eliminar el ciclo", 'danger');
     }
 }
 
 // Función para limpiar formulario
-function limpiarFormularioGrupo() {
-    document.getElementById('grupo-nombre').value = '';
-    document.getElementById('grupo-cantidad').value = '';
-    document.getElementById('grupo-usuario').value = userInfo.nombre;
+function limpiarFormulario() {
+    document.getElementById('ciclo-nombre').value = '';
+    document.getElementById('ciclo-descripcion').value = '';
 
     const form = document.querySelector('.needs-validation');
     if (form) {

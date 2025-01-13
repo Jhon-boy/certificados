@@ -13,7 +13,7 @@
 <body>
 
     <!-- Sidebar -->
-    <nav class="sidebar">
+    <nav class="sidebar" style="height: 100vh;">
         <div class="logo-container text-center">
             <img src="~/img/logughorizontal.png" alt="Logo UG" class="logo">
         </div>
@@ -35,6 +35,12 @@
                         <li onclick="cargarDatosEventos()" class="nav-item"><a class="nav-link text-white" href="#" id="link-evento" data-view="Eventos"><i class="bi bi-play-btn"></i> Eventos</a></li>
                         <li class="nav-item"><a class="nav-link text-white" href="#" id="link-certificados" data-view="Certificados"><i class="bi bi-clipboard-check"></i> Certificados</a></li>
                         <li onclick="cargarDatosModalidades()" class="nav-item"><a class="nav-link text-white" href="#" id="link-modalidad" data-view="Modalidad"><i class="bi bi-receipt"></i> Modalidad</a></li>
+                        <!-- <li onclick="cargarDatosDocentes()" class="nav-item"><a class="nav-link text-white" href="#" id="link-docente" data-view="Docente"><i class="bi bi-person-workspace"></i> Docentes</a></li> -->
+                        <li class="nav-item"><a class="nav-link text-white" href="#" id="link-decanato" data-view="Decanato"><i class="bi bi-diagram-3"></i> Decanatos</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="#" id="link-evento" data-view="Eventos"><i class="bi bi-calendar-event"></i> Eventos</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="#" id="link-certificados" data-view="Certificados"><i class="bi bi-award"></i> Certificados</a></li>
+                        <!-- <li onclick="cargarDatosModalidades()" class="nav-item"><a class="nav-link text-white" href="#" id="link-modalidad" data-view="Modalidad"><i class="bi bi-layout-text-sidebar"></i> Modalidad</a></li> -->
+                        <li onclick="cargarDatosCiclos()" class="nav-item"><a class="nav-link text-white" href="#" id="link-ciclo" data-view="Ciclo"><i class="bi bi-circle-half"></i> Ciclo</a></li>
                     </ul>
                 </div>
             </li>
@@ -171,5 +177,6 @@
     <script src="~/js/modalidad.js" asp-append-version="true"></script>
     <script src="~/js/decanato.js" asp-append-version="true"></script>
     <script src="~/js/eventos.js" asp-append-version="true"></script>
+    <script src="~/js/ciclo.js" asp-append-version="true"></script>
 </body>
 </html>

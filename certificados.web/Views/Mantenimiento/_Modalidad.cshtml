@@ -36,11 +36,13 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="modalidad-nombre" class="form-label">Nombre</label>
-                        <input type="text" class="form-control" id="modalidad-nombre" name="modalidad-nombre" placeholder="Ingresa el nombre de la modalidad" required>
+                        <input type="text" class="form-control" id="modalidad-nombre" name="modalidad-nombre" placeholder="Ingresa el nombre de la modalidad" required oninput="this.setCustomValidity('')"
+                               oninvalid="this.setCustomValidity('Por favor, complete este campo.')">
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="modalidad-descripcion" class="form-label">Descripción</label>
-                        <input type="text" class="form-control" id="modalidad-descripcion" name="modalidad-descripcion" placeholder="Ingresa la descripción" required>
+                        <input type="text" class="form-control" id="modalidad-descripcion" name="modalidad-descripcion" placeholder="Ingresa la descripción" required oninput="this.setCustomValidity('')"
+                               oninvalid="this.setCustomValidity('Por favor, complete este campo.')">
                     </div>
                 </div>
                 <div class="row">

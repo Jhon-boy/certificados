@@ -42,6 +42,9 @@ async function cargarDatosModalidades() {
                 });
                 Utils.showToast('DATOS CARGADOS EXITOSAMENTE', 'success');
 
+                // Establecer usuario actual en el formulario
+                document.getElementById("modalidad-usuario").value = userInfo.nombre;
+
                 // Inicializar tooltips
                 const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
                 tooltipTriggerList.forEach(function (tooltipTriggerEl) {
@@ -52,9 +55,6 @@ async function cargarDatosModalidades() {
                 Utils.showToast('NO EXISTEN MODALIDADES REGISTRADAS', 'info');
             }
         }, 150);
-
-        // Establecer usuario actual en el formulario
-        document.getElementById("modalidad-usuario").value = userInfo.nombre;
 
     } catch (error) {
         Utils.showToast("Error cargando datos iniciales", 'error');
