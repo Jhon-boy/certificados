@@ -228,13 +228,22 @@ const Utils = (() => {
 
         return isValid;
     }
-
+    //Marca error algun campo del fomrulario
     const  marcarError = (input, mensaje)  => {
         input.classList.add('is-invalid');
         const feedback = document.createElement('div');
         feedback.classList.add('invalid-feedback');
         feedback.textContent = mensaje;
         input.parentElement.appendChild(feedback);
+    }
+    //Convierte en base64 los archivos
+    const  convertirArchivoABase64 = async (file)  => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = (error) => reject(error);
+            reader.readAsDataURL(file);
+        });
     }
 
 
@@ -255,7 +264,8 @@ const Utils = (() => {
         showLoader,
         formatFecha,
         marcarError,
-        validarFormulario
+        validarFormulario,
+        convertirArchivoABase64
  
     };
 })();

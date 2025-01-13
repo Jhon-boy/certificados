@@ -8,10 +8,22 @@ namespace certificados.web.Controllers.Mappers
     {
         public static TactaAsistencia toEntity(ActaAsistenciaDTO dto, Tevento evento) {
 
-            return new TactaAsistencia { 
+            return new TactaAsistencia {
                 IdEvento = dto.IdEvento,
                 ActaDocumento = dto.ActaDocumento,
                 UsuarioIngreso = dto.UsuarioIngreso,
+                FCreacion = Utils.timeParsed(DateTime.Now), 
+                Tevento = evento
+            };
+        }
+        public static TactaAsistencia toEntityUpdate(ActaAsistenciaDTO dto, Tevento evento)
+        {
+
+            return new TactaAsistencia
+            {
+                IdEvento = dto.IdEvento,
+                ActaDocumento = dto.ActaDocumento,
+                UsuarioIngreso = dto.UsuarioIngreso, 
                 FModificacion = Utils.timeParsed(DateTime.Now),
                 Tevento = evento
             };
