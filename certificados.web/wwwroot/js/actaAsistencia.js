@@ -120,7 +120,7 @@ function limpiarCampos() {
 
 async function buscarActaAsistencia() {
     const idActaBuscar = document.getElementById('buscar-actaAsistencia').value;
-
+    limpiarInputs();
     try {
         const payload = {
             "idActa": parseInt(idActaBuscar, 10)
@@ -164,7 +164,7 @@ async function buscarActaAsistencia() {
 
     } catch (error) {
         console.log(error);
-        Utils.showToast("Error al agregar el rol:", 'danger');
+        Utils.showToast("Error al obtener el documento", 'danger');
     }
 }
 async function cargarActaAsistencia() {
@@ -271,4 +271,16 @@ function descargarActa(actaDocumento) {
     const nombreDescarga = new Date().getTime();
     link.download = `${nombreDescarga}.pdf`
     link.click();
+}
+function limpiarInputs() {
+    document.getElementById('dominioA').value = '';
+    document.getElementById('tematicaA').value = '';
+    document.getElementById('idEvento').value = '';
+    document.getElementById('actaId').value = '';
+    document.getElementById('usuarioIngresoA').value = '';
+    document.getElementById('usuarioActualizacionA').value = '';
+    document.getElementById('fechaIngresoA').value = '';
+    document.getElementById('fechaActualizacionA').value = '';
+    document.getElementById('nombreDocumento').value = '';
+    document.getElementById('btnDownload').disabled = true;
 }
