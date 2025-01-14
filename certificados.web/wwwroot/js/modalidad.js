@@ -222,7 +222,7 @@ function limpiarFormulario() {
 }
 
 // Función para habilitar validación
-function habilitarValidacion() {
+function habilitarValidacionModalidad() {
     'use strict';
     const forms = document.querySelectorAll('.needs-validation');
     Array.from(forms).forEach(form => {

@@ -120,7 +120,7 @@ namespace certificados.web.Controllers
         }
         [HttpPost("eliminar")]
         public ActionResult<ResponseApp> EliminarGrupo([FromBody] Dictionary<string, object> request) {
-            if (!request.ContainsKey("idGrupo") || !request.ContainsKey("cedula"))
+            if (!request.ContainsKey("idGrupoPersona") || !request.ContainsKey("cedula"))
             {
                 return Utils.BadResponse("Faltan parámetros en la solicitud.");
             }
@@ -130,9 +130,9 @@ namespace certificados.web.Controllers
             {
                 return Utils.BadResponse("El parámetro 'cedula' no puede estar vacío.");
             }
-            if (!int.TryParse(request["idGrupo"]?.ToString(), out int id))
+            if (!int.TryParse(request["idGrupoPersona"]?.ToString(), out int id))
             {
-                return Utils.BadResponse("El parámetro 'idGrupo' no es válido.");
+                return Utils.BadResponse("El parámetro 'idGrupoPersona' no es válido.");
             }
             return grupoPersonaService.EliminarGrupo(id, cedula );
         }

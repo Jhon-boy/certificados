@@ -7,6 +7,9 @@
         <li class="nav-item" role="presentation">
             <a class="nav-link text-dark" id="formulario-tab" data-bs-toggle="tab" href="#formulario" role="tab" aria-controls="formulario" aria-selected="false">Agregar Docente</a>
         </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link text-dark" id="buscar-tab" data-bs-toggle="tab" href="#buscar" role="tab" aria-controls="buscar" aria-selected="false">Buscar Docente</a>
+        </li>
     </ul>
 
     <div class="tab-content" id="docenteTabContent">
@@ -71,8 +74,8 @@
                     <div class="col-md-6">
                         <label for="docente-estado" class="form-label">Estado</label >
                         <select class="form-control" id="docente-estado" required>
-                            <option value="2">Activo</option>
-                            <option value="3">Inactivo</option>
+                            <option value="1">Activo</option>
+                            <option value="2">Inactivo</option>
                         </select>
                     </div>
                 </div>
@@ -90,6 +93,68 @@
                 </div>
             </form>
         </div>
+
+        <div class="tab-pane fade" id="buscar" role="tabpanel" aria-labelledby="buscar-tab">
+            <form id="form-buscar-docente" class="border border-2 p-4 rounded" onsubmit="return handleBuscarDocente(event)">
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="buscar-cedula" class="form-label">Cédula</label>
+                        <input type="text" class="form-control" id="buscar-cedula" placeholder="Ingresa la cédula" required oninput="this.setCustomValidity('')"
+                               oninvalid="this.setCustomValidity('Por favor, ingresa una cédula válida.')">
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="btn btn-primary mx-2">Buscar</button>
+                </div>
+            </form>
+
+            <form id="form-busqueda-docente" class="border border-2 p-4 rounded mt-4 d-none">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="docente-codigo-buscar" class="form-label">Código Docente</label>
+                        <input type="text" class="form-control" id="docente-codigo-buscar" disabled>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="docente-cedula-buscar" class="form-label">Cédula</label>
+                        <input type="text" class="form-control" id="docente-cedula-buscar" disabled>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="docente-titulo-buscar" class="form-label">Título</label>
+                        <input type="text" class="form-control" id="docente-titulo-buscar" disabled>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="docente-facultad-buscar" class="form-label">Facultad</label>
+                        <input type="text" class="form-control" id="docente-facultad-buscar" disabled>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="docente-carrera-buscar" class="form-label">Carrera</label>
+                        <input type="text" class="form-control" id="docente-carrera-buscar" disabled>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="docente-fecha-buscar" class="form-label">Fecha de Creación</label>
+                        <input type="text" class="form-control" id="docente-fecha-buscar" disabled>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="docente-estado-buscar" class="form-label">Estado</label>
+                        <input type="text" class="form-control" id="docente-estado-buscar" disabled>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="docente-usuario-buscar" class="form-label">Usuario Ingreso</label>
+                        <input type="text" class="form-control" id="docente-usuario-buscar" disabled>
+                    </div>
+                </div>
+            </form>
+        </div>
+
     </div>
 </div>
 
@@ -134,8 +199,8 @@
                         <div class="col-md-6 mb-3">
                             <label for="docente-estado-editar" class="form-label">Estado</label>
                             <select class="form-control" id="docente-estado-editar" name="docente-estado-editar">
-                                <option value="2">Activo</option>
-                                <option value="3">Inactivo</option>
+                                <option value="1">Activo</option>
+                                <option value="2">Inactivo</option>
                             </select>
                         </div>
                     </div>
