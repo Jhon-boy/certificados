@@ -21,16 +21,14 @@
     <div class="tab-pane fade show active" id="nav-actas" role="tabpanel" aria-labelledby="actas-tab" tabindex="0">
         <div class="container mt-4">
             <center>
-                <div class="p-3 w-60 my-2 bg-white shadow-sm">
+                <div class="p-3 w-50 my-2 bg-white shadow-sm">
                     <label for="eventoActaAsistenciaAll" class="form-label">
                         Seleccione el Evento
                     </label>
-                    <div class="input-group my-2 d-flex">
-                        <div class="mb-3 text-start w-60">
+                    <div class="input-group my-2"> 
                             <select class="form-select" id="eventoActaAsistenciaAll" required>
                                 <!-- Opciones serán cargadas dinámicamente -->
-                            </select>
-                        </div>
+                            </select> 
                         <button class="btn btn-primary" type="button" onclick="cargarActaAsistencia()">Buscar</button>
                     </div>
                 </div>
@@ -82,12 +80,12 @@
                             <input type="date" class="form-control" id="fecha" disabled>
                         </div>
 
-                        <!-- Archivo CSV -->
+                        <!-- Archivo PDF -->
                         <div class="mb-3 text-start">
-                            <label for="archivo" class="form-label">Archivo CSV</label>
-                            <input type="file" class="form-control" id="archivoAsistencia" accept=".csv" required>
+                            <label for="archivo" class="form-label">Archivo PDF</label>
+                            <input type="file" class="form-control" id="archivoAsistencia" accept=".pdf" required>
                             <div class="form-text text-muted">
-                                Nota: Solo se admiten archivos en formato CSV.
+                                Nota: Solo se admiten archivos en formato PDF.
                             </div>
                         </div>
 
@@ -175,8 +173,8 @@
                                 <div class="mb-3">
                                     <label class="form-label">Documento Actual</label>
                                     <div class="input-group">
-                                        <input type="text" class="form-control" value="documento_actual.csv" disabled>
-                                        <button class="btn btn-success" type="button">
+                                        <input id="nombreDocumento" type="text" class="form-control" value="" disabled>
+                                        <button id="btnDownload" class="btn btn-success" type="button" disabled>
                                             <i class="bi bi-download"></i> Descargar
                                         </button>
                                     </div>
@@ -191,5 +189,25 @@
     </div>
 
 </div>
+<!--- MODAL PARA ELIMINAR EL ROL---->
+
+<div class="modal fade" id="confirmarEliminacionModal" tabindex="-1" aria-labelledby="confirmarEliminacionActa" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmarEliminacionActa">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Está seguro que desea eliminar este documento?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" onclick="confirmarEliminacionAsistencia()">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <script src="~/js/actaAsistencia.js" asp-append-version="true"></script>

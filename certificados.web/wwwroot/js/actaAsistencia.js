@@ -1,4 +1,5 @@
 ﻿let userInfoAS = JSON.parse(localStorage.getItem('userInfo'));
+let actaAsistenciaAEliminar;
 async function inciarDatosActaAsistencia() {
     try { 
         const eventosResponse = await Utils.httpRequest(
@@ -76,7 +77,7 @@ async function agregarActaAsistencia(event) {
     console.log(idEvento);
     // Verificar si el archivo está seleccionado
     if (!archivoInput.files.length) {
-        Utils.showToast("Por favor, seleccione un archivo CSV", "warning");
+        Utils.showToast("Por favor, seleccione un archivo pdf", "warning");
         return;
     }
 
@@ -141,14 +142,19 @@ async function buscarActaAsistencia() {
             document.getElementById('usuarioActualizacionA').value = actaData.usuarioActualizacion || 'No actualizado';
             document.getElementById('fechaIngresoA').value = Utils.formatFecha(actaData.fCreacion);
             document.getElementById('fechaActualizacionA').value = Utils.formatFecha(actaData.fModificacion);
-             
-            const downloadButton = document.querySelector('.btn-success');
-            downloadButton.onclick = () => {
-                const link = document.createElement('a');
-                link.href = `data:text/csv;base64,${actaData.actaDocumento}`;
-                link.download = 'documento_actual.csv';
-                link.click();
-            };
+            // Manejo del botón y el nombre del documento
+            const downloadButton = document.getElementById('btnDownload');
+            const nombreDocumento = document.getElementById('nombreDocumento');
+
+            if (actaData.actaDocumento) {
+                const nombreDescargaD = new Date().getTime();
+                downloadButton.disabled = false;
+                nombreDocumento.value = `${nombreDescargaD}.pdf`; // Nombre dinámico del documento
+                downloadButton.onclick = () => descargarActa(actaData.actaDocumento);
+            } else {
+                downloadButton.disabled = true;
+                nombreDocumento.value = "Sin documento disponible";
+            }
 
         } else {
             const messageClient = responseActaSearch.message || "Ocurrió un error inesperado.";
@@ -160,7 +166,8 @@ async function buscarActaAsistencia() {
         console.log(error);
         Utils.showToast("Error al agregar el rol:", 'danger');
     }
-} async function cargarActaAsistencia() {
+}
+async function cargarActaAsistencia() {
     let hasData = false;  
 
     try { 
@@ -177,7 +184,7 @@ async function buscarActaAsistencia() {
         const tableBody = document.querySelector("#tabla-actas tbody");
         tableBody.innerHTML = "";
          
-        if (eventosAllResponse.cod === Utils.COD_OK && eventosAllResponse.data.length > 0) { 
+        if (eventosAllResponse.cod === Utils.COD_OK) { 
             eventosAllResponse.data.forEach(event => {
 
                 if (parseInt(event.idEvento, 10) === idActaReferencia) {
@@ -191,8 +198,10 @@ async function buscarActaAsistencia() {
                         <td>${event.fCreacion}</td>
                         <td>${event.usuarioIngreso}</td>
                         <td>
-                            <i class="bi bi-arrow-down-square-fill text-primary me-3" style="cursor: pointer;" onclick="descargarActa('${event.actaDocumento}')" data-bs-toggle="tooltip" data-bs-placement="top" title="Descargar"></i>
-                            <i class="bi bi-trash-fill text-danger" style="cursor: pointer;" onclick="eliminarActa(${event.idAsistencia})" data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar"></i>
+                        <i class="bi bi-file-earmark-pdf-fill text-danger me-3 fs-4" style="cursor: pointer;" onclick="descargarActa('${event.actaDocumento}')" 
+                            data-bs-toggle="tooltip"  data-bs-placement="top"   title="Descargar PDF"></i>
+
+                            <i class="bi bi-trash-fill text-danger  fs-4" style="cursor: pointer;" onclick="eliminarActa(${event.idAsistencia})" data-bs-toggle="tooltip" data-bs-placement="top" title="Eliminar"></i>
                         </td>
                     `;
                      
@@ -215,14 +224,51 @@ async function buscarActaAsistencia() {
 }
 
 async function eliminarActa(id) {
+    actaAsistenciaAEliminar = id;
+
+    const modal = new bootstrap.Modal(document.getElementById('confirmarEliminacionModal'));
+    modal.show(); 
 
 }
-function descargarActa(actaDocumento) {
-    console.log('descanando');
+async function confirmarEliminacionAsistencia() {
+    if (!actaAsistenciaAEliminar) {
+        Utils.showToast("ID de Acta no válido", "danger");
+        return;
+    }
+
+    try {
+        const data = {
+            "idActa": actaAsistenciaAEliminar
+        }
+        const response = await Utils.httpRequest(
+            `${Utils.path}/asistencia/eliminar`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        }
+        );
+
+        if (response && response.cod === Utils.COD_OK) {
+            Utils.showToast("Documento eliminado exitosamente", "success");
+            cargarActaAsistencia();
+        } else {
+            const messageClient = response.message || "Error al eliminar el documento.";
+            const messageTech = response.data || null;
+            Utils.showErrorModal(messageClient, messageTech);
+        }
+    } catch (error) {
+        Utils.showToast("Error al eliminar el documento", "danger");
+    } finally {
+        actaAsistenciaAEliminar = null;
+        const modal = bootstrap.Modal.getInstance(document.getElementById('confirmarEliminacionModal'));
+        modal.hide();
+    }
+}
+function descargarActa(actaDocumento) { 
     const blob = new Blob([new Uint8Array(atob(actaDocumento).split("").map(char => char.charCodeAt(0)))], { type: "application/pdf" });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     const nombreDescarga = new Date().getTime();
-    link.download = `${nombreDescarga}.csv`
+    link.download = `${nombreDescarga}.pdf`
     link.click();
 }
