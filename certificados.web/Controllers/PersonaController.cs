@@ -98,7 +98,7 @@ namespace certificados.web.Controllers
             return Ok(personaService.CrearPersona(persona, usuario));
         }
         [HttpPost("modificar")]
-        public ActionResult<ResponseApp> modificarPersona(PersonaDTO dto)
+        public ActionResult<ResponseApp> modificarPersona([FromBody]  PersonaDTO dto)
         {
             if (dto == null)
             {

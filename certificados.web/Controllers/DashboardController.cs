@@ -63,5 +63,13 @@ namespace certificados.web.Controllers
         {
             return PartialView("~/Views/RegistroFacilitador/_RegistrarFacilitador.cshtml");
         }
+        public IActionResult ActasCalificacion()
+        {
+            return PartialView("~/Views/Actas/_ActasCalificacion.cshtml");
+        }
+        public IActionResult ActasAsistencia()
+        {
+            return PartialView("~/Views/Actas/_ActasAsistencia.cshtml");
+        }
     }
 }

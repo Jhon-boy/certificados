@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace certificados.services.Services
@@ -63,7 +64,13 @@ namespace certificados.services.Services
                     return buscarUsuario;
                 }
                 if (buscarUsuario.Data !=null) {
-                     Tpersona personaResponse = buscarUsuario.Data as Tpersona;
+                    var jsonString = JsonSerializer.Serialize(buscarUsuario.Data);
+
+                    Tpersona personaResponse = JsonSerializer.Deserialize<Tpersona>(jsonString, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true  
+                    });
+
                     var eliminarUsuario = usuarioService.EliminarUsuario(personaResponse.Cedula);
                     if (!eliminarUsuario.Cod.Equals(CONSTANTES.COD_OK))
                     {

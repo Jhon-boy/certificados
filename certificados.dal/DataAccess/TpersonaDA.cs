@@ -66,7 +66,7 @@ namespace certificados.dal.DataAccess
                         personaExistente.UsuarioActualizacion = tpersona.UsuarioActualizacion;
 
                         usuarioExiste.Email = usuario.Email;
-                        usuarioExiste.Clave = usuario.Clave;
+                        //usuarioExiste.Clave = usuario.Clave; no se actualiza la clave aqui
                         usuarioExiste.FModificacion = Utils.timeParsed(DateTime.Now);
                         usuarioExiste.UsuarioActualizacion = usuario.UsuarioActualizacion;
                         // Guardar los cambios
@@ -148,9 +148,10 @@ namespace certificados.dal.DataAccess
                            .Select(usuario => new
                            {
                                Email = usuario.Email,
+                               Estado = usuario.Estado,
                                Rol = context.Tusuario
                                     .Where(u => u.Cedula == persona.Cedula)
-                                    .Include(u => u.Trol) // Incluir la relación con Trol
+                                    .Include(u => u.Trol)  
                                     .Select(u => u.Trol.Nombre)
 
                                     .Distinct()

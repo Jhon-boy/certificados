@@ -68,16 +68,12 @@ async function cargarDatosRoles() {
  
   
  
-async function agregarRol(event) {
-    const form = event.target.closest("form");
- 
-    if (!form.checkValidity()) {
-        event.preventDefault();
-        event.stopPropagation();
-        form.classList.add('was-validated');
+async function agregarRol(event) { 
+
+    event.preventDefault()
+    if (!validarFormularioRol()) {
         return false; // Detener el envío
-    }
-    event.preventDefault();
+    };
 
     const bodyRequest = {
         Nombre: document.getElementById('rolNombre').value,
@@ -92,6 +88,7 @@ async function agregarRol(event) {
 
         if (rolesResponse.cod === Utils.COD_OK) {
             Utils.showToast('ROL REGISTRADO EXITOSAMENTE', 'info');
+            limpiarRol(event);
             cargarDatosRoles();
         } else {
             const messageClient = rolesResponse.message || "Ocurrió un error inesperado.";
@@ -105,7 +102,8 @@ async function agregarRol(event) {
 
 
  
-function limpiarRol() {
+function limpiarRol(event) {
+    event.preventDefault()
     document.getElementById('rolNombre').value = '';
     document.getElementById('rolEstado').value = '';
     document.getElementById('rolDescripcion').value = '';
@@ -121,21 +119,21 @@ function limpiarRol() {
 //Validador
 function habilitarValidacio() {
 
-    (() => {
-        'use strict';
+    //(() => {
+    //    'use strict';
          
-        const forms = document.querySelectorAll('.needs-validation');
+    //    const forms = document.querySelectorAll('.needs-validation');
          
-        Array.from(forms).forEach(form => {
-            form.addEventListener('submit', event => {
-                if (!form.checkValidity()) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-                form.classList.add('was-validated');
-            }, false);
-        });
-    })();
+    //    Array.from(forms).forEach(form => {
+    //        form.addEventListener('submit', event => {
+    //            if (!form.checkValidity()) {
+    //                event.preventDefault();
+    //                event.stopPropagation();
+    //            }
+    //            form.classList.add('was-validated');
+    //        }, false);
+    //    });
+    //})();
 
 }
 function generarAccionesHtml(tipo, nombre) {
@@ -272,6 +270,37 @@ async function buscarRol() {
     document.getElementById('fechaActualizacion').value = Utils.formatFecha(rol.fModificacion);
     document.getElementById('usuarioActualizacion').value = rol.usuarioActualizacion || "-";
     document.getElementById('rolDescripcionFind').value = rol.observacion || "-";
+}
+
+function validarFormularioRol() {
+    const nombre = document.getElementById("rolNombre").value.trim();
+    const estado = document.getElementById("rolEstado").value;
+    const descripcion = document.getElementById("rolDescripcion").value.trim();
+     
+    const inputs = [document.getElementById("rolNombre"), document.getElementById("rolEstado"), document.getElementById("rolDescripcion")];
+    inputs.forEach(input => input.classList.remove("is-invalid"));
+
+    let isValid = true;
+
+    if (!nombre) {
+        document.getElementById("rolNombre").classList.add("is-invalid");
+         Utils.showErrorModal("El campo 'Nombre' es obligatorio.", "info");
+        isValid = false;
+    }
+
+    if (!estado) {
+        document.getElementById("rolEstado").classList.add("is-invalid");
+         Utils.showErrorModal("Debes seleccionar un 'Estado'.", "info");
+        isValid = false;
+    }
+
+    if (!descripcion) {
+        document.getElementById("rolDescripcion").classList.add("is-invalid");
+         Utils.showErrorModal("El campo 'Descripción' es obligatorio.", "info");
+        isValid = false;
+    }
+
+    return isValid;
 }
 
 async function httpRequest(url, method, body = null) {

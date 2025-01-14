@@ -30,11 +30,16 @@
                         <li onclick="cargarDatosRoles()" class="nav-item"><a class="nav-link text-white" href="#" id="link-roles" data-view="Roles"><i class="bi bi-shield-lock"></i> Roles</a></li>
                         <li onclick="cargarDatospersonas()" class="nav-item"><a class="nav-link text-white" href="#" id="link-personas" data-view="Personas"><i class="bi bi-people"></i> Usuarios</a></li>
                         <li onclick="cargarDatosGrupos()" class="nav-item"><a class="nav-link text-white" href="#" id="link-grupo" data-view="Grupo"><i class="bi bi-person-lines-fill"></i> Grupo</a></li>
-                        <li onclick="cargarDatosDocentes()" class="nav-item"><a class="nav-link text-white" href="#" id="link-docente" data-view="Docente"><i class="bi bi-person-workspace"></i> Docentes</a></li>
-                        <li class="nav-item"><a class="nav-link text-white" href="#" id="link-decanato" data-view="Decanato"><i class="bi bi-diagram-3"></i> Decanatos</a></li>
-                        <li class="nav-item"><a class="nav-link text-white" href="#" id="link-evento" data-view="Eventos"><i class="bi bi-calendar-event"></i> Eventos</a></li>
+                        <!-- <li onclick="cargarDatosDocentes()" class="nav-item"><a class="nav-link text-white" href="#" id="link-docente" data-view="Docente"><i class="bi bi-person-video3"></i> Docentes</a></li>-->
+                        <!-- <li onclick="cargarDatosDecanatos()" class="nav-item"><a class="nav-link text-white" href="#" id="link-decanato" data-view="Decanato"><i class="bi  bi-layers-fill"></i> Decanatos</a></li>-->
+                        <!-- <li onclick="cargarDatosEventos()" class="nav-item"><a class="nav-link text-white" href="#" id="link-evento" data-view="Eventos"><i class="bi bi-play-btn"></i> Eventos</a></li>-->
+                        <!--<li class="nav-item"><a class="nav-link text-white" href="#" id="link-certificados" data-view="Certificados"><i class="bi bi-clipboard-check"></i> Certificados</a></li>-->
+                        <!-- <li onclick="cargarDatosModalidades()" class="nav-item"><a class="nav-link text-white" href="#" id="link-modalidad" data-view="Modalidad"><i class="bi bi-receipt"></i> Modalidad</a></li>-->
+                         <li onclick="cargarDatosDocentes()" class="nav-item"><a class="nav-link text-white" href="#" id="link-docente" data-view="Docente"><i class="bi bi-person-workspace"></i> Docentes</a></li>
+                        <li  onclick="cargarDatosDecanatos()" class="nav-item"><a class="nav-link text-white" href="#" id="link-decanato" data-view="Decanato"><i class="bi bi-diagram-3"></i> Decanatos</a></li>
+                        <li onclick="cargarDatosEventos()"  class="nav-item"><a class="nav-link text-white" href="#" id="link-evento" data-view="Eventos"><i class="bi bi-calendar-event"></i> Eventos</a></li>
                         <li class="nav-item"><a class="nav-link text-white" href="#" id="link-certificados" data-view="Certificados"><i class="bi bi-award"></i> Certificados</a></li>
-                        <li onclick="cargarDatosModalidades()" class="nav-item"><a class="nav-link text-white" href="#" id="link-modalidad" data-view="Modalidad"><i class="bi bi-layout-text-sidebar"></i> Modalidad</a></li>
+                        <li onclick="cargarDatosModalidades()" class="nav-item"><a class="nav-link text-white" href="#" id="link-modalidad" data-view="Modalidad"><i class="bi bi-layout-text-sidebar"></i> Modalidad</a></li>  
                         <li onclick="cargarDatosCiclos()" class="nav-item"><a class="nav-link text-white" href="#" id="link-ciclo" data-view="Ciclo"><i class="bi bi-circle-half"></i> Ciclo</a></li>
                     </ul>
                 </div>
@@ -52,35 +57,29 @@
                 </div>
             </li>
 
-            <li class="nav-item">
-                <a class="nav-link  text-white" onclick="toggleCollapse('submenu4')">
-                    <i class="bi bi-person-plus"></i> Participante <i class="bi bi-caret-down-fill arrow"></i>
-                </a>
-                <div class="submenu" id="submenu4" style="display: none;">
-                    <ul class="nav flex-column ms-3">
-                        <li class="nav-item"><a class="nav-link text-white" href="#" id="link-registrarparticipante" data-view="RegistrarParticipante"><i class="bi bi-clipboard-check"></i> Registrar Participante </a></li>
-                        <li class="nav-item"><a class="nav-link text-white" href="#" id="link-manatenimientoparticipante" data-view="MantenimientoParticipante"><i class="bi bi-receipt"></i> Mantenimiento </a></li>
-                    </ul>
-                </div>
-            </li>
 
             <li class="nav-item">
                 <a class="nav-link  text-white" onclick="toggleCollapse('submenu5')">
-                    <i class="bi bi-person-plus"></i> Facilitador <i class="bi bi-caret-down-fill arrow"></i>
+                    <i class="bi bi-calendar-event"></i> Eventos <i class="bi bi-caret-down-fill arrow"></i>
                 </a>
                 <div class="submenu" id="submenu5" style="display: none;">
                     <ul class="nav flex-column ms-3">
-                        <li class="nav-item"><a class="nav-link text-white" href="#" id="link-registrarfacilitador" data-view="RegistrarFacilitador"><i class="bi bi-clipboard-check"></i> Registrar Facilitador </a></li>
-                        <li class="nav-item"><a class="nav-link text-white" href="#" id="link-manatenimientoparticipante" data-view="MantenimientoFacilitador"><i class="bi bi-receipt"></i> Mantenimiento </a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="#" id="link-registrarfacilitador" data-view="RegistrarFacilitador"><i class="bi bi-calendar-event"></i> Ver</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="#" id="link-manatenimientoparticipante" data-view="MantenimientoFacilitador"><i class="bi bi-receipt"></i> Registrar </a></li>
                     </ul>
                 </div>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link  text-white" href="#">
-                    <i class="bi bi-clipboard-check"></i>
-                    <span>Registro Calificaciones</span>
+                <a class="nav-link  text-white" onclick="toggleCollapse('submenu6')">
+                    <i class="bi bi-file-earmark-bar-graph"></i>Actas <i class="bi bi-caret-down-fill arrow"></i>
                 </a>
+                <div class="submenu" id="submenu6" style="display: none;">
+                    <ul class="nav flex-column ms-3">
+                        <li onclick="inciarDatosActaAsistencia()" class="nav-item"><a class="nav-link text-white" href="#" id="link-actasAsistencia" data-view="ActasAsistencia"><i class="bi bi-list-check"></i>Asistencia </a></li>
+                        <li onclick="inciarDatosActaCalificacion()" class="nav-item"><a class="nav-link text-white" href="#" id="link-actasCalificacion" data-view="ActasCalificacion"><i class="bi bi-bar-chart"></i>Calificación</a></li>
+                    </ul>
+                </div>
             </li>
 
             <li class="nav-item">
@@ -89,8 +88,8 @@
                 </a>
                 <div class="submenu" id="submenu2" style="display: none;">
                     <ul class="nav flex-column ms-3">
-                        <li class="nav-item"><a class="nav-link text-white" href="#"><i class="bi bi-file-earmark-text"></i> Generar Plantilla</a></li>
-                        <li class="nav-item"><a class="nav-link text-white" href="#"><i class="bi bi-file-earmark-pdf"></i> Generar Certificado</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="#"><i class="bi bi-file-earmark-text"></i>  Mantenimiento</a></li>
+                        <li class="nav-item"><a class="nav-link text-white" href="#"><i class="bi bi-file-earmark-pdf"></i> Emitir Certificado</a></li>
                     </ul>
                 </div>
             </li>
@@ -170,6 +169,10 @@
     <script src="~/js/grupo.js" asp-append-version="true"></script>
     <script src="~/js/docente.js" asp-append-version="true"></script>
     <script src="~/js/modalidad.js" asp-append-version="true"></script>
+    <script src="~/js/decanato.js" asp-append-version="true"></script>
+    <script src="~/js/eventos.js" asp-append-version="true"></script>
     <script src="~/js/ciclo.js" asp-append-version="true"></script>
+    <script src="~/js/actaAsistencia.js" asp-append-version="true"></script>
+    <script src="~/js/actaCalificacion.js" asp-append-version="true"></script>
 </body>
 </html>

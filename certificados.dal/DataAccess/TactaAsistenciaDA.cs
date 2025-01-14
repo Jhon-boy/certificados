@@ -102,7 +102,7 @@ namespace certificados.dal.DataAccess
             try
             {
                 // Obtener todas las actas de asistencia de la base de datos
-                var listaActas = context.TactaAsistencia.ToList();
+                var listaActas = context.TactaAsistencia.Include(e => e.Tevento).ToList();
 
                 // Retornar respuesta exitosa con la lista
                 response = Utils.OkResponse(listaActas);
@@ -121,7 +121,7 @@ namespace certificados.dal.DataAccess
             ResponseApp response = Utils.BadResponse(null);
             try
             { 
-                var acta = context.TactaAsistencia.FirstOrDefault(a => a.IdAsistencia == idAsistencia);
+                var acta = context.TactaAsistencia.Include(e => e.Tevento).FirstOrDefault(a => a.IdAsistencia == idAsistencia);
 
                 if (acta != null)
                 { 

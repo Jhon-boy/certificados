@@ -44,18 +44,18 @@
     <!-- TAB para AGREGAR -->
     <div class="tab-pane fade" id="nav-add" role="tabpanel" aria-labelledby="add-tab" tabindex="0">
         <div class=" card mx-2 p4 container mt-4">
-            <form id="personaForm" class="needs-validation px-3 py-3" novalidate onsubmit="return savePersona(event)">
+            <form id="personaForm" class="px-3 py-3" novalidate onsubmit="return savePersona(event)">
                 <div class="row">
                     <!-- Primera fila: Cédula, Edad, Género -->
                     <div class="col-md-4 mb-3 position-relative">
                         <label for="cedula" class="form-label">Cédula</label>
                         <input  pattern="[0-9]{10}" maxlength="10" type="text" id="cedula" class="form-control" placeholder="Ingrese la cédula" required>
-                        <div class="invalid-tooltip">Escribe la cédula</div>
+                      
                     </div>
                     <div class="col-md-4 mb-3 position-relative">
                         <label for="edad" class="form-label">Edad</label>
                         <input min="0" max="120" type="number" id="edad" class="form-control" placeholder="Ingrese la edad" required>
-                        <div class="invalid-tooltip">Escribe la edad</div>
+                    
                     </div>
                     <div class="col-md-4 mb-3">
                         <label for="genero" class="form-label">Género</label>
@@ -72,12 +72,12 @@
                     <div class="col-md-6 mb-3 position-relative">
                         <label for="nombres" class="form-label">Nombres</label>
                         <input maxlength="35 type=" text" id="nombres" class="form-control" placeholder="Ingrese los nombres" required>
-                        <div class="invalid-tooltip">Escribe los nombres</div>
+                
                     </div>
                     <div class="col-md-6 mb-3 position-relative">
                         <label for="apellidos" class="form-label">Apellidos</label>
                         <input maxlength="35 type="text" id="apellidos" class="form-control" placeholder="Ingrese los apellidos" required>
-                        <div class="invalid-tooltip">Escribe los apellidos</div>
+                     
                     </div>
                 </div>
 
@@ -86,7 +86,7 @@
                     <div class="col-md-4 mb-3 position-relative">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" id="email" class="form-control" placeholder="Ingrese el email" required>
-                        <div class="invalid-tooltip">Selecciona un email</div>
+              
                     </div>
                     <div class="col-md-4 mb-3 position-relative">
                         <label for="clave" class="form-label">Asignacion automatica Contraseña</label>
@@ -96,8 +96,7 @@
                         <label for="idRol" class="form-label">Rol</label>
                         <select id="idRol" class="form-select" required>
                             <option value="">Seleccione un rol</option>
-                        </select>
-                        <div class="invalid-tooltip">Selecciona un rol</div>
+                        </select> 
                     </div>
                 </div>
 
@@ -112,7 +111,7 @@
                 <!-- Botones -->
                 <div class="col-12 d-flex mb-2 justify-content-center">
                     <button type="submit" class="btn btn-primary me-3">Guardar</button>
-                    <button class="btn btn-danger" type="button" onclick="resetPersonaForm()">Cancelar</button>
+                    <button class="btn btn-danger" type="button" onclick="resetPersonaForm(event)">Cancelar</button>
                 </div>
             </form>
 
@@ -121,17 +120,68 @@
     </div>
 
     <div class="tab-pane fade" id="nav-search" role="tabpanel" aria-labelledby="search-tab" tabindex="0">
-       <center>
+        <center>
             <div class="p-3 w-50 my-2 bg-white shadow-sm">
-                <label for="buscar-rol" class="form-label ">
-                    Buscar por ID del Rol
+                <label for="buscar-persona" class="form-label">
+                    Buscar por cédula
                 </label>
                 <div class="input-group my-2">
-                    <input type="text" id="buscar-rol" class="form-control form-control-sm" placeholder="Ingresa el ID del rol" required>
-                    <button class="btn btn-primary" type="button" onclick="buscarRol()">  Buscar  </button>
+                    <input type="text" id="buscar-persona" class="form-control form-control-sm" placeholder="Ingresa la cédula" required>
+                    <button class="btn btn-primary" type="button" onclick="BuscarPersona()">Buscar</button>
                 </div>
             </div>
-       </center>
+            <div class="card mx-2 my-2 p-3 shadow">
+                <form id="form-persona">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label for="persona-nombres" class="form-label">Nombres</label>
+                            <input type="text" id="persona-nombres" class="form-control" disabled readonly>
+                        </div>
+                        <div class="col-6">
+                            <label for="persona-apellidos" class="form-label">Apellidos</label>
+                            <input type="text" id="persona-apellidos" class="form-control" disabled readonly>
+                        </div>
+                        <div class="col-4">
+                            <label for="persona-cedula" class="form-label">Cédula</label>
+                            <input type="text" id="persona-cedula" class="form-control" disabled readonly>
+                        </div>
+                        <div class="col-4">
+                            <label for="persona-edad" class="form-label">Edad</label>
+                            <input type="number" id="persona-edad" class="form-control" disabled  readonly>
+                        </div>
+                        <div class="col-4">
+                            <label for="persona-genero" class="form-label">Género</label>
+                            <input type="text" id="persona-genero" class="form-control" disabled  readonly>
+                        </div>
+                        <div class="col-4">
+                            <label for="persona-email" class="form-label">Correo Electrónico</label>
+                            <input type="email" id="persona-email" class="form-control" disabled readonly>
+                        </div>
+                        <div class="col-4">
+                            <label for="persona-rol" class="form-label">Rol</label>
+                            <input type="text" id="persona-rol" class="form-control" disabled readonly>
+                        </div>
+                        <div class="col-4">
+                            <label for="persona-usuario-ingreso" class="form-label">Usuario Ingreso</label>
+                            <input type="text" id="persona-usuario-ingreso" class="form-control" disabled readonly>
+                        </div>
+                        <div class="col-4">
+                            <label for="persona-usuario-actualizacion" class="form-label">Usuario Actualización</label>
+                            <input type="text" id="persona-usuario-actualizacion" class="form-control" disabled readonly>
+                        </div>
+                        <div class="col-3">
+                            <label for="persona-fecha-creacion" class="form-label">Fecha de Creación</label>
+                            <input type="text" id="persona-fecha-creacion" class="form-control" disabled readonly>
+                        </div>
+                        <div class="col-3">
+                            <label for="persona-fecha-modificacion" class="form-label">Fecha de Modificación</label>
+                            <input type="text" id="persona-fecha-modificacion" class="form-control" disabled readonly>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </center>
+
     </div>
     <div class="tab-pane fade" id="nav-add-m" role="tabpanel" aria-labelledby="add-m-tab" tabindex="0">
        <div class="card">
@@ -162,18 +212,20 @@
     </div>
 </div>
 
+
+<!--Modal para Editar Persona-->
 <div class="modal fade" id="modal-editar-persona" tabindex="-1" aria-labelledby="modal-editar-persona-label" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modal-editar-persona-label">Agregar Nueva Persona</h5>
+                <h5 class="modal-title" id="modal-editar-persona-label">Editar Persona</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="row mb-3">
                     <div class="col-6">
                         <label for="persona-cedula" class="form-label">Cédula</label>
-                        <input type="text" class="form-control" id="persona-cedula" placeholder="Ingresa la cédula">
+                        <input type="text" class="form-control" id="persona-cedula" readonly placeholder="Ingresa la cédula">
                     </div>
                     <div class="col-6">
                         <label for="persona-nombres" class="form-label">Nombres</label>
@@ -186,21 +238,7 @@
                         <label for="persona-apellidos" class="form-label">Apellidos</label>
                         <input type="text" class="form-control" id="persona-apellidos" placeholder="Ingresa los apellidos">
                     </div>
-                    <div class="col-6">
-                        <label for="persona-edad" class="form-label">Edad</label>
-                        <input type="number" class="form-control" id="persona-edad" placeholder="Ingresa la edad">
-                    </div>
-                </div>
 
-                <div class="row mb-3">
-                    <div class="col-6">
-                        <label for="persona-genero" class="form-label">Género</label>
-                        <select class="form-control" id="persona-genero">
-                            <option value="M">Masculino</option>
-                            <option value="F">Femenino</option>
-                            <option value="O">Otro</option>
-                        </select>
-                    </div>
                     <div class="col-6">
                         <label for="persona-email" class="form-label">Email</label>
                         <input type="email" class="form-control" id="persona-email" placeholder="Ingresa el correo electrónico">
@@ -208,23 +246,49 @@
                 </div>
 
                 <div class="row mb-3">
-                    <div class="col-6">
-                        <label for="persona-clave" class="form-label">Contraseña</label>
-                        <input type="password" class="form-control" id="persona-clave" placeholder="Ingresa la contraseña">
+                    <div class="col-3">
+                        <label for="persona-genero" class="form-label">Género</label>
+                        <select class="form-control" id="persona-genero">
+                            <option value="M">Masculino</option>
+                            <option value="F">Femenino</option>
+                            <option value="O">Otro</option>
+                        </select>
                     </div>
-                    <div class="col-6">
+
+                    <div class="col-3">
+                        <label for="persona-edad" class="form-label">Edad</label>
+                        <input type="number" class="form-control" id="persona-edad" placeholder="Ingresa la edad">
+                    </div>
+
+                    <div class="col-3">
                         <label for="persona-rol" class="form-label">Rol</label>
-                        <select class="form-control" id="persona-rol">
-                            <option value="1">Administrador</option>
-                            <option value="2">Usuario</option>
-                            <option value="3">Invitado</option>
+                        <select id="persona-rol" class="form-select" required>
+                            <option value="">Seleccione un rol</option>
                         </select>
                     </div>
                 </div>
+
+                <div class="row mb-3">
+                    <div class="col-3">
+                        <label for="estadopersona" class="form-label">Estado</label>
+                        <select id="estadopersona" class="form-select" required>
+                            <option value="ACT">Activar</option>
+                            <option value="INA">Inactivar</option>
+                        </select>
+                    </div>
+                    <div class="col-4">
+                        <label for="userIngreso" class="form-label">Usuario Ingreso</label>
+                        <input type="text" class="form-control" id="userIngreso" readonly placeholder="Ingresa el correo electrónico">
+                    </div>
+                    <div class="col-4">
+                        <label for="userIngreso" class="form-label">Usuario Actualizacion</label>
+                        <input type="text" class="form-control" id="userActualizar" readonly placeholder="Ingresa el correo electrónico">
+                    </div>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary" id="btn-guardar-cambios">Guardar</button>
+            <div class="modal-footer col-12 d-flex mb-2 justify-content-center">
+                <button type="button" class="btn btn-secondary me-3" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="btn-guardar-cambios" onclick="confirmarEditarPersona()">Guardar</button>
             </div>
         </div>
     </div>

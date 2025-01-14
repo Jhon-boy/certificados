@@ -41,35 +41,33 @@
     <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
         <div class="card mx-5 my-5">
             <div class="card-header">Registro de un Rol</div>
-            <form class="row g-3 needs-validation px-3" novalidate onsubmit="return agregarRol(event)">
-                <div class="col-md-6 position-relative">
+            <form class="row g-3 px-3" onsubmit="return agregarRol(event)">
+                <div class="col-md-6">
                     <label for="rolNombre" class="form-label">Nombre</label>
-                    <input type="text" class="form-control" id="rolNombre" required>
-                    <div class="invalid-tooltip">Escribe el nombre del Rol</div>
+                    <input type="text" class="form-control" id="rolNombre">
                 </div>
-                <div class="col-md-3 position-relative">
+                <div class="col-md-3">
                     <label for="rolEstado" class="form-label">Estado</label>
-                    <select class="form-select" id="rolEstado" required>
+                    <select class="form-select" id="rolEstado">
                         <option selected disabled value="">Selecciona un estado</option>
                         <option value="true">Activo</option>
                         <option value="false">Inactivo</option>
                     </select>
-                    <div class="invalid-tooltip">Selecciona un estado</div>
                 </div>
-                <div class="col-md-3 position-relative">
+                <div class="col-md-3">
                     <label for="usuarioIngreso" class="form-label">Usuario Ingreso</label>
                     <input type="text" class="form-control" id="usuarioIngreso" disabled>
                 </div>
                 <div class="mb-3">
                     <label for="rolDescripcion" class="form-label">Descripción</label>
-                    <textarea class="form-control" id="rolDescripcion" placeholder="Descripción obligatoria" required></textarea>
-                    <div class="invalid-feedback">Escribe la descripción</div>
+                    <textarea class="form-control" id="rolDescripcion" placeholder="Descripción obligatoria"></textarea>
                 </div>
                 <div class="col-12 d-flex justify-content-center">
                     <button class="btn btn-primary me-3" type="submit">Guardar</button>
-                    <button class="btn btn-danger" type="submit" onclick="limpiarRol()">Cancelar</button>
+                    <button class="btn btn-danger" type="button" onclick="limpiarRol(event)">Cancelar</button>
                 </div>
             </form>
+
         </div>
     </div>
 
@@ -173,22 +171,6 @@
                         <label for="rolNombre" class="form-label">Nombre</label>
                         <input type="text" class="form-control" id="rolNombreEdit" required>
                         <div class="invalid-tooltip">Escribe el nombre del Rol</div>
-                    </div>
-                     
-                    <div class="row g-2">
-                        <div class="col-md-6 position-relative">
-                            <label for="rolEstado" class="form-label">Estado</label>
-                            <select class="form-select" id="rolEstadoEdit" required>
-                                <option selected disabled value="">Selecciona un estado</option>
-                                <option value="true">Activo</option>
-                                <option value="false">Inactivo</option>
-                            </select>
-                            <div class="invalid-tooltip">Selecciona un estado</div>
-                        </div>
-                        <div class="col-md-6 position-relative">
-                            <label for="usuarioIngreso" class="form-label">Usuario Actualización</label>
-                            <input type="text" class="form-control" id="usuarioIngresoEdit" disabled>
-                        </div>
                     </div>
                      
                     <div class="mb-3">
