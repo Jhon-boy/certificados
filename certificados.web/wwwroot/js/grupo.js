@@ -14,8 +14,21 @@ async function cargarDatosGrupos() {
             const tablaBody = document.querySelector("#tabla-grupo tbody");
             tablaBody.innerHTML = '';
 
+            // Obtener el elemento select donde se listarán los grupos
+            const selectGrupo = document.getElementById("persona-id-grupo");
+
+            // Limpiar las opciones actuales del select
+            selectGrupo.innerHTML = '<option value="">Selecciona un grupo</option>';
+
             if (response.cod === Utils.COD_OK && response.data.length > 0) {
                 response.data.forEach(grupo => {
+
+                    // Agregar el grupo al select
+                    const option = document.createElement("option");
+                    option.value = grupo.idGrupo;
+                    option.textContent = grupo.nombre; // Mostrar el nombre del grupo
+                    selectGrupo.appendChild(option);
+
                     const fila = `
                         <tr>
                             <td>${grupo.idGrupo}</td>
@@ -40,6 +53,21 @@ async function cargarDatosGrupos() {
                     `;
                     tablaBody.insertAdjacentHTML("beforeend", fila);
                 });
+
+                // Inicializar DataTables o reiniciarlo
+                if ($.fn.DataTable.isDataTable("#tabla-grupo")) {
+                    $("#tabla-grupo").DataTable().destroy();
+                }
+                $("#tabla-grupo").DataTable({
+                    language: {
+                        url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+                    }
+                });
+
+                // Establecer usuario actual en el formulario
+                document.getElementById("grupo-usuario").value = userInfo.nombre;
+                document.getElementById("persona-usuario-ingreso").value = userInfo.nombre;
+
                 Utils.showToast('DATOS CARGADOS EXITOSAMENTE', 'success');
 
                 // Inicializar tooltips
@@ -48,13 +76,24 @@ async function cargarDatosGrupos() {
                     new bootstrap.Tooltip(tooltipTriggerEl);
                 });
             } else {
+
+                if ($.fn.DataTable.isDataTable("#tabla-grupo")) {
+                    $("#tabla-grupo").DataTable().destroy();
+                }
+
+                $("#tabla-grupo").DataTable({
+                    language: {
+                        url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+                    }
+                });
+
+
                 tablaBody.innerHTML = '<tr><td colspan="4" class="text-center">No se encontraron grupos.</td></tr>';
                 Utils.showToast('NO EXISTEN GRUPOS REGISTRADOS', 'info');
             }
         }, 150);
 
-        // Establecer usuario actual en el formulario
-        document.getElementById("grupo-usuario").value = userInfo.nombre;
+        await cargarDatosGrupoPersonas();
 
     } catch (error) {
         Utils.showToast("Error cargando datos iniciales", 'error');
@@ -209,6 +248,236 @@ async function eliminarGrupo(id) {
     }
 }
 
+// METODOS GRUPO PERSONA
+// Funcion para cargar los datos grupo persona
+async function cargarDatosGrupoPersonas() {
+    try {
+        const response = await Utils.httpRequest(
+            `${Utils.path}/grupoPersona/listar`,
+            { method: "GET", headers: { "Content-Type": "application/json" } },
+            true
+        );
+
+        const tablaBody = document.querySelector("#tabla-grupo-personas tbody");
+        tablaBody.innerHTML = "";
+
+        if (response.cod === Utils.COD_OK && response.data.length > 0) {
+            response.data.forEach(persona => {
+                const fila = `
+                    <tr>
+                        <td>${persona.idGrupoPersona}</td>
+                        <td>${persona.idGrupo}</td>
+                        <td>${persona.cedula}</td>
+                        <td>${persona.estado}</td>
+                        <td>
+                            <i class="bi bi-trash-fill text-danger" 
+                               style="cursor: pointer;"
+                               onclick="eliminarGrupoPersona(${persona.idGrupoPersona},'${persona.cedula}')" 
+                               data-bs-toggle="tooltip" 
+                               title="Eliminar Persona"></i>
+                        </td>
+                    </tr>`;
+                tablaBody.insertAdjacentHTML("beforeend", fila);
+            });
+
+            // Inicializar DataTables o reiniciarlo
+            if ($.fn.DataTable.isDataTable("#tabla-grupo-personas")) {
+                $("#tabla-grupo-personas").DataTable().destroy();
+            }
+            $("#tabla-grupo-personas").DataTable({
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+                }
+            });
+
+            Utils.showToast("DATOS GRUPO PERSONAS CARGADOS EXITOSAMENTE", "success");
+        } else {
+
+            // Inicializar DataTables o reiniciarlo
+            if ($.fn.DataTable.isDataTable("#tabla-grupo-personas")) {
+                $("#tabla-grupo-personas").DataTable().destroy();
+            }
+            $("#tabla-grupo-personas").DataTable({
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+                }
+            });
+
+            tablaBody.innerHTML = '<tr><td colspan="5" class="text-center">No se encontraron grupo personas.</td></tr>';
+            Utils.showToast("NO EXISTEN GRUPO DE PERSONAS REGISTRADAS", "info");
+        }
+    } catch (error) {
+        Utils.showToast("Error cargando datos de grupo persona", "error");
+    }
+}
+
+// Manejador para crear nuevo grupo persona
+async function handleAgregarGrupoPersonas(event) {
+    const form = event.target.closest("form");
+
+    if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+        form.classList.add('was-validated');
+        return false;
+    }
+    event.preventDefault();
+
+    const grupoId = document.getElementById('persona-id-grupo').value;
+    const archivoCSV = document.getElementById('persona-cedulas-csv').files[0];
+    const usuarioIngreso = userInfo.idUsuario;
+
+    if (!grupoId || !archivoCSV || !usuarioIngreso) {
+        Utils.showToast("Todos los campos son obligatorios", 'warning');
+        return;
+    }
+
+    // Leer el archivo CSV
+    const cedulas = await leerArchivoCSV(archivoCSV);
+    if (!cedulas || cedulas.length === 0) {
+        Utils.showToast("El archivo CSV está vacío o no contiene cédulas válidas", 'warning');
+        return;
+    }
+
+    const bodyRequest = {
+        IdGrupo: grupoId,
+        Cedulas: cedulas,
+        UsuarioIngreso: usuarioIngreso.toString()
+    };
+
+    try {
+        const response = await Utils.httpRequest(
+            `${Utils.path}/grupoPersona/crear`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(bodyRequest)
+            },
+            true
+        );
+
+        if (response.cod === Utils.COD_OK) {
+            Utils.showToast('GRUPO DE PERSONAS REGISTRADO EXITOSAMENTE', 'info');
+            // Llamar a una funcion para recargar los datos si es necesario
+            cargarDatosGrupoPersonas();
+            limpiarFormularioGrupoPersonas();
+            // Cambiar a la pestaña de la tabla si es necesario
+            const tablaTab = document.querySelector('#tabla-tab');
+            const tab = new bootstrap.Tab(tablaTab);
+            tab.show();
+        } else {
+            const messageClient = response.message || "Ocurrió un error inesperado.";
+            const messageTech = response.data || null;
+            Utils.showErrorModal(messageClient, messageTech);
+        }
+    } catch (error) {
+        Utils.showToast("Error al agregar el grupo personas", 'danger');
+    }
+}
+
+async function eliminarGrupoPersona(idGrupoPersona, cedula) {
+    if (!confirm('¿Está seguro que desea eliminar este grupo?')) return;
+
+    try {
+        const response = await Utils.httpRequest(
+            `${Utils.path}/grupoPersona/eliminar`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ idGrupoPersona, cedula })
+            },
+            true
+        );
+
+        if (response.cod === Utils.COD_OK) {
+            Utils.showToast("Grupo eliminado exitosamente", 'success');
+            cargarDatosGrupos();
+        } else {
+            const messageClient = response.message || "Error al eliminar el grupo.";
+            const messageTech = response.data || null;
+            Utils.showErrorModal(messageClient, messageTech);
+        }
+    } catch (error) {
+        Utils.showToast("Error al eliminar el grupo", 'danger');
+    }
+}
+
+async function handleBuscarGrupoCedula(event) {
+    const form = event.target.closest("form");
+
+    if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+        form.classList.add('was-validated');
+        return false;
+    }
+    event.preventDefault();
+
+    // Obtener los valores del formulario
+    const idGrupo = document.getElementById('buscar-id-grupo-cedula').value;
+    const cedula = document.getElementById('buscar-cedula').value;
+
+    if (!idGrupo || !cedula) {
+        Utils.showToast("Todos los campos son obligatorios", 'warning');
+        return;
+    }
+
+    try {
+        // Realizar la solicitud a la API
+        const response = await Utils.httpRequest(
+            `${Utils.path}/grupoPersona/buscarPersona`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    idGrupo: idGrupo,
+                    cedula: cedula
+                })
+            },
+            true
+        );
+
+        if (response.cod === Utils.COD_OK) {
+            const data = response.data;
+
+            // Mostrar los datos obtenidos en el formulario
+            document.getElementById('id-grupo-persona').value = data.idGrupoPersona || '';
+            document.getElementById('id-grupo').value = data.idGrupo || '';
+            document.getElementById('cedula').value = data.cedula || '';
+            document.getElementById('estado').value = data.estado || '';
+            document.getElementById('fecha-creacion').value = data.fCreacion || '';
+            document.getElementById('usuario-ingreso').value = data.ususarioIngreso || '';
+
+            // Mostrar el formulario lleno
+            document.getElementById('form-datos-grupo-cedula').classList.remove('d-none');
+        } else {
+            const messageClient = response.message || "No se encontraron datos para la búsqueda.";
+            Utils.showToast(messageClient, 'warning');
+        }
+    } catch (error) {
+        Utils.showToast("Error al buscar el grupo persona", 'danger');
+        console.error("Error en la búsqueda:", error);
+    }
+}
+
+
+// Funcion para leer el archivo CSV y obtener las cedulas
+function leerArchivoCSV(archivo) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = function (event) {
+            const contenido = event.target.result;
+            const lineas = contenido.split('\n');
+            const cedulas = lineas.map(linea => linea.trim()).filter(linea => linea.length > 0); // Eliminar espacios y líneas vacías
+            resolve(cedulas);
+        };
+        reader.onerror = function (error) {
+            reject("Error al leer el archivo CSV");
+        };
+        reader.readAsText(archivo);
+    });
+}
+
 // Función para limpiar formulario
 function limpiarFormularioGrupo() {
     document.getElementById('grupo-nombre').value = '';
@@ -234,4 +503,15 @@ function habilitarValidacion() {
             form.classList.add('was-validated');
         }, false);
     });
+}
+
+function limpiarFormularioGrupoPersonas() {
+    // Restablecer los campos del formulario
+    document.getElementById('persona-id-grupo').value = '';
+    document.getElementById('persona-cedulas-csv').value = '';
+    document.getElementById('persona-usuario-ingreso').value = userInfo.nombre;
+
+    // Eliminar la validación visual (si es necesario)
+    const form = document.getElementById('form-grupo-personas');
+    form.classList.remove('was-validated');
 }

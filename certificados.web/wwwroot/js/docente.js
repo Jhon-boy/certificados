@@ -228,7 +228,7 @@ async function eliminarDocente(id) {
 }
 
 // Función para habilitar validación
-function habilitarValidacion() {
+function habilitarValidacionDocente() {
     'use strict';
     const forms = document.querySelectorAll('.needs-validation');
     Array.from(forms).forEach(form => {
