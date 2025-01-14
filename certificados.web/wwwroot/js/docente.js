@@ -23,7 +23,7 @@ async function cargarDatosDocentes() {
                             <td>${docente.titulo}</td>
                             <td>${docente.facultad}</td>
                             <td>${docente.carrera}</td>
-                            <td>${docente.idEstado === 2 ? 'Activo' : 'Inactivo'}</td>
+                            <td>${docente.idEstado === 1 ? 'Activo' : 'Inactivo'}</td>
                             <td>${docente.usuarioIngreso || 'No disponible'}</td>
                             <td>
                                 <i class="bi bi-pencil-fill text-success me-3" 
@@ -44,6 +44,16 @@ async function cargarDatosDocentes() {
                     tablaBody.insertAdjacentHTML("beforeend", fila);
                 });
 
+                // Inicializar DataTables o reiniciarlo
+                if ($.fn.DataTable.isDataTable("#tabla-docente")) {
+                    $("#tabla-docente").DataTable().destroy();
+                }
+                $("#tabla-docente").DataTable({
+                    language: {
+                        url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+                    }
+                });
+
                 // Establecer usuario actual en el formulario
                 document.getElementById("docente-usuarioingreso").value = userInfo.nombre;
 
@@ -55,6 +65,17 @@ async function cargarDatosDocentes() {
                     new bootstrap.Tooltip(tooltipTriggerEl);
                 });
             } else {
+
+                if ($.fn.DataTable.isDataTable("#tabla-docente")) {
+                    $("#tabla-docente").DataTable().destroy();
+                }
+
+                $("#tabla-docente").DataTable({
+                    language: {
+                        url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+                    }
+                });
+
                 tablaBody.innerHTML = '<tr><td colspan="8" class="text-center">No se encontraron docentes.</td></tr>';
                 Utils.showToast('NO EXISTEN DOCENTES REGISTRADOS', 'info');
             }
@@ -198,6 +219,65 @@ async function handleEditarDocente(event) {
         Utils.showToast("Error al actualizar el docente", 'danger');
     }
 }
+
+async function handleBuscarDocente(event) {
+    const form = event.target.closest("form");
+
+    if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+        form.classList.add('was-validated');
+        return false;
+    }
+    event.preventDefault();
+
+    // Obtener los valores del formulario
+    const cedula = document.getElementById('buscar-cedula').value;
+
+    if (!cedula) {
+        Utils.showToast("La cédula es obligatoria para la búsqueda", 'warning');
+        return;
+    }
+
+    try {
+        // Realizar la solicitud a la API para buscar el docente
+        const response = await Utils.httpRequest(
+            `${Utils.path}/docente/cedula`,  // Ajusta la URL según tu API
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    cedula: cedula
+                })
+            },
+            true
+        );
+
+        if (response.cod === Utils.COD_OK) {
+            const data = response.data;
+
+            // Mostrar los datos obtenidos en el formulario
+            document.getElementById('docente-codigo-buscar').value = data.codigoDocente || '';
+            document.getElementById('docente-cedula-buscar').value = data.cedula || '';
+            document.getElementById('docente-titulo-buscar').value = data.titulo || '';
+            document.getElementById('docente-facultad-buscar').value = data.facultad || '';
+            document.getElementById('docente-carrera-buscar').value = data.carrera || '';
+            document.getElementById('docente-fecha-buscar').value = data.fCreacion || '';
+            document.getElementById('docente-estado-buscar').value = data.idEstado || '';
+            document.getElementById('docente-usuario-buscar').value = data.usuarioIngreso || '';
+
+            // Mostrar el formulario lleno
+            document.getElementById('form-busqueda-docente').classList.remove('d-none');
+        } else {
+            const messageClient = response.message || "No se encontraron datos para el docente con esta cédula.";
+            Utils.showToast(messageClient, 'warning');
+        }
+    } catch (error) {
+        Utils.showToast("Error al buscar el docente", 'danger');
+        console.error("Error en la búsqueda:", error);
+    }
+}
+
 
 // Función para eliminar docente
 async function eliminarDocente(id) {
