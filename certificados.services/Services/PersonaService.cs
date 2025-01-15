@@ -52,6 +52,12 @@ namespace certificados.services.Services
         
             return personaDataAcces.BuscarPersona(cedula);
         }
+        //Buscar una persona por medio de la CEDULA COMPLETO
+        public ResponseApp ObtenerPersonaCompleta(String cedula)
+        {
+
+            return personaDataAcces.BuscarPersonaEntidadCompleta(cedula);
+        }
 
         //Elimina una persona por medio de su ID
         public ResponseApp ELiminarPersona(String cedula) {

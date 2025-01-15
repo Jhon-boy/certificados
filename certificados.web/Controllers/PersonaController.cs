@@ -159,6 +159,15 @@ namespace certificados.web.Controllers
             }
             return Ok(personaService.ObtenerPersona(cedula.ToString()));
         }
+        [HttpPost("perfil")]
+        public ActionResult<ResponseApp> buscarPorCedulaCompleto([FromBody] Dictionary<string, object> requestBody)
+        {
+            if (!requestBody.TryGetValue("cedula", out var cedula))
+            {
+                return BadRequest(Utils.BadResponse(CONSTANTES.MESSAGE_DATA_ERRORS));
+            }
+            return Ok(personaService.ObtenerPersonaCompleta(cedula.ToString()));
+        }
         [HttpPost("eliminar")]
         public ActionResult<ResponseApp> Eliminarersonas([FromBody] Dictionary<string, object> requestBody)
         {

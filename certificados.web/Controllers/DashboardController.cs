@@ -71,5 +71,13 @@ namespace certificados.web.Controllers
         {
             return PartialView("~/Views/Actas/_ActasAsistencia.cshtml");
         }
+        public IActionResult MiPerfil()
+        {
+            return PartialView("~/Views/Config/_MiPerfil.cshtml");
+        }
+        public IActionResult Configuracion()
+        {
+            return PartialView("~/Views/Config/_Configuracion.cshtml");
+        }
     }
 }

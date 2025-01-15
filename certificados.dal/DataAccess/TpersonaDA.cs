@@ -253,6 +253,7 @@ namespace certificados.dal.DataAccess
                         FechaModificacion = persona.FechaModificacion,
                         UsuarioIngreso = persona.UsuarioIngreso,
                         UsuarioActualizacion = persona.UsuarioActualizacion,
+                        
                     };
 
                     // Retornar respuesta exitosa
@@ -272,5 +273,49 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
+        public ResponseApp BuscarPersonaEntidadCompleta(string cedula)
+        {
+            ResponseApp response = Utils.BadResponse(null);
+            try
+            {
+                // Buscar la persona por su cédula
+                var persona = context.Tusuario.Include(e => e.Tpersona).Include(ep  => ep.Trol).FirstOrDefault(p => p.Cedula == cedula);
+
+                if (persona != null)
+                {
+
+                    var personaCompleta = new
+                    {
+                        Usuario = persona,
+                        Persona = persona.Tpersona,
+                        Rol = context.Tusuario
+                                    .Where(u => u.Cedula == cedula)
+                                    .Include(u => u.Trol) // Incluir la relación con Trol
+                                    .Select(u => u.Trol.Nombre)
+
+                                    .Distinct()
+                                    .ToList()
+
+                    };
+
+                    // Retornar respuesta exitosa
+                    response = Utils.OkResponse(personaCompleta);
+                }
+                else
+                {
+                    // Si la persona no existe
+                    response = Utils.BadResponse("PERSONA NO EXISTE");
+                }
+            }
+            catch (Exception ex)
+            {
+                response = Utils.BadResponse($"ERROR AL BUSCAR PERSONA: {ex.Message}");
+                throw new Exception($"ERROR AL BUSCAR PERSONA: {ex.Message}");
+            }
+            return response;
+        }
+
+
     }
+
 }
