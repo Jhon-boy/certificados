@@ -7,6 +7,9 @@
         <li class="nav-item" role="presentation">
             <a class="nav-link text-dark" id="formulario-tab" data-bs-toggle="tab" href="#formulario" role="tab" aria-controls="formulario" aria-selected="false">Agregar Modalidad</a>
         </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link text-dark" id="buscar-tab" data-bs-toggle="tab" href="#buscar" role="tab" aria-controls="buscar" aria-selected="false">Buscar Modalidad</a>
+        </li>
     </ul>
 
     <div class="tab-content" id="myTabContent">
@@ -54,6 +57,51 @@
                 <div class="d-flex justify-content-center">
                     <button type="submit" class="btn btn-primary mx-2">Guardar</button>
                     <button type="reset" class="btn btn-secondary mx-2">Limpiar</button>
+                </div>
+            </form>
+        </div>
+        <!-- Contenido de la pestaña de búsqueda -->
+        <div class="tab-pane fade" id="buscar" role="tabpanel" aria-labelledby="buscar-tab">
+            <!-- Formulario de Búsqueda -->
+            <form id="form-buscar-modalidad" class="border border-2 p-4 rounded" onsubmit="handleBuscarModalidad(event)">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="buscar-id" class="form-label">ID Modalidad</label>
+                        <input type="text" class="form-control" id="buscar-id" name="buscar-id" placeholder="Ingresa el ID de la modalidad" required>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary">Buscar</button>
+                        <button type="reset" class="btn btn-secondary mx-2">Limpiar</button>
+                    </div>
+                </div>
+            </form>
+            <!-- Formulario de Resultado de Búsqueda -->
+            <form id="form-resultado-busqueda" class="border border-2 p-4 rounded d-none">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="id-modalidad" class="form-label">ID Modalidad</label>
+                        <input type="text" class="form-control" id="id-modalidad" name="id-modalidad" disabled>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="nombre-modalidad" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="nombre-modalidad" name="nombre-modalidad" disabled>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="descripcion-modalidad" class="form-label">Descripción</label>
+                        <input type="text" class="form-control" id="descripcion-modalidad" name="descripcion-modalidad" disabled>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="fcreacion-modalidad" class="form-label">Fecha Creación</label>
+                        <input type="text" class="form-control" id="fcreacion-modalidad" name="fcreacion-modalidad" disabled>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="usuario-ingreso-modalidad" class="form-label">Usuario Ingreso</label>
+                        <input type="text" class="form-control" id="usuario-ingreso-modalidad" name="usuario-ingreso-modalidad" disabled>
+                    </div>
                 </div>
             </form>
         </div>

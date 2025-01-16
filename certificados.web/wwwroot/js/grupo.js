@@ -56,7 +56,7 @@ async function cargarDatosGrupos() {
 
                 // Inicializar DataTables o reiniciarlo
                 if ($.fn.DataTable.isDataTable("#tabla-grupo")) {
-                    $("#tabla-grupo").DataTable().destroy();
+                    $("#tabla-grupo").DataTable().cargarDatosGrupos();
                 }
                 $("#tabla-grupo").DataTable({
                     language: {
@@ -78,7 +78,7 @@ async function cargarDatosGrupos() {
             } else {
 
                 if ($.fn.DataTable.isDataTable("#tabla-grupo")) {
-                    $("#tabla-grupo").DataTable().destroy();
+                    $("#tabla-grupo").DataTable().cargarDatosGrupos();
                 }
 
                 $("#tabla-grupo").DataTable({
@@ -86,7 +86,6 @@ async function cargarDatosGrupos() {
                         url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
                     }
                 });
-
 
                 tablaBody.innerHTML = '<tr><td colspan="4" class="text-center">No se encontraron grupos.</td></tr>';
                 Utils.showToast('NO EXISTEN GRUPOS REGISTRADOS', 'info');
@@ -282,7 +281,7 @@ async function cargarDatosGrupoPersonas() {
 
             // Inicializar DataTables o reiniciarlo
             if ($.fn.DataTable.isDataTable("#tabla-grupo-personas")) {
-                $("#tabla-grupo-personas").DataTable().destroy();
+                $("#tabla-grupo-personas").DataTable().cargarDatosGrupoPersonas();
             }
             $("#tabla-grupo-personas").DataTable({
                 language: {
@@ -295,7 +294,7 @@ async function cargarDatosGrupoPersonas() {
 
             // Inicializar DataTables o reiniciarlo
             if ($.fn.DataTable.isDataTable("#tabla-grupo-personas")) {
-                $("#tabla-grupo-personas").DataTable().destroy();
+                $("#tabla-grupo-personas").DataTable().cargarDatosGrupoPersonas();
             }
             $("#tabla-grupo-personas").DataTable({
                 language: {

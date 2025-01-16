@@ -209,6 +209,60 @@ async function eliminarModalidad(id) {
     }
 }
 
+async function handleBuscarModalidad(event) {
+    const form = event.target.closest("form");
+
+    // Validar el formulario
+    if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+        form.classList.add('was-validated');
+        return false;
+    }
+    event.preventDefault();
+
+    // Obtener el valor del ID Modalidad
+    const idModalidad = document.getElementById('buscar-id').value;
+
+    if (!idModalidad) {
+        Utils.showToast("El campo ID Modalidad es obligatorio", 'warning');
+        return;
+    }
+
+    try {
+        // Realizar la solicitud a la API
+        const response = await Utils.httpRequest(
+            `${Utils.path}/modalidad/id`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ idModalidad })
+            },
+            true
+        );
+
+        if (response.cod === Utils.COD_OK) {
+            const data = response.data;
+
+            // Mostrar los datos obtenidos en el formulario
+            document.getElementById('id-modalidad').value = data.idModalidad || '';
+            document.getElementById('nombre-modalidad').value = data.nombre || '';
+            document.getElementById('descripcion-modalidad').value = data.descripcion || '';
+            document.getElementById('fcreacion-modalidad').value = data.fCreacion || '';
+            document.getElementById('usuario-ingreso-modalidad').value = data.usuarioIngreso || '';
+
+            // Mostrar el formulario lleno
+            document.getElementById('form-resultado-busqueda').classList.remove('d-none');
+        } else {
+            const messageClient = response.message || "No se encontraron datos para la búsqueda.";
+            Utils.showToast(messageClient, 'warning');
+        }
+    } catch (error) {
+        Utils.showToast("Error al buscar la modalidad", 'danger');
+        console.error("Error en la búsqueda:", error);
+    }
+}
+
 // Función para limpiar formulario
 function limpiarFormulario() {
     document.getElementById('modalidad-nombre').value = '';
