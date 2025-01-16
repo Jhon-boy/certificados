@@ -112,7 +112,24 @@ namespace certificados.services.Services
 
             return response;
         }
+        //Modifica los Datos de una persona
+        public ResponseApp ModificarPerfil(Tpersona persona, Tusuario usuario)
+        {
+            ResponseApp response = Utils.Utils.BadResponse(null);
 
+            try
+            {
+                response = personaDataAcces.ModificarPerfil(persona, usuario);
+
+            }
+            catch (Exception ex)
+            {
+                response.Message = $"ERROR AL MODIFICAR PERSONA: {ex.Message}";
+                throw new Exception($"ERROR AL MODIFICAR PERSONA: {ex.Message}", ex);
+            }
+
+            return response;
+        }
         public ResponseApp ListarPersonas(string estado) {
             ResponseApp response = Utils.Utils.BadResponse(null);
             try

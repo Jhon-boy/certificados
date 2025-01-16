@@ -93,6 +93,53 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
+        public ResponseApp ModificarPerfil(Tpersona tpersona, Tusuario usuario)
+        {
+            ResponseApp response = Utils.BadResponse(null);
+            using (var transaction = context.Database.BeginTransaction())
+            {
+                try
+                {
+
+                    var personaExistente = context.Tpersona.FirstOrDefault(p => p.Cedula == tpersona.Cedula);
+                    var usuarioExiste = context.Tusuario.FirstOrDefault(p => p.Cedula == tpersona.Cedula);
+                    if (personaExistente != null && usuarioExiste != null)
+                    {
+                        // Actualizar los campos de la persona
+                        personaExistente.Nombres = Utils.SafeString(tpersona.Nombres);
+                        personaExistente.Apellidos = Utils.SafeString(tpersona.Apellidos);
+                        personaExistente.Edad = tpersona.Edad;
+                        personaExistente.Genero = tpersona.Genero;
+                        personaExistente.FechaModificacion = Utils.timeParsed(DateTime.Now);
+                        personaExistente.UsuarioActualizacion = tpersona.UsuarioActualizacion;
+
+                        usuarioExiste.Email = usuario.Email;
+                        usuarioExiste.Clave = usuario.Clave; //no se actualiza la clave aqui
+                        usuarioExiste.FModificacion = Utils.timeParsed(DateTime.Now);
+                        usuarioExiste.UsuarioActualizacion = usuario.UsuarioActualizacion;
+                        // Guardar los cambios
+                        context.SaveChanges();
+                        transaction.Commit();
+
+                        // Retornar respuesta exitosa
+                        response = Utils.OkResponse(personaExistente);
+                    }
+                    else
+                    {
+                        // Si la persona no existe
+                        response = Utils.BadResponse("PERSONA NO EXISTE");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    response = Utils.BadResponse($"ERROR AL MODIFICAR PERSONA: {ex.Message}");
+                    throw new Exception($"ERROR AL MODIFICAR PERSONA: {ex.Message}");
+                }
+            }
+
+            return response;
+        }
         public ResponseApp EliminarPersona(string cedula)
         {
             ResponseApp response = Utils.BadResponse(null);

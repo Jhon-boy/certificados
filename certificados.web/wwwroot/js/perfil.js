@@ -19,30 +19,25 @@ async function cargarDatosPerfil() {
                 const { usuario, persona, rol } = response.data;
 
                 // Llenar campos del Tab Usuario
-                document.getElementById("email").innerText = usuario.email;
+                document.getElementById("email").value = usuario.email;
 
-                // Procesar roles como badges
-                const rolesContainer = document.getElementById("roles");
-                rolesContainer.innerHTML = ""; // Limpiar el contenido previo
-                rol.forEach(role => {
-                    const badge = document.createElement("span");
-                    badge.className = "badge bg-secondary me-2";
-                    badge.innerText = role;
-                    rolesContainer.appendChild(badge);
-                });
+                const roles = response.data.rol; // Array de roles
+                document.getElementById("rolesP").value = roles.join(", ");
 
-                document.getElementById("password").innerText = usuario.clave;
+
+
+                document.getElementById("password").value = usuario.clave;
 
                 // Llenar campos del Tab Persona
-                document.getElementById("nombres").innerText = persona.nombres;
-                document.getElementById("apellidos").innerText = persona.apellidos;
-                document.getElementById("cedula").innerText = persona.cedula;
-                document.getElementById("edad").innerText = persona.edad;
-                document.getElementById("genero").innerText = persona.genero;
-                document.getElementById("usuarioIngreso").innerText = persona.usuarioIngreso;
-                document.getElementById("usuarioActualizacion").innerText = persona.usuarioActualizacion || "N/A";
-                document.getElementById("fechaCreacion").innerText = new Date(persona.fechaCreacion).toLocaleString();
-                document.getElementById("fechaModificacion").innerText = new Date(persona.fechaModificacion).toLocaleString();
+                document.getElementById("nombres").value = persona.nombres;
+                document.getElementById("apellidos").value = persona.apellidos;
+                document.getElementById("cedula").value = persona.cedula;
+                document.getElementById("edad").value = persona.edad;
+                document.getElementById("genero").value = persona.genero;
+                document.getElementById("usuarioIngreso").value = persona.usuarioIngreso;
+                document.getElementById("usuarioActualizacion").value = persona.usuarioActualizacion || "NO ACTUALIZADO";
+                document.getElementById("fechaCreacion").value = Utils.formatFecha(persona.fechaCreacion);
+                document.getElementById("fechaModificacion").value = Utils.formatFecha(persona.fechaModificacion);
 
             } else {
                 Utils.showToast('NO PUDIMOS OBTENER TU INFORMACION', 'info');

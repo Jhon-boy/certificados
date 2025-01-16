@@ -149,6 +149,58 @@ namespace certificados.web.Controllers
             };
             return Ok(personaService.ModificarPersona(persona, usuario));
         }
+        [HttpPost("modificar/perfil")]
+        public ActionResult<ResponseApp> modificarPerfil([FromBody] PersonaDTO dto)
+        {
+            if (dto == null)
+            {
+                return BadRequest(Utils.BadResponse(CONSTANTES.MESSAGE_DATA_ERRORS));
+            }
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                 .SelectMany(v => v.Errors)
+                 .Select(e => e.ErrorMessage)
+                 .ToList();
+                return BadRequest(Utils.BadResponse(errors));
+            }
+
+            var rolRequest = rolService.BuscarRol(dto.idRol);
+            if (!rolRequest.Cod.Equals(CONSTANTES.COD_OK))
+            {
+                return BadRequest(Utils.BadResponse("ROL NO EXISTE"));
+            }
+            var rolEntity = rolRequest.Data as Trol;
+            if (rolEntity == null)
+            {
+                return BadRequest(Utils.BadResponse("ROL NO EXISTE O DATOS INVÁLIDOS"));
+            }
+            Tpersona persona = new Tpersona
+            {
+                Cedula = dto.Cedula,
+                Nombres = Utils.SafeString(dto.Nombres),
+                Apellidos = Utils.SafeString(dto.Apellidos),
+                Edad = dto.Edad,
+                Genero = dto.Genero,
+                UsuarioIngreso = dto.UsuarioIngreso,
+                UsuarioActualizacion = Utils.SafeString(dto.UsuarioActualizacion),
+                FechaCreacion = Utils.timeParsed(DateTime.Now),
+                FechaModificacion = Utils.timeParsed(DateTime.Now),
+            };
+            Tusuario usuario = new Tusuario
+            {
+                Email = dto.email,
+                Clave = dto.clave,
+                Tpersona = persona,
+                Trol = rolEntity,
+                UsusarioIngreso = dto.UsuarioIngreso,
+                UsuarioActualizacion = Utils.SafeString(dto.UsuarioActualizacion),
+                FCreacion = Utils.timeParsed(DateTime.Now),
+                FModificacion = Utils.timeParsed(DateTime.Now),
+                Estado = dto.estado
+            };
+            return Ok(personaService.ModificarPerfil(persona, usuario));
+        }
 
         [HttpPost("id")]
         public ActionResult<ResponseApp> buscarPorId([FromBody] Dictionary<string, object> requestBody)
