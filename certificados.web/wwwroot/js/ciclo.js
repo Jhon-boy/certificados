@@ -209,6 +209,60 @@ async function eliminarCiclo(id) {
     }
 }
 
+async function handleBuscarCiclo(event) {
+    const form = event.target.closest("form");
+
+    if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+        form.classList.add('was-validated');
+        return false;
+    }
+    event.preventDefault();
+
+    // Obtener el valor del formulario
+    const idCiclo = document.getElementById('buscar-id').value;
+
+    if (!idCiclo) {
+        Utils.showToast("El campo ID Ciclo es obligatorio", 'warning');
+        return;
+    }
+
+    try {
+        // Realizar la solicitud a la API
+        const response = await Utils.httpRequest(
+            `${Utils.path}/ciclo/id`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ idCiclo: idCiclo })
+            },
+            true
+        );
+
+        if (response.cod === Utils.COD_OK) {
+            const data = response.data;
+
+            // Mostrar los datos obtenidos en el formulario de resultados
+            document.getElementById('id-ciclo').value = data.idCiclo || '';
+            document.getElementById('nombre-ciclo').value = data.nombre || '';
+            document.getElementById('descripcion-ciclo').value = data.descripcion || '';
+            document.getElementById('fcreacion-ciclo').value = data.fCreacion || '';
+            document.getElementById('usuario-ingreso-ciclo').value = data.usuarioIngreso || '';
+
+            // Mostrar el formulario de resultados
+            document.getElementById('form-resultado-busqueda').classList.remove('d-none');
+        } else {
+            const messageClient = response.message || "No se encontraron datos para la búsqueda.";
+            Utils.showToast(messageClient, 'warning');
+        }
+    } catch (error) {
+        Utils.showToast("Error al buscar el ciclo", 'danger');
+        console.error("Error en la búsqueda:", error);
+    }
+}
+
+
 // Función para limpiar formulario
 function limpiarFormulario() {
     document.getElementById('ciclo-nombre').value = '';
