@@ -60,12 +60,12 @@
 
             <li class="nav-item">
                 <a class="nav-link  text-white" onclick="toggleCollapse('submenu5')">
-                    <i class="bi bi-calendar-event"></i> Eventos <i class="bi bi-caret-down-fill arrow"></i>
+                    <i class="bi bi-person-video2"></i> Facilitador <i class="bi bi-caret-down-fill arrow"></i>
                 </a>
                 <div class="submenu" id="submenu5" style="display: none;">
                     <ul class="nav flex-column ms-3">
-                        <li class="nav-item"><a class="nav-link text-white" href="#" id="link-registrarfacilitador" data-view="RegistrarFacilitador"><i class="bi bi-calendar-event"></i> Ver</a></li>
-                        <li class="nav-item"><a class="nav-link text-white" href="#" id="link-manatenimientoparticipante" data-view="MantenimientoFacilitador"><i class="bi bi-receipt"></i> Registrar </a></li>
+                        <li onclick="cargarFacilitador()" class="nav-item"><a class="nav-link text-white" href="#" id="link-registrarfacilitador" data-view="VerFacilitador"><i class="bi bi-calendar-event"></i> Ver</a></li>
+                        <li onclick="cargarDatosFacilitadores()" class="nav-item"><a class="nav-link text-white" href="#" id="link-manatenimientoparticipante" data-view="Facilitador"><i class="bi bi-receipt"></i> Registrar </a></li>
                     </ul>
                 </div>
             </li>
@@ -177,5 +177,7 @@
     <script src="~/js/actaCalificacion.js" asp-append-version="true"></script>
     <script src="~/js/perfil.js" asp-append-version="true"></script>
     <script src="~/js/Config.js" asp-append-version="true"></script>
+    <script src="~/js/verFacilitador.js" asp-append-version="true"></script>
+    <script src="~/js/Facilitador.js" asp-append-version="true"></script>
 </body>
 </html>
