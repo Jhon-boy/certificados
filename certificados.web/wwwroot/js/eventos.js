@@ -143,18 +143,18 @@ async function editarevento(id) {
         if (requestEdit && requestEdit.data) {
             const data = requestEdit.data;
             document.getElementById('idEventoE').value = data.idevento;
-            document.getElementById('modalidadE').value = data.idModalidad;
+            document.getElementById('idmodalidadE').value = data.idModalidad;
             document.getElementById('ttipoEvento').value = data.idTipoEvento;
             document.getElementById('idDecanatoE').value = data.idDecanato;
             document.getElementById('idGrupoE').value = data.idGrupo;
 
 
             document.getElementById('tematicaEvento').value = data.tematica;
-            document.getElementById('dominioE').value = data.dominio;
+            document.getElementById('dominioEvento').value = data.dominio;
             document.getElementById('FechaInicio').value = new Date(data.fechaInicio).toISOString().split('T')[0];
             document.getElementById('FechaFin').value = new Date(data.fechaFin).toISOString().split('T')[0];
             document.getElementById('Horas').value = data.horas;
-            document.getElementById('lugarE').value = data.lugar;
+            document.getElementById('lugarEvento').value = data.lugar;
             document.getElementById('grupoParticipante').value = data.tgrupo.nombre;
             document.getElementById('periodoEvento').value = data.periodo;
             document.getElementById('conCertificado').value = data.conCertificado ? 'true' : 'false';
@@ -187,13 +187,13 @@ async function confirmarEditarEvento(event) {
             "FechaInicio": `${new Date(form.querySelector("#FechaInicio").value).toISOString()}`,
             "FechaFin": `${new Date(form.querySelector("#FechaFin").value).toISOString()}`,
             "Horas": `${parseInt(form.querySelector("#Horas").value, 10)}`,
-            "Lugar": `${form.querySelector("#lugarE").value}`,
+            "Lugar": `${form.querySelector("#lugarEvento").value}`,
             "ConCertificado": `${form.querySelector("#conCertificado").value === "true" ? 1 : 0}`,
             "Periodo": `${form.querySelector("#periodoEvento").value}`,
             "Tematica": `${form.querySelector("#tematicaEvento").value}`,
-            "Dominio": `${form.querySelector("#dominioE").value}`,
+            "Dominio": `${form.querySelector("#dominioEvento").value}`,
             "IdGrupo": `${parseInt(form.querySelector("#idGrupoE").value, 10)}`,
-            "IdModalidad": `${parseInt(form.querySelector("#modalidadE").value, 10)}`,
+            "IdModalidad": `${parseInt(form.querySelector("#idmodalidadE").value, 10)}`,
             "IdTipoEvento": `${parseInt(form.querySelector("#ttipoEvento").value, 10)}`,
             "IdDecanato": `${parseInt(form.querySelector("#idDecanatoE").value, 10)}`,
             "UsuarioActualizacion": `${userInfoEv.idUsuario}`
