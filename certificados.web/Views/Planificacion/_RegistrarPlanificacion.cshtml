@@ -43,43 +43,36 @@
             <form id="form-planificacion" class="border border-2 p-4 rounded" onsubmit="return handleAgregarPlanificacion(event)">
                 <div class="row">
                     <div class="col-md-4 mb-3">
-                        <label for="tipo-evento" class="form-label">Tipo de Evento</label>
-                        <select class="form-select" id="tipo-evento" name="tipo-evento" required>
-                            <option value="">Seleccione...</option>
-                            <!-- Opciones dinámicas -->
-                        </select>
-                    </div>
-                    <div class="col-md-4 mb-3">
                         <label for="tematica" class="form-label">Temática</label>
                         <input type="text" class="form-control" id="tematica" name="tematica" placeholder="Ingrese la temática" required>
                     </div>
                     <div class="col-md-4 mb-3">
                         <label for="dominio" class="form-label">Dominio</label>
-                        <select class="form-select" id="dominio" name="dominio" required>
-                            <option value="">Seleccione...</option>
-                            <!-- Opciones dinámicas -->
-                        </select>
+                        <input class="form-control" id="dominioAll" name="dominio" required /> 
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="lugarDesarrollo" class="form-label">Lugar a desarrollarse</label>
+                        <input class="form-control" id="lugarDesarrollo" name="lugarDesarrollo" required />
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-4 mb-3">
-                        <label for="linea-investigacion" class="form-label">Línea de Investigación</label>
-                        <select class="form-select" id="linea-investigacion" name="linea-investigacion" required>
-                            <option value="">Seleccione...</option>
+                        <label for="tipo-evento" class="form-label">Tipo de Evento</label>
+                        <select class="form-select" id="tipo-evento" name="tipo-evento" required>
+
                             <!-- Opciones dinámicas -->
                         </select>
                     </div>
                     <div class="col-md-4 mb-3">
                         <label for="ciclo" class="form-label">Ciclo</label>
-                        <select class="form-select" id="ciclo" name="ciclo" required>
-                            <option value="">Seleccione...</option>
-                            <!-- Opciones dinámicas -->
+                        <select class="form-select" id="ciclo-evento" name="ciclo" required>
+                            <!-- Opciones CICLO dinámicas --> 
                         </select>
                     </div>
                     <div class="col-md-4 mb-3">
                         <label for="facilitador" class="form-label">Facilitador</label>
-                        <select class="form-select" id="facilitador" name="facilitador" required>
-                            <option value="">Seleccione...</option>
+                        <select class="form-select" id="facilitadorAll" name="facilitadorAll" required>
+                          
                             <!-- Opciones dinámicas -->
                         </select>
                     </div>
@@ -87,8 +80,8 @@
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <label for="modalidad" class="form-label">Modalidad</label>
-                        <select class="form-select" id="modalidad" name="modalidad" required>
-                            <option value="">Seleccione...</option>
+                        <select class="form-select" id="modalidadAll" name="modalidadAll" required>
+                       
                             <!-- Opciones dinámicas -->
                         </select>
                     </div>
@@ -98,8 +91,8 @@
                     </div>
                     <div class="col-md-4 mb-3">
                         <label for="grupo" class="form-label">Grupo</label>
-                        <select class="form-select" id="grupo" name="grupo" required>
-                            <option value="">Seleccione...</option>
+                        <select class="form-select" id="grupoAll" name="grupoAll" required>
+                           
                             <!-- Opciones dinámicas -->
                         </select>
                     </div>
@@ -115,7 +108,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-4 mb-3">
                         <label for="horas" class="form-label">Horas</label>
                         <input type="number" class="form-control" id="horas" name="horas" placeholder="Ingrese las horas" required>
                     </div>

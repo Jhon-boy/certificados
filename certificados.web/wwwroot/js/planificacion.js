@@ -38,7 +38,11 @@ async function cargarDatosPlanificacion() {
                     tablaBody.innerHTML = '<tr><td colspan="7" class="text-center">No hay eventos en curso.</td></tr>';
                     Utils.showToast('NO EXISTEN EVENTOS EN CURSO', 'info');
                 }
-                cargarDatosTipoEvento();
+                cargarGrupos();
+                cargarModalidades();
+                cargarFacilitadores();
+                cargarCiclos();
+                cargarTipoEvento();
             } else {
                 tablaBody.innerHTML = '<tr><td colspan="7" class="text-center">No se encontraron eventos.</td></tr>';
                 Utils.showToast('NO EXISTEN EVENTOS REGISTRADOS', 'info');
@@ -47,6 +51,155 @@ async function cargarDatosPlanificacion() {
 
     } catch (error) {
         console.log(error)
+        Utils.showToast("Error cargando datos iniciales", 'error');
+    }
+}
+
+
+async function cargarTipoEvento() {
+    try {
+        const tipoResponse = await Utils.httpRequest(
+            `${Utils.path}/tipoEvento/all`,
+            {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            },
+            true);
+        if (tipoResponse.cod === Utils.COD_OK && tipoResponse.data.length > 0) {
+            const selectTipoEvento = document.getElementById("tipo-evento");
+              
+            tipoResponse.data.forEach(tipo => {
+                const option = document.createElement("option");
+                option.value = tipo.idtipoevento;  
+                option.textContent = tipo.nombre;  
+                selectTipoEvento.appendChild(option);
+            });
+        } else {  
+           Utils.showToast('NO EXISTEN ROLES REGISTRADOS', 'info');
+        }
+    } catch (error) {
+        console.log(error)
+        Utils.showToast("Error cargando datos iniciales", 'error');
+    }
+}
+async function cargarCiclos() {
+    try {
+        const responseCiclos = await Utils.httpRequest(
+            `${Utils.path}/ciclo/all`,
+            {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            },
+            true
+        );
+
+            if (responseCiclos.cod === Utils.COD_OK && responseCiclos.data.length > 0) {
+                const selectCiclo = document.getElementById("ciclo-evento");
+                 
+                responseCiclos.data.forEach(ciclo => {
+                    const option = document.createElement("option");
+                    option.value = ciclo.idCiclo;
+                    option.textContent = ciclo.nombre;
+                    selectCiclo.appendChild(option);
+                });
+             
+            } else {
+                Utils.showToast('NO EXISTEN CICLOS REGISTRADOS', 'info');
+            }
+
+    } catch (error) {
+        Utils.showToast("Error cargando datos iniciales", 'error');
+    }
+}
+
+async function cargarFacilitadores() {
+    try {
+        const condition = {
+            estado: 'ACT'
+        }
+        const expositorResponse = await Utils.httpRequest(
+            `${Utils.path}/personas/all`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(condition)
+            },
+            true);
+
+            if (expositorResponse.cod === Utils.COD_OK && expositorResponse.data.length > 0) {
+                const selectElement = document.getElementById('facilitadorAll');
+                selectElement.innerHTML = '';
+
+                expositorResponse.data.forEach(persona => {
+                    if (persona.mDatos.rol.includes('Facilitador')) {
+                        const option = document.createElement('option');
+                        option.value = persona.cedula;
+                        option.textContent = `${persona.cedula} - ${persona.nombres} - ${persona.apellidos}`;
+                        selectElement.appendChild(option);
+                    }
+                   
+                });
+            } else {
+                Utils.showToast("No se encontraron facilitadores.", 'info');
+            }
+             
+    } catch (error) {
+        console.log(error);
+        Utils.showToast("Error cargando datos iniciales", 'error');
+    }
+
+}
+async function cargarModalidades() {
+    try {
+        const responseModalidades = await Utils.httpRequest(
+            `${Utils.path}/modalidad/all`,
+            {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            },
+            true
+        );
+        if (responseModalidades.cod === Utils.COD_OK && responseModalidades.data.length > 0) {
+            const selectModalidad = document.getElementById("modalidadAll"); 
+
+            responseModalidades.data.forEach(mod => {
+                const option = document.createElement("option");
+                option.value = mod.idModalidad;
+                option.textContent = mod.nombre;
+                selectModalidad.appendChild(option);
+            });
+        } else {
+            Utils.showToast('NO EXISTEN MODALIDADES REGISTRADAS', 'info');
+        }
+    } catch (error) {
+        Utils.showToast("Error cargando datos iniciales", 'error');
+    }
+}
+
+async function cargarGrupos() {
+    try {
+        const responseGrupos = await Utils.httpRequest(
+            `${Utils.path}/grupo/all`,
+            {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            },
+            true
+        );
+
+        if (responseGrupos.cod === Utils.COD_OK && responseGrupos.data.length > 0) {
+            const selectGrupo = document.getElementById("grupoAll"); 
+
+            responseGrupos.data.forEach(grupo => {
+                const option = document.createElement("option");
+                option.value = grupo.idGrupo;
+                option.textContent = grupo.nombre;
+                selectGrupo.appendChild(option);
+            });
+        } else {
+            Utils.showToast('NO EXISTEN MODALIDADES REGISTRADAS', 'info');
+        }
+    } catch (error) {
         Utils.showToast("Error cargando datos iniciales", 'error');
     }
 }
