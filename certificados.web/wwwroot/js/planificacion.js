@@ -1,62 +1,52 @@
 ﻿// Función para cargar datos de planificación
 async function cargarDatosPlanificacion() {
     try {
-        const response = await Utils.httpRequest(
+        const eventosResponse = await Utils.httpRequest(
             `${Utils.path}/evento/all`,
             {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
             },
-            true
-        );
-
+            true);
         setTimeout(() => {
-            const tablaBody = document.querySelector("#tabla-planificacion tbody");
+            const hoy = new Date();
+
+            const response = eventosResponse;
+            const tablaBody = document.querySelector("#tabla-evento tbody");
             tablaBody.innerHTML = '';
 
-            if (response.cod === Utils.COD_OK && response.data.length > 0) {
-                response.data.forEach(planificacion => {
-                    const fila = `
-                        <tr>
-                            <td>${planificacion.idPlanificacion}</td>
-                            <td>${planificacion.nombre}</td>
-                            <td>${planificacion.descripcion}</td>
-                            <td>${planificacion.usuarioIngreso || 'No disponible'}</td>
-                            <td>
-                                <i class="bi bi-pencil-fill text-success me-3" 
-                                   style="cursor: pointer;" 
-                                   onclick="editarPlanificacion(${planificacion.idPlanificacion})" 
-                                   data-bs-toggle="tooltip" 
-                                   data-bs-placement="top" 
-                                   title="Editar Planificación"></i>
-                                <i class="bi bi-trash-fill text-danger" 
-                                   style="cursor: pointer;" 
-                                   onclick="eliminarPlanificacion(${planificacion.idPlanificacion})" 
-                                   data-bs-toggle="tooltip" 
-                                   data-bs-placement="top" 
-                                   title="Eliminar Planificación"></i>
-                            </td>
-                        </tr>
-                    `;
-                    tablaBody.insertAdjacentHTML("beforeend", fila);
-                });
-                Utils.showToast('DATOS CARGADOS EXITOSAMENTE', 'success');
+            if (response.cod === Utils.COD_OK && response.data.length > 0) { 
+                const eventosEnCurso = response.data.filter(evento => new Date(evento.fechaFin) > hoy);
 
-                // Establecer usuario actual en el formulario
-                document.getElementById("planificacion-usuario").value = userInfo.nombre;
-
-                // Inicializar tooltips
-                const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-                tooltipTriggerList.forEach(function (tooltipTriggerEl) {
-                    new bootstrap.Tooltip(tooltipTriggerEl);
-                });
+                if (eventosEnCurso.length > 0) {
+                    eventosEnCurso.forEach(evento => {
+                        const fila = `
+                    <tr>
+                        <td>${evento.idevento}</td>
+                        <td>${evento.tematica}</td>
+                        <td>${evento.dominio}</td>
+                        <td>${Utils.formatFecha(evento.fechaInicio)} - ${Utils.formatFecha(evento.fechaFin)}</td>
+                        <td>${evento.tmodalidad.nombre}</td>
+                        <td>${evento.lugar}</td>
+                        <td>${evento.idGrupo}</td>
+                    </tr>
+                `;
+                        tablaBody.insertAdjacentHTML("beforeend", fila);
+                    });
+                    Utils.showToast('EVENTOS EN CURSO CARGADOS EXITOSAMENTE', 'success');
+                } else {
+                    tablaBody.innerHTML = '<tr><td colspan="7" class="text-center">No hay eventos en curso.</td></tr>';
+                    Utils.showToast('NO EXISTEN EVENTOS EN CURSO', 'info');
+                }
+                cargarDatosTipoEvento();
             } else {
-                tablaBody.innerHTML = '<tr><td colspan="5" class="text-center">No se encontraron planificaciones.</td></tr>';
-                Utils.showToast('NO EXISTEN PLANIFICACIONES REGISTRADAS', 'info');
+                tablaBody.innerHTML = '<tr><td colspan="7" class="text-center">No se encontraron eventos.</td></tr>';
+                Utils.showToast('NO EXISTEN EVENTOS REGISTRADOS', 'info');
             }
         }, 150);
 
     } catch (error) {
+        console.log(error)
         Utils.showToast("Error cargando datos iniciales", 'error');
     }
 }

@@ -16,23 +16,25 @@
         <br />
         <!-- Contenido de la pestaña para listar planificaciones -->
         <div class="tab-pane fade show active m-1" id="listar-planificacion" role="tabpanel" aria-labelledby="listar-planificacion-tab">
-            <table id="tabla-planificacion" class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th>ID Planificación</th>
-                        <th>Fecha Inicio</th>
-                        <th>Fecha Fin</th>
-                        <th>Horas</th>
-                        <th>Lugar</th>
-                        <th>Periodo</th>
-                        <th>Temática</th>
-                        <th>Dominio</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Aquí se mostrarán los datos de las planificaciones -->
-                </tbody>
-            </table>
+            <div class="container mt-4">
+                <h2>Lista de Eventos en Curso o proximamente</h2>
+                <table id="tabla-evento" class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tematica</th>
+                            <th>Dominio</th>
+                            <th>F. Inicio & Fin</th>
+                            <th>Modalidad</th>
+                            <th>Lugar</th>
+                            <th>Grupo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Aquí se cargarán los registros de roles -->
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <!-- Contenido de la pestaña para agregar planificación -->
