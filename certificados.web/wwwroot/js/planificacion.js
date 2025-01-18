@@ -1,4 +1,7 @@
-﻿// Función para cargar datos de planificación
+﻿
+let userInfoPl = JSON.parse(localStorage.getItem('userInfo'));
+
+// Función para cargar datos de planificación
 async function cargarDatosPlanificacion() {
     try {
         const eventosResponse = await Utils.httpRequest(
@@ -33,7 +36,7 @@ async function cargarDatosPlanificacion() {
                 `;
                         tablaBody.insertAdjacentHTML("beforeend", fila);
                     });
-                    Utils.showToast('EVENTOS EN CURSO CARGADOS EXITOSAMENTE', 'success');
+                    Utils.showToast('EVENTOS CARGADOS EXITOSAMENTE', 'success');
                 } else {
                     tablaBody.innerHTML = '<tr><td colspan="7" class="text-center">No hay eventos en curso.</td></tr>';
                     Utils.showToast('NO EXISTEN EVENTOS EN CURSO', 'info');
@@ -43,6 +46,7 @@ async function cargarDatosPlanificacion() {
                 cargarFacilitadores();
                 cargarCiclos();
                 cargarTipoEvento();
+                cargarFacultad();
             } else {
                 tablaBody.innerHTML = '<tr><td colspan="7" class="text-center">No se encontraron eventos.</td></tr>';
                 Utils.showToast('NO EXISTEN EVENTOS REGISTRADOS', 'info');
@@ -76,6 +80,32 @@ async function cargarTipoEvento() {
             });
         } else {  
            Utils.showToast('NO EXISTEN ROLES REGISTRADOS', 'info');
+        }
+    } catch (error) {
+        console.log(error)
+        Utils.showToast("Error cargando datos iniciales", 'error');
+    }
+}
+async function cargarFacultad() {
+    try {
+        const decanatoResponse = await Utils.httpRequest(
+            `${Utils.path}/decanato/all`,
+            {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            },
+            true);
+        if (decanatoResponse.cod === Utils.COD_OK && decanatoResponse.data.length > 0) {
+            const selectDecanato = document.getElementById("decanatoAll");
+
+            decanatoResponse.data.forEach(tipo => {
+                const option = document.createElement("option");
+                option.value = tipo.idDecanato;
+                option.textContent = tipo.nombre;
+                selectDecanato.appendChild(option);
+            });
+        } else {
+            Utils.showToast('NO EXISTEN ROLES REGISTRADOS', 'info');
         }
     } catch (error) {
         console.log(error)
@@ -203,11 +233,11 @@ async function cargarGrupos() {
         Utils.showToast("Error cargando datos iniciales", 'error');
     }
 }
-
 // Manejador para crear nueva planificación
 async function handleAgregarPlanificacion(event) {
     const form = event.target.closest("form");
 
+    // Validación del formulario
     if (!form.checkValidity()) {
         event.preventDefault();
         event.stopPropagation();
@@ -216,14 +246,26 @@ async function handleAgregarPlanificacion(event) {
     }
     event.preventDefault();
 
+    // Construir el cuerpo de la solicitud (JSON) 
     const bodyRequest = {
-        Nombre: document.getElementById('planificacion-nombre').value,
-        Descripcion: document.getElementById('planificacion-descripcion').value,
-        UsuarioIngreso: userInfo.idUsuario
+        "FechaInicio": `${document.getElementById('fecha-inicio').value}T08:30:00`,
+        "FechaFin": `${document.getElementById('fecha-fin').value}T12:30:00`,
+        "Horas": `${parseInt(document.getElementById('horas').value, 10)}`,
+        "Lugar": `${document.getElementById('lugarDesarrollo').value}`,
+        "ConCertificado": `${document.getElementById('con-certificado').value}`,
+        "Periodo": `${document.getElementById('ciclo-evento').value}`,
+        "Tematica": `${document.getElementById('tematica').value}`,
+        "Dominio": `${document.getElementById('dominioAll').value}`,
+        "IdGrupo": `${parseInt(document.getElementById('grupoAll').value, 10)}`,
+        "IdModalidad": `${parseInt(document.getElementById('modalidadAll').value, 10)}`,
+        "IdTipoEvento": `${parseInt(document.getElementById('tipo-evento').value, 10)}`,
+        "IdDecanato": `${parseInt(document.getElementById('decanatoAll').value, 10)}`,
+        "Admin": `${userInfoPl.idUsuario}`
     };
 
-    try {
-        const response = await Utils.httpRequest(
+
+    try { 
+        const responseCreate = await Utils.httpRequest(
             `${Utils.path}/evento/crear`,
             {
                 method: "POST",
@@ -232,23 +274,27 @@ async function handleAgregarPlanificacion(event) {
             },
             true
         );
-
-        if (response.cod === Utils.COD_OK) {
+         
+        if (responseCreate.cod === Utils.COD_OK) {
             Utils.showToast('PLANIFICACIÓN REGISTRADA EXITOSAMENTE', 'info');
             cargarDatosPlanificacion();
-            limpiarFormulario();
-            // Cambiar a la pestaña de la tabla
-            const tablaTab = document.querySelector('#tabla-tab');
-            const tab = new bootstrap.Tab(tablaTab);
-            tab.show();
+            limpiarFormulario(); 
         } else {
-            const messageClient = response.message || "Ocurrió un error inesperado.";
-            const messageTech = response.data || null;
+            const messageClient = responseCreate.message || "Ocurrió un error inesperado.";
+            const messageTech = responseCreate.data || null;
             Utils.showErrorModal(messageClient, messageTech);
         }
     } catch (error) {
+        console.log(error)
         Utils.showToast("Error al agregar la planificación", 'danger');
     }
+}
+
+// Función para limpiar el formulario
+function limpiarFormulario() {
+    const form = document.getElementById('form-planificacion');
+    form.reset(); // Restablecer todos los inputs
+    form.classList.remove('was-validated'); // Eliminar clases de validación
 }
 
 // Función para editar planificación
@@ -281,48 +327,6 @@ async function editarPlanificacion(id) {
     }
 }
 
-// Manejador para guardar edición de planificación
-async function handleEditarPlanificacion(event) {
-    const form = event.target.closest("form");
-
-    if (!form.checkValidity()) {
-        form.classList.add('was-validated');
-        return;
-    }
-    event.preventDefault();
-
-    const bodyRequest = {
-        idPlanificacion: document.getElementById('planificacion-id-editar').value,
-        Nombre: document.getElementById('planificacion-nombre-editar').value,
-        Descripcion: document.getElementById('planificacion-descripcion-editar').value,
-        UsuarioActualizacion: userInfo.idUsuario
-    };
-
-    try {
-        const response = await Utils.httpRequest(
-            `${Utils.path}/evento/modificar`,
-            {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(bodyRequest)
-            },
-            true
-        );
-
-        if (response.cod === Utils.COD_OK) {
-            Utils.showToast("Planificación actualizada exitosamente", 'info');
-            cargarDatosPlanificacion();
-            const modal = bootstrap.Modal.getInstance(document.getElementById('modal-editar'));
-            modal.hide();
-        } else {
-            const messageClient = response.message || "Ocurrió un error inesperado.";
-            const messageTech = response.data || null;
-            Utils.showErrorModal(messageClient, messageTech);
-        }
-    } catch (error) {
-        Utils.showToast("Error al actualizar la planificación", 'danger');
-    }
-}
 
 // Función para eliminar planificación
 async function eliminarPlanificacion(id) {
@@ -352,17 +356,6 @@ async function eliminarPlanificacion(id) {
     }
 }
 
-// Función para limpiar formulario
-function limpiarFormulario() {
-    document.getElementById('planificacion-nombre').value = '';
-    document.getElementById('planificacion-descripcion').value = '';
-    document.getElementById('planificacion-usuario').value = userInfo.nombre;
-
-    const form = document.querySelector('.needs-validation');
-    if (form) {
-        form.classList.remove('was-validated');
-    }
-}
 
 // Función para habilitar validación
 function habilitarValidacionPlanificacion() {
