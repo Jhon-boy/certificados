@@ -43,6 +43,7 @@ async function cargarDatosPlanificacion() {
                 cargarFacilitadores();
                 cargarCiclos();
                 cargarTipoEvento();
+                cargarFacultad();
             } else {
                 tablaBody.innerHTML = '<tr><td colspan="7" class="text-center">No se encontraron eventos.</td></tr>';
                 Utils.showToast('NO EXISTEN EVENTOS REGISTRADOS', 'info');
@@ -76,6 +77,32 @@ async function cargarTipoEvento() {
             });
         } else {  
            Utils.showToast('NO EXISTEN ROLES REGISTRADOS', 'info');
+        }
+    } catch (error) {
+        console.log(error)
+        Utils.showToast("Error cargando datos iniciales", 'error');
+    }
+}
+async function cargarFacultad() {
+    try {
+        const decanatoResponse = await Utils.httpRequest(
+            `${Utils.path}/decanato/all`,
+            {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            },
+            true);
+        if (decanatoResponse.cod === Utils.COD_OK && decanatoResponse.data.length > 0) {
+            const selectDecanato = document.getElementById("decanatoAll");
+
+            decanatoResponse.data.forEach(tipo => {
+                const option = document.createElement("option");
+                option.value = tipo.idDecanato;
+                option.textContent = tipo.nombre;
+                selectDecanato.appendChild(option);
+            });
+        } else {
+            Utils.showToast('NO EXISTEN ROLES REGISTRADOS', 'info');
         }
     } catch (error) {
         console.log(error)
