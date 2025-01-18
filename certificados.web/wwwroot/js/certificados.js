@@ -1,146 +1,247 @@
-﻿$(function () {
-    inicializarTabla('#tabla-certificado');
-});
-
-function inicializarTabla(selector) {
-    $(selector).DataTable({
-        language: {
-            sProcessing: 'Procesando...',
-            sLengthMenu: 'Mostrar _MENU_ registros',
-            sZeroRecords: 'No se encontraron resultados',
-            sEmptyTable: 'Ningún dato disponible en esta tabla',
-            sInfo: 'Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros',
-            sInfoEmpty: 'Mostrando registros del 0 al 0 de un total de 0 registros',
-            sInfoFiltered: '(filtrado de un total de _MAX_ registros)',
-            sSearch: 'Buscar:',
-            sLoadingRecords: 'Cargando...',
-            oPaginate: {
-                sFirst: 'Primero',
-                sPrevious: 'Anterior',
-                sNext: 'Siguiente',
-                sLast: 'Último',
+﻿// Función para cargar datos de certificados
+async function cargarDatosCertificados() {
+    try {
+        const response = await Utils.httpRequest(
+            `${Utils.path}/certificado/all`,
+            {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
             },
-        },
-    });
-}
+            true
+        );
 
-let datosCertificado = { certificados: [] };
+        setTimeout(() => {
+            const tablaBody = document.querySelector("#tabla-certificados tbody");
+            tablaBody.innerHTML = '';
 
-// Obtener los datos del formulario
-function obtenerDatosFormulario(tipo) {
-    const prefijo = tipo.toLowerCase();
-    return new Promise((resolve, reject) => {
-        const imagenInput = $(`#${prefijo}-imagen`)[0];
-        let imagenBase64 = null;
-
-        if (imagenInput.files.length > 0) {
-            const file = imagenInput.files[0];
-            const reader = new FileReader();
-
-            reader.onloadend = function () {
-                imagenBase64 = reader.result;
-                resolve({
-                    titulo: $(`#${prefijo}-titulo`).val().trim(),
-                    evento: $(`#${prefijo}-evento`).val().trim(),
-                    formato: $(`#${prefijo}-formato`).val().trim(),
-                    tipo: $(`#${prefijo}-tipo`).val().trim(),
-                    estado: $(`#${prefijo}-estado`).val().trim(),
-                    usuarioIngreso: $(`#${prefijo}-usuarioingreso`).val().trim(),
-                    imagen: imagenBase64
+            if (response.cod === Utils.COD_OK && response.data.length > 0) {
+                response.data.forEach(certificado => {
+                    const fila = `
+                        <tr>
+                            <td>${certificado.idCertificado}</td>
+                            <td>${certificado.titulo}</td>
+                            <td>${certificado.idEvento}</td>
+                            <td>${certificado.idFormato}</td>
+                            <td>${certificado.tipo}</td>
+                            <td>${certificado.estado ? 'Activo' : 'Inactivo'}</td>
+                            <td>
+                                <i class="bi bi-pencil-fill text-success me-3" 
+                                   style="cursor: pointer;" 
+                                   onclick="editarCertificado(${certificado.idCertificado})" 
+                                   data-bs-toggle="tooltip" 
+                                   data-bs-placement="top" 
+                                   title="Editar Certificado"></i>
+                                <i class="bi bi-trash-fill text-danger" 
+                                   style="cursor: pointer;" 
+                                   onclick="eliminarCertificado(${certificado.idCertificado})" 
+                                   data-bs-toggle="tooltip" 
+                                   data-bs-placement="top" 
+                                   title="Eliminar Certificado"></i>
+                            </td>
+                        </tr>
+                    `;
+                    tablaBody.insertAdjacentHTML("beforeend", fila);
                 });
-            };
+                Utils.showToast('DATOS CARGADOS EXITOSAMENTE', 'success');
 
-            reader.onerror = function () {
-                reject("Error al leer el archivo.");
-            };
+                // Inicializar tooltips
+                const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+                    new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+            } else {
+                tablaBody.innerHTML = '<tr><td colspan="7" class="text-center">No se encontraron certificados.</td></tr>';
+                Utils.showToast('NO EXISTEN CERTIFICADOS REGISTRADOS', 'info');
+            }
+        }, 150);
 
-            reader.readAsDataURL(file); // Convertir la imagen a Base64
-        } else {
-            resolve({
-                titulo: $(`#${prefijo}-titulo`).val().trim(),
-                evento: $(`#${prefijo}-evento`).val().trim(),
-                formato: $(`#${prefijo}-formato`).val().trim(),
-                tipo: $(`#${prefijo}-tipo`).val().trim(),
-                estado: $(`#${prefijo}-estado`).val().trim(),
-                usuarioIngreso: $(`#${prefijo}-usuarioingreso`).val().trim(),
-                imagen: null // No hay imagen seleccionada
-            });
-        }
-    });
-}
-
-// Agregar nuevo certificado
-function agregarCertificado() {
-    const prefijo = "certificado";
-    $(`#${prefijo}-titulo, #${prefijo}-evento, #${prefijo}-formato, #${prefijo}-estado, #${prefijo}-usuarioingreso, #${prefijo}-imagen`).val('');
-    $('#modal-editar-certificado-label').text('Agregar Nuevo Certificado');
-    $('#modal-editar-certificado').modal('show');
-
-    $('#btn-guardar-cambios').off('click').on('click', () => guardarCambios('Certificado'));
-}
-
-// Guardar cambios (agregar o editar)
-function guardarCambios(tipo, itemEditado = null) {
-    obtenerDatosFormulario(tipo).then(({ titulo, evento, formato, tipoCertificado, estado, usuarioIngreso, imagen }) => {
-        if (!titulo || !evento || !formato) {
-            alert(`Los campos 'Título', 'Evento' y 'Formato' son obligatorios.`);
-            return;
-        }
-
-        const dataType = tipo.toLowerCase();
-        const tableSelector = `#tabla-${dataType}`;
-        const table = $(tableSelector).DataTable();
-
-        // Asegurarse de que el array de datos está inicializado
-        if (!Array.isArray(datosCertificado[dataType])) {
-            datosCertificado[dataType] = [];
-        }
-
-        if (!itemEditado) {
-            agregarNuevoElemento(table, dataType, { titulo, evento, formato, tipo: tipoCertificado, estado, usuarioIngreso, imagen });
-        } else {
-            editarElementoExistente(table, dataType, itemEditado, { titulo, evento, formato, tipo: tipoCertificado, estado, usuarioIngreso, imagen });
-        }
-
-        $('#modal-editar-certificado').modal('hide');
-    }).catch((error) => {
-        alert(error);
-    });
-}
-
-// Agregar nuevo certificado
-function agregarNuevoElemento(table, dataType, { titulo, evento, formato, tipo, estado, usuarioIngreso, imagen }) {
-    const nuevoElemento = { titulo, evento, formato, tipo, estado, usuarioIngreso, imagen };
-
-    // Asegurarse de que el array de datos está inicializado
-    if (!Array.isArray(datosCertificado[dataType])) {
-        datosCertificado[dataType] = [];
+    } catch (error) {
+        Utils.showToast("Error cargando datos iniciales", 'error');
     }
-
-    datosCertificado[dataType].push(nuevoElemento);
-
-    table.row.add([titulo, evento, formato, tipo, estado === 'true' ? 'Activo' : 'Inactivo', usuarioIngreso, generarAccionesHtml(dataType, evento)]).draw();
 }
 
-// Editar un certificado existente
-function editarElementoExistente(table, dataType, itemEditado, { titulo, evento, formato, tipo, estado, usuarioIngreso, imagen }) {
-    Object.assign(itemEditado, { titulo, evento, formato, tipo, estado, usuarioIngreso, imagen });
+// Manejador para crear nuevo certificado
+async function handleAgregarCertificado(event) {
+    const form = event.target.closest("form");
 
-    table.rows().every(function () {
-        const data = this.data();
-        if (data[1] === evento) {
-            this.data([titulo, evento, formato, tipo, estado === 'true' ? 'Activo' : 'Inactivo', usuarioIngreso, generarAccionesHtml(dataType, evento)]);
+    if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+        form.classList.add('was-validated');
+        return false;
+    }
+    event.preventDefault();
+    let userInfoConfig = JSON.parse(localStorage.getItem('userInfo'));
+    const bodyRequest = {
+        Titulo: document.getElementById('certificado-titulo').value,
+        Imagen: document.getElementById('certificado-imagen').value,
+        IdEvento: parseInt(document.getElementById('certificado-id-evento').value),
+        IdFormato: parseInt(document.getElementById('certificado-id-formato').value),
+        Tipo: document.getElementById('certificado-tipo').value,
+        Estado: document.getElementById('certificado-estado').checked,
+        UsuarioIngreso: userInfoConfig.idUsuario
+    };
+
+    try {
+        const response = await Utils.httpRequest(
+            `${Utils.path}/certificado/crear`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(bodyRequest)
+            },
+            true
+        );
+
+        if (response.cod === Utils.COD_OK) {
+            Utils.showToast('CERTIFICADO REGISTRADO EXITOSAMENTE', 'info');
+            cargarDatosCertificados();
+            limpiarFormularioCertificado();
+            const tablaTab = document.querySelector('#tabla-tab');
+            const tab = new bootstrap.Tab(tablaTab);
+            tab.show();
+        } else {
+            const messageClient = response.message || "Ocurrió un error inesperado.";
+            const messageTech = response.data || null;
+            Utils.showErrorModal(messageClient, messageTech);
         }
-    });
-
-    table.draw();
+    } catch (error) {
+        Utils.showToast("Error al agregar el certificado", 'danger');
+    }
 }
 
-// Generar HTML para los botones de acciones (editar y eliminar)
-function generarAccionesHtml(tipo, evento) {
-    return `
-        <div class="text-end">
-            <button class="btn btn-primary btn-sm" onclick="editarElemento('${tipo}', '${evento}')">Editar</button>
-            <button class="btn btn-danger btn-sm" onclick="eliminarElemento('${tipo}', '${evento}')">Eliminar</button>
-        </div>`;
+// Función para editar certificado
+async function editarCertificado(id) {
+    try {
+        const response = await Utils.httpRequest(
+            `${Utils.path}/certificado/id`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ idCertificado: id })
+            },
+            true
+        );
+
+        if (response.cod === Utils.COD_OK) {
+            const certificado = response.data;
+            document.getElementById('certificado-id-editar').value = certificado.idCertificado;
+            document.getElementById('certificado-titulo-editar').value = certificado.titulo;
+            document.getElementById('certificado-id-evento-editar').value = certificado.idEvento;
+            document.getElementById('certificado-id-formato-editar').value = certificado.idFormato;
+            document.getElementById('certificado-tipo-editar').value = certificado.tipo;
+            document.getElementById('certificado-estado-editar').checked = certificado.estado;
+
+            const modal = new bootstrap.Modal(document.getElementById('modal-editar-certificado'));
+            modal.show();
+        } else {
+            Utils.showToast("Error al cargar datos del certificado", 'danger');
+        }
+    } catch (error) {
+        Utils.showToast("Error al obtener los datos del certificado", 'danger');
+    }
+}
+
+// Manejador para guardar edición
+async function handleEditarCertificado(event) {
+    const form = event.target.closest("form");
+
+    if (!form.checkValidity()) {
+        form.classList.add('was-validated');
+        return;
+    }
+    event.preventDefault();
+
+    const bodyRequest = {
+        idCertificado: document.getElementById('certificado-id-editar').value,
+        Titulo: document.getElementById('certificado-titulo-editar').value,
+        IdEvento: parseInt(document.getElementById('certificado-id-evento-editar').value),
+        IdFormato: parseInt(document.getElementById('certificado-id-formato-editar').value),
+        Tipo: document.getElementById('certificado-tipo-editar').value,
+        Estado: document.getElementById('certificado-estado-editar').checked,
+        UserModificacion: userInfo.idUsuario
+    };
+
+    try {
+        const response = await Utils.httpRequest(
+            `${Utils.path}/certificado/modificar`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(bodyRequest)
+            },
+            true
+        );
+
+        if (response.cod === Utils.COD_OK) {
+            Utils.showToast("Certificado actualizado exitosamente", 'info');
+            cargarDatosCertificados();
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modal-editar-certificado'));
+            modal.hide();
+        } else {
+            const messageClient = response.message || "Ocurrió un error inesperado.";
+            const messageTech = response.data || null;
+            Utils.showErrorModal(messageClient, messageTech);
+        }
+    } catch (error) {
+        Utils.showToast("Error al actualizar el certificado", 'danger');
+    }
+}
+
+// Función para eliminar certificado
+async function eliminarCertificado(id) {
+    if (!confirm('¿Está seguro que desea eliminar este certificado?')) return;
+
+    try {
+        const response = await Utils.httpRequest(
+            `${Utils.path}/certificado/eliminar`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ idCertificado: id })
+            },
+            true
+        );
+
+        if (response.cod === Utils.COD_OK) {
+            Utils.showToast("Certificado eliminado exitosamente", 'success');
+            cargarDatosCertificados();
+        } else {
+            const messageClient = response.message || "Error al eliminar el certificado.";
+            const messageTech = response.data || null;
+            Utils.showErrorModal(messageClient, messageTech);
+        }
+    } catch (error) {
+        Utils.showToast("Error al eliminar el certificado", 'danger');
+    }
+}
+
+// Función para limpiar formulario
+function limpiarFormularioCertificado() {
+    document.getElementById('certificado-titulo').value = '';
+    document.getElementById('certificado-imagen').value = '';
+    document.getElementById('certificado-id-evento').value = '';
+    document.getElementById('certificado-id-formato').value = '';
+    document.getElementById('certificado-tipo').value = '';
+    document.getElementById('certificado-estado').checked = false;
+
+    const form = document.querySelector('.needs-validation');
+    if (form) {
+        form.classList.remove('was-validated');
+    }
+}
+
+// Habilitar validación de formularios
+function habilitarValidacionCertificado() {
+    'use strict';
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+        form.addEventListener('submit', event => {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    });
 }

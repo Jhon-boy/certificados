@@ -82,16 +82,10 @@
                 </div>
             </li>
 
-            <li class="nav-item">
-                <a class="nav-link text-white" onclick="toggleCollapse('submenu2')">
-                    <i class="bi bi-clipboard-check"></i> Certificación <i class="bi bi-caret-down-fill arrow"></i>
+            <li onclick="cargarDatosCertificados()" class="nav-item">
+                <a class="nav-link text-white" href="#" id="link-expositor" data-view="Certificado">
+                    <i class="bi bi-clipboard-check"></i> Certificación
                 </a>
-                <div class="submenu" id="submenu2" style="display: none;">
-                    <ul class="nav flex-column ms-3">
-                        <li class="nav-item"><a class="nav-link text-white" href="#"><i class="bi bi-file-earmark-text"></i>  Mantenimiento</a></li>
-                        <li class="nav-item"><a class="nav-link text-white" href="#"><i class="bi bi-file-earmark-pdf"></i> Emitir Certificado</a></li>
-                    </ul>
-                </div>
             </li>
 
             <li class="nav-item">
@@ -180,5 +174,6 @@
     <script src="~/js/Config.js" asp-append-version="true"></script>
     <script src="~/js/verFacilitador.js" asp-append-version="true"></script>
     <script src="~/js/Facilitador.js" asp-append-version="true"></script>
+    <script src="~/js/certificados.js" asp-append-version="true"></script>
 </body>
 </html>
