@@ -4,7 +4,9 @@ using certificados.services.Services;
 using certificados.services.Utils;
 using certificados.web.Controllers.Mappers;
 using certificados.web.Models.DTO;
+using iTextSharp.text.pdf.codec.wmf;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace certificados.web.Controllers
 {
@@ -33,28 +35,49 @@ namespace certificados.web.Controllers
          * Endpoint para crear un CERTIFICADO
          */
         [HttpPost("crear")]
-        public ActionResult<ResponseApp> crearCertificado([FromBody] CertificadoDTO dto)
+        public ActionResult<ResponseApp> crearCertificado([FromBody] Dictionary<string, object> requestBody)
         {
 
-            if (dto == null)
+            if (requestBody == null || !requestBody.Any())
             {
-                return BadRequest(Utils.BadResponse(CONSTANTES.MESSAGE_DATA_ERRORS));
+                return Utils.BadResponse(CONSTANTES.MESSAGE_DATA_ERRORS);
             }
 
-            var eventoResponse = eventoService.ListarPorId(dto.IdEvento);
+            var titulo = (JsonElement)requestBody["Titulo"];
+            var imagen = (JsonElement)requestBody["Imagen"];
+            var idEvento = (JsonElement)requestBody["IdEvento"];
+            var idFormato = (JsonElement)requestBody["IdFormato"];
+            var tipo = (JsonElement)requestBody["Tipo"];
+            var estado = (JsonElement)requestBody["Estado"];
+            var usuarioIngreso = (JsonElement)requestBody["UsuarioIngreso"];
+
+            var eventoResponse = eventoService.ListarPorId(int.Parse(idEvento.ToString()));
             if (!eventoResponse.Cod.Equals(CONSTANTES.COD_OK))
             {
                 return Utils.BadResponse("NO EXISTE EL EVENTO");
             }
 
-            var formatoResponse = formatoCertificadoService.ListarFormatoByID(dto.IdFormato);
+            var formatoResponse = formatoCertificadoService.ListarFormatoByID(int.Parse(idFormato.ToString()));
             if (!formatoResponse.Cod.Equals(CONSTANTES.COD_OK))
             {
                 return Utils.BadResponse("NO EXISTE EL FORMATO");
             }
             Tevento evento = EventoMapper.convertEntity(eventoResponse.Data);
             TformatoCertificado formato = FormatoCertificadoMapper.convertEntity(formatoResponse.Data);
-            Tcertificado tcertificado = CertificadoMapper.toEntity(dto, evento, formato);
+
+            var tcertificado = new Tcertificado
+            {
+                Titulo = titulo.ToString(),
+                Imagen = imagen.GetBytesFromBase64(),
+                IdEvento = int.Parse(idEvento.ToString()),
+                IdFormato = int.Parse(idFormato.ToString()),
+                Tipo = tipo.GetString(),
+                Estado = true,
+                UsuarioIngreso = usuarioIngreso.ValueKind == JsonValueKind.Number ? usuarioIngreso.GetInt32().ToString() : usuarioIngreso.GetString(),
+                Tevento = evento,
+                TformatoCertificado = formato
+            };
+
             return Ok(certificadosService.CrearCertificado(tcertificado));
         }
 

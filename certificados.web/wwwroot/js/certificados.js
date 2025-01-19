@@ -55,6 +55,9 @@ async function cargarDatosCertificados() {
             }
         }, 150);
 
+        await cargarEventos();
+        await cargarFormatos();
+
     } catch (error) {
         Utils.showToast("Error cargando datos iniciales", 'error');
     }
@@ -72,17 +75,26 @@ async function handleAgregarCertificado(event) {
     }
     event.preventDefault();
     let userInfoConfig = JSON.parse(localStorage.getItem('userInfo'));
+    const fileInput = document.getElementById('certificado-imagen');
+    const file = fileInput.files[0];
+
+    try {
+
+    const imagenBase64 = await convertirImagenABase64(file);
+        const base64Data = imagenBase64.split(",")[1];
+
+
     const bodyRequest = {
         Titulo: document.getElementById('certificado-titulo').value,
-        Imagen: document.getElementById('certificado-imagen').value,
+        Imagen: base64Data,
         IdEvento: parseInt(document.getElementById('certificado-id-evento').value),
         IdFormato: parseInt(document.getElementById('certificado-id-formato').value),
         Tipo: document.getElementById('certificado-tipo').value,
-        Estado: document.getElementById('certificado-estado').checked,
+        Estado: document.getElementById('certificado-estado').value,
         UsuarioIngreso: userInfoConfig.idUsuario
     };
 
-    try {
+   
         const response = await Utils.httpRequest(
             `${Utils.path}/certificado/crear`,
             {
@@ -243,5 +255,70 @@ function habilitarValidacionCertificado() {
             }
             form.classList.add('was-validated');
         }, false);
+    });
+}
+async function cargarEventos() {
+    try {
+        const responseEventos = await Utils.httpRequest(
+            `${Utils.path}/evento/all`,
+            {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            },
+            true
+        );
+
+        if (responseEventos.cod === Utils.COD_OK && responseEventos.data.length > 0) {
+            const selectGrupo = document.getElementById("certificado-id-evento");
+
+            responseEventos.data.forEach(evento => {
+                const option = document.createElement("option");
+                option.value = evento.idevento;
+                option.textContent = evento.tematica;
+                selectGrupo.appendChild(option);
+            });
+        } else {
+            Utils.showToast('NO EXISTEN EVENTOS REGISTRADOS', 'info');
+        }
+    } catch (error) {
+        Utils.showToast("Error cargando datos iniciales", 'error');
+    }
+}
+
+async function cargarFormatos() {
+    try {
+        const responseFormatos = await Utils.httpRequest(
+            `${Utils.path}/formato/all`,
+            {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            },
+            true
+        );
+
+        if (responseFormatos.cod === Utils.COD_OK && responseFormatos.data.length > 0) {
+            const selectGrupo = document.getElementById("certificado-id-formato");
+
+            responseFormatos.data.forEach(formato => {
+                const option = document.createElement("option");
+                option.value = formato.idFormato;
+                option.textContent = formato.idFormato;
+                selectGrupo.appendChild(option);
+            });
+        } else {
+            Utils.showToast('NO EXISTEN FORMATOS REGISTRADOS', 'info');
+        }
+    } catch (error) {
+        Utils.showToast("Error cargando datos iniciales", 'error');
+    }
+}
+
+// Metodo para convertir una imagen a base64
+function convertirImagenABase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result); // Obtener el resultado base64
+        reader.onerror = () => reject(new Error("Error al convertir la imagen a base64"));
+        reader.readAsDataURL(file); // Leer el archivo como DataURL
     });
 }

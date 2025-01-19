@@ -41,18 +41,24 @@
                         <input type="text" class="form-control" id="certificado-titulo" name="certificado-titulo" placeholder="Ingresa el título del certificado" required>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="certificado-imagen" class="form-label">Imagen (Base64)</label>
+                        <label for="certificado-imagen" class="form-label">Imagen</label>
                         <input type="file" class="form-control" id="certificado-imagen" accept="image/*">
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="certificado-idevento" class="form-label">ID Evento</label>
-                        <input type="number" class="form-control" id="certificado-idevento" name="certificado-idevento" placeholder="Ingresa el ID del evento" required>
+                        <select class="form-select" id="certificado-id-evento" name="certificado-id-evento" required oninput="this.setCustomValidity('')"
+                                oninvalid="this.setCustomValidity('Por favor, complete este campo.')">
+                            <option value="">Selecciona un id evento</option>
+                        </select>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="certificado-idformato" class="form-label">ID Formato</label>
-                        <input type="number" class="form-control" id="certificado-idformato" name="certificado-idformato" placeholder="Ingresa el ID del formato" required>
+                        <select class="form-select" id="certificado-id-formato" name="certificado-id-formato" required oninput="this.setCustomValidity('')"
+                                oninvalid="this.setCustomValidity('Por favor, complete este campo.')">
+                            <option value="">Selecciona id formato</option>
+                        </select>
                     </div>
                 </div>
                 <div class="row">
@@ -63,8 +69,8 @@
                     <div class="col-md-6 mb-3">
                         <label for="certificado-estado" class="form-label">Estado</label>
                         <select class="form-select" id="certificado-estado" name="certificado-estado" required>
-                            <option value="true">Activo</option>
-                            <option value="false">Inactivo</option>
+                            <option value="1">Activo</option>
+                            <option value="0">Inactivo</option>
                         </select>
                     </div>
                 </div>

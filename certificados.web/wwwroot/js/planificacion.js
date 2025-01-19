@@ -41,17 +41,18 @@ async function cargarDatosPlanificacion() {
                     tablaBody.innerHTML = '<tr><td colspan="7" class="text-center">No hay eventos en curso.</td></tr>';
                     Utils.showToast('NO EXISTEN EVENTOS EN CURSO', 'info');
                 }
-                cargarGrupos();
-                cargarModalidades();
-                cargarFacilitadores();
-                cargarCiclos();
-                cargarTipoEvento();
-                cargarFacultad();
             } else {
                 tablaBody.innerHTML = '<tr><td colspan="7" class="text-center">No se encontraron eventos.</td></tr>';
                 Utils.showToast('NO EXISTEN EVENTOS REGISTRADOS', 'info');
             }
         }, 150);
+
+        await cargarGrupos();
+        await cargarModalidades();
+        await cargarFacilitadores();
+        await cargarCiclos();
+        await cargarTipoEvento();
+        await cargarFacultad();
 
     } catch (error) {
         console.log(error)
