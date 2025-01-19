@@ -549,3 +549,98 @@ function validarFormularioPersona() {
 
     return isValid;
 }
+async function procesarArchivoCSV(event) {
+    event.preventDefault();
+
+    const inputFile = document.getElementById("inputCsvFile");
+    if (!inputFile.files.length) {
+        Utils.showToast("Debe seleccionar un archivo CSV", "warning");
+        return;
+    }
+
+    const archivo = inputFile.files[0];
+    if (archivo.type !== "text/csv") {
+        Utils.showToast("El archivo debe ser un CSV", "warning");
+        return;
+    }
+
+    const matriculadosExitosos = [];
+    const matriculadosErrores = [];
+
+    try {
+        const texto = await archivo.text();
+        const filas = texto.split("\n").slice(1); // Omitir encabezado
+        for (const fila of filas) {
+            if (fila.trim() === "") continue; // Ignorar filas vacías
+
+            const columnas = fila.split(";");
+
+            if (columnas.length < 8) {
+                matriculadosErrores.push({ fila, error: "Datos incompletos" });
+                continue;
+            }
+
+            const [cedula, edad, genero, nombres, apellidos, email, clave, idRol] = columnas.map(col => col.trim());
+
+            // Validación de datos básicos
+            if (!cedula || !nombres || !apellidos || !edad || !genero || !email || !clave || !idRol) {
+                matriculadosErrores.push({ fila, error: "Datos inválidos" });
+                continue;
+            }
+
+            const persona = {
+                "cedula": `${cedula}`,
+                "nombres": `${nombres}`,
+                "apellidos": `${apellidos}`,
+                "edad": `${edad}`,
+                "genero": `${genero}`,
+                "email": `${email}`,
+                "clave": `${clave}`,
+                "idRol": `${idRol}`,
+                "usuarioIngreso": `${userInfoPersona.idUsuario}`,
+                "usuarioActualizacion": `${userInfoPersona.idUsuario}`,
+            };
+
+            try {
+                const responseRequest = await Utils.httpRequest(
+                    `${Utils.path}/personas/crear`,
+                    {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(persona),
+                    },
+                    true
+                );
+
+                if (responseRequest.cod === Utils.COD_OK) {
+                    matriculadosExitosos.push(persona);
+                } else {
+                    matriculadosErrores.push({ fila, error: responseRequest.message || "Error desconocido" });
+                }
+            } catch (error) {
+                matriculadosErrores.push({ fila, error: "Error en la solicitud al servidor" });
+            } finally {
+                cargarDatospersonas();
+            }
+        }
+
+        llenarModalResultados(matriculadosExitosos, matriculadosErrores);
+    } catch (error) {
+        console.error(error);
+        Utils.showToast("Error al procesar el archivo CSV", "danger");
+    }
+}
+
+function llenarModalResultados(exitosos, errores) {
+    const listaExitosos = document.getElementById("listaExitosos");
+    const listaErrores = document.getElementById("listaErrores");
+
+    listaExitosos.innerHTML = exitosos
+        .map(e => `<li>${e.nombres} ${e.apellidos} (${e.email})</li>`)
+        .join("");
+    listaErrores.innerHTML = errores
+        .map(e => `<li>Fila: ${e.fila} - Error: ${e.error}</li>`)
+        .join("");
+
+    new bootstrap.Modal(document.getElementById("modalResultados")).show();
+}
