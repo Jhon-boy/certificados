@@ -93,7 +93,7 @@ async function handleAgregarCiclo(event) {
         if (response.cod === Utils.COD_OK) {
             Utils.showToast('CICLO REGISTRADO EXITOSAMENTE', 'info');
             cargarDatosCiclos();
-            limpiarFormulario();
+            limpiarFormularioCiclo();
             // Cambiar a la pestaña de la tabla
             const tablaTab = document.querySelector('#tabla-tab');
             const tab = new bootstrap.Tab(tablaTab);
