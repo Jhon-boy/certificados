@@ -93,7 +93,7 @@ async function handleAgregarModalidad(event) {
         if (response.cod === Utils.COD_OK) {
             Utils.showToast('MODALIDAD REGISTRADA EXITOSAMENTE', 'info');
             cargarDatosModalidades();
-            limpiarFormulario();
+            limpiarFormularioModalidad();
             // Cambiar a la pestaña de la tabla
             const tablaTab = document.querySelector('#tabla-tab');
             const tab = new bootstrap.Tab(tablaTab);
@@ -264,7 +264,7 @@ async function handleBuscarModalidad(event) {
 }
 
 // Función para limpiar formulario
-function limpiarFormulario() {
+function limpiarFormularioModalidad() {
     document.getElementById('modalidad-nombre').value = '';
     document.getElementById('modalidad-descripcion').value = '';
     document.getElementById('modalidad-usuario').value = userInfo.nombre;

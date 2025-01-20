@@ -279,7 +279,7 @@ async function handleAgregarPlanificacion(event) {
         if (responseCreate.cod === Utils.COD_OK) {
             Utils.showToast('PLANIFICACIÓN REGISTRADA EXITOSAMENTE', 'info');
             cargarDatosPlanificacion();
-            limpiarFormulario(); 
+            limpiarFormularioPlanificacion(); 
         } else {
             const messageClient = responseCreate.message || "Ocurrió un error inesperado.";
             const messageTech = responseCreate.data || null;
@@ -292,7 +292,7 @@ async function handleAgregarPlanificacion(event) {
 }
 
 // Función para limpiar el formulario
-function limpiarFormulario() {
+function limpiarFormularioPlanificacion() {
     const form = document.getElementById('form-planificacion');
     form.reset(); // Restablecer todos los inputs
     form.classList.remove('was-validated'); // Eliminar clases de validación

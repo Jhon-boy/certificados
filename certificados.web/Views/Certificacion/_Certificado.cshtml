@@ -7,6 +7,9 @@
         <li class="nav-item" role="presentation">
             <a class="nav-link text-dark" id="formulario-tab" data-bs-toggle="tab" href="#formulario" role="tab" aria-controls="formulario" aria-selected="false">Crear Certificado</a>
         </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link text-dark" id="generar-tab" data-bs-toggle="tab" href="#generar" role="tab" aria-controls="generar" aria-selected="false">Generar Certificado</a>
+        </li>
     </ul>
 
     <div class="tab-content" id="myTabContent">
@@ -86,11 +89,38 @@
                 </div>
             </form>
         </div>
+
+        <!-- Contenido de la pestaña de generar certificados -->
+        <div class="tab-pane fade" id="generar" role="tabpanel" aria-labelledby="generar-tab">
+            <!-- Formulario de Generar Certificados -->
+            <form id="form-generar-certificado" class="border border-2 p-4 rounded" onsubmit="handleGenerarCertificados(event)">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="generar-id-certificado" class="form-label">ID Certificado</label>
+                        <select class="form-select" id="generar-id-certificado" name="generar-id-certificado" required>
+                            <option value="">Selecciona un certificado</option>
+                            <!-- Opciones dinámicas -->
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="generar-docentes" class="form-label">Subir CSV de Docentes</label>
+                        <input type="file" class="form-control" id="generar-docentes" name="generar-docentes" accept=".csv" required>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="btn btn-primary mx-2">Generar</button>
+                    <button type="reset" class="btn btn-secondary mx-2">Limpiar</button>
+                </div>
+            </form>
+
+            <!-- Contenedor para mostrar resultados -->
+            <div id="resultados-certificados" class="mt-4"></div>
+        </div>
     </div>
 </div>
 
 <!-- Modal de edición con formulario -->
-<div class="modal fade" id="modal-editar" tabindex="-1" aria-labelledby="modal-editar-label" aria-hidden="true">
+<div class="modal fade" id="modal-editar-certificado" tabindex="-1" aria-labelledby="modal-editar-label" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -106,18 +136,18 @@
                             <input type="text" class="form-control" id="certificado-titulo-editar" name="certificado-titulo-editar" required>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="certificado-imagen-editar" class="form-label">Imagen (Base64)</label>
-                            <textarea class="form-control" id="certificado-imagen-editar" name="certificado-imagen-editar" required></textarea>
+                            <label for="certificado-imagen-editar" class="form-label">Imagen</label>
+                            <input type="file" class="form-control" id="certificado-imagen-editar" accept="image/*">
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="certificado-idevento-editar" class="form-label">ID Evento</label>
-                            <input type="number" class="form-control" id="certificado-idevento-editar" name="certificado-idevento-editar" required>
+                            <input type="number" class="form-control" id="certificado-id-evento-editar" name="certificado-idevento-editar" required>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="certificado-idformato-editar" class="form-label">ID Formato</label>
-                            <input type="number" class="form-control" id="certificado-idformato-editar" name="certificado-idformato-editar" required>
+                            <input type="number" class="form-control" id="certificado-id-formato-editar" name="certificado-idformato-editar" required>
                         </div>
                     </div>
                     <div class="row">

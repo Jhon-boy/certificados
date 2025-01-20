@@ -57,6 +57,7 @@ async function cargarDatosCertificados() {
 
         await cargarEventos();
         await cargarFormatos();
+        await cargarCertificados();
 
     } catch (error) {
         Utils.showToast("Error cargando datos iniciales", 'error');
@@ -137,19 +138,25 @@ async function editarCertificado(id) {
 
         if (response.cod === Utils.COD_OK) {
             const certificado = response.data;
-            document.getElementById('certificado-id-editar').value = certificado.idCertificado;
-            document.getElementById('certificado-titulo-editar').value = certificado.titulo;
-            document.getElementById('certificado-id-evento-editar').value = certificado.idEvento;
-            document.getElementById('certificado-id-formato-editar').value = certificado.idFormato;
-            document.getElementById('certificado-tipo-editar').value = certificado.tipo;
-            document.getElementById('certificado-estado-editar').checked = certificado.estado;
 
+            // Asignar valores a los campos del formulario
+            document.getElementById('certificado-id-editar').value = certificado.idCertificado || '';
+            document.getElementById('certificado-titulo-editar').value = certificado.titulo || '';
+            document.getElementById('certificado-id-evento-editar').value = certificado.idEvento || '';
+            document.getElementById('certificado-id-formato-editar').value = certificado.idFormato || '';
+            document.getElementById('certificado-tipo-editar').value = certificado.tipo || '';
+
+            // Manejar el estado del certificado
+            document.getElementById('certificado-estado-editar').value = certificado.estado ? 'true' : 'false';
+
+            // Mostrar el modal
             const modal = new bootstrap.Modal(document.getElementById('modal-editar-certificado'));
             modal.show();
         } else {
             Utils.showToast("Error al cargar datos del certificado", 'danger');
         }
     } catch (error) {
+        console.error(error);
         Utils.showToast("Error al obtener los datos del certificado", 'danger');
     }
 }
@@ -269,13 +276,13 @@ async function cargarEventos() {
         );
 
         if (responseEventos.cod === Utils.COD_OK && responseEventos.data.length > 0) {
-            const selectGrupo = document.getElementById("certificado-id-evento");
+            const selectEvento = document.getElementById("certificado-id-evento");
 
             responseEventos.data.forEach(evento => {
                 const option = document.createElement("option");
                 option.value = evento.idevento;
                 option.textContent = evento.tematica;
-                selectGrupo.appendChild(option);
+                selectEvento.appendChild(option);
             });
         } else {
             Utils.showToast('NO EXISTEN EVENTOS REGISTRADOS', 'info');
@@ -297,13 +304,13 @@ async function cargarFormatos() {
         );
 
         if (responseFormatos.cod === Utils.COD_OK && responseFormatos.data.length > 0) {
-            const selectGrupo = document.getElementById("certificado-id-formato");
+            const selectFormato = document.getElementById("certificado-id-formato");
 
             responseFormatos.data.forEach(formato => {
                 const option = document.createElement("option");
                 option.value = formato.idFormato;
                 option.textContent = formato.idFormato;
-                selectGrupo.appendChild(option);
+                selectFormato.appendChild(option);
             });
         } else {
             Utils.showToast('NO EXISTEN FORMATOS REGISTRADOS', 'info');
@@ -321,4 +328,150 @@ function convertirImagenABase64(file) {
         reader.onerror = () => reject(new Error("Error al convertir la imagen a base64"));
         reader.readAsDataURL(file); // Leer el archivo como DataURL
     });
+}
+
+async function handleGenerarCertificados(event) {
+    const form = event.target.closest("form");
+
+    if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+        form.classList.add('was-validated');
+        return false;
+    }
+    event.preventDefault();
+    let userInfoConfig = JSON.parse(localStorage.getItem('userInfo'));
+    const fileInput = document.getElementById('generar-docentes');
+    const file = fileInput.files[0];
+
+    try {
+        const csvContent = await file.text();
+        const docentes = csvContent.split('\n').map(line => line.trim()).filter(line => line);
+
+        const bodyRequest = {
+            idCertificado: parseInt(document.getElementById('generar-id-certificado').value),
+            docentes: docentes
+        };
+
+        const response = await Utils.httpRequest(
+            `${Utils.path}/certificado/emitir`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(bodyRequest)
+            },
+            true
+        );
+
+        if (response.cod === Utils.COD_OK) {
+            Utils.showToast('CERTIFICADOS GENERADOS EXITOSAMENTE', 'info');
+            limpiarFormGeneraCertificado();
+            // Procesar los datos de respuesta
+            mostrarResultados(response.data);
+        } else {
+            const messageClient = response.message || "Ocurrió un error inesperado.";
+            const messageTech = response.data || null;
+            Utils.showErrorModal(messageClient, messageTech);
+        }
+    } catch (error) {
+        Utils.showToast("Error al generar los certificados", 'danger');
+    }
+}
+
+async function cargarCertificados() {
+    try {
+        const responseCertificados = await Utils.httpRequest(
+            `${Utils.path}/certificado/all`,
+            {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            },
+            true
+        );
+
+        if (responseCertificados.cod === Utils.COD_OK && responseCertificados.data.length > 0) {
+            const selectGrupo = document.getElementById("generar-id-certificado");
+
+            responseCertificados.data.forEach(certificado => {
+                const option = document.createElement("option");
+                option.value = certificado.idCertificado;
+                option.textContent = certificado.titulo;
+                selectGrupo.appendChild(option);
+            });
+        } else {
+            Utils.showToast('NO EXISTEN CERTIFICADOS REGISTRADOS', 'info');
+        }
+    } catch (error) {
+        Utils.showToast("Error cargando datos iniciales", 'error');
+    }
+}
+
+function mostrarResultados(data) {
+    const { Notificados, NoNotificados } = data;
+
+    // Crear contenedores con tarjetas para los resultados
+    let resultadosHTML = `
+        <div class="mt-4">
+            <h4 class="text-center">Resultados del Proceso</h4>
+            <div class="row justify-content-center">
+                <!-- Tarjeta de Notificados -->
+                <div class="col-md-5 mb-4">
+                    <div class="card border-success shadow-sm">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="card-title mb-0">Notificados</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">
+                                <strong>Cantidad:</strong> ${Notificados.length}
+                            </p>
+                            <p class="card-text">
+                                <strong>Listado:</strong> 
+                                ${Notificados.length > 0 ? Notificados.join(", ") : "No hay notificados."}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tarjeta de No Notificados -->
+                <div class="col-md-5 mb-4">
+                    <div class="card border-danger shadow-sm">
+                        <div class="card-header bg-danger text-white">
+                            <h5 class="card-title mb-0">No Notificados</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">
+                                <strong>Cantidad:</strong> ${NoNotificados.length}
+                            </p>
+                            <p class="card-text">
+                                <strong>Listado:</strong> 
+                                ${NoNotificados.length > 0 ? NoNotificados.join(", ") : "No hay no notificados."}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Buscar el contenedor de resultados o crearlo dinámicamente si no existe
+    const resultadosContenedor = document.getElementById('resultados-certificados');
+    if (resultadosContenedor) {
+        resultadosContenedor.innerHTML = resultadosHTML;
+    } else {
+        // Si no existe el contenedor, crear uno dinámicamente
+        const tabGenerar = document.getElementById('generar');
+        const divResultados = document.createElement('div');
+        divResultados.id = 'resultados-certificados';
+        divResultados.innerHTML = resultadosHTML;
+        tabGenerar.appendChild(divResultados);
+    }
+}
+
+function limpiarFormGeneraCertificado() {
+    document.getElementById('generar-id-certificado').value = '';
+    document.getElementById('generar-docentes').value = '';
+
+    const form = document.querySelector('.needs-validation');
+    if (form) {
+        form.classList.remove('was-validated');
+    }
 }

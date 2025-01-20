@@ -264,7 +264,7 @@ async function handleBuscarCiclo(event) {
 
 
 // Función para limpiar formulario
-function limpiarFormulario() {
+function limpiarFormularioCiclo() {
     document.getElementById('ciclo-nombre').value = '';
     document.getElementById('ciclo-descripcion').value = '';
 
