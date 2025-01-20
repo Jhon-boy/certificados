@@ -85,28 +85,48 @@ namespace certificados.web.Controllers
           * Endpoint para MODIFICAR un CERTIFICADO
           */
         [HttpPost("modificar")]
-        public ActionResult<ResponseApp> modificarCertificado([FromBody] CertificadoDTO dto)
+        public ActionResult<ResponseApp> modificarCertificado([FromBody] Dictionary<string, object> requestBody)
         {
 
-            if (dto == null)
+            if (requestBody == null || !requestBody.Any())
             {
-                return BadRequest(Utils.BadResponse(CONSTANTES.MESSAGE_DATA_ERRORS));
+                return Utils.BadResponse(CONSTANTES.MESSAGE_DATA_ERRORS);
             }
 
-            var eventoResponse = eventoService.ListarPorId(dto.IdEvento);
+            var idCertificado = (JsonElement)requestBody["idCertificado"];
+            var titulo = (JsonElement)requestBody["Titulo"];
+            var idEvento = (JsonElement)requestBody["IdEvento"];
+            var idFormato = (JsonElement)requestBody["IdFormato"];
+            var tipo = (JsonElement)requestBody["Tipo"];
+            var estado = (JsonElement)requestBody["Estado"];
+            var userModificacion = (JsonElement)requestBody["UserModificacion"];
+
+
+            var eventoResponse = eventoService.ListarPorId(int.Parse(idEvento.ToString()));
             if (!eventoResponse.Cod.Equals(CONSTANTES.COD_OK))
             {
                 return Utils.BadResponse("NO EXISTE EL EVENTO");
             }
 
-            var formatoResponse = formatoCertificadoService.ListarFormatoByID(dto.IdFormato);
+            var formatoResponse = formatoCertificadoService.ListarFormatoByID(int.Parse(idFormato.ToString()));
             if (!formatoResponse.Cod.Equals(CONSTANTES.COD_OK))
             {
                 return Utils.BadResponse("NO EXISTE EL FORMATO");
             }
             Tevento evento = EventoMapper.convertEntity(eventoResponse.Data);
             TformatoCertificado formato = FormatoCertificadoMapper.convertEntity(formatoResponse.Data);
-            Tcertificado tcertificado = CertificadoMapper.toEntity(dto, evento, formato);
+            var tcertificado = new Tcertificado
+            {
+                IdCertificado = int.Parse(idCertificado.ToString()),
+                Titulo = titulo.ToString(),
+                IdEvento = int.Parse(idEvento.ToString()),
+                IdFormato = int.Parse(idFormato.ToString()),
+                Tipo = tipo.ToString(),
+                Estado = Boolean.Parse(estado.ToString()),
+                UsuarioActualizacion = userModificacion.ValueKind == JsonValueKind.Number ? userModificacion.GetInt32().ToString() : userModificacion.GetString(),
+                Tevento = evento,
+                TformatoCertificado = formato
+            };
             return Ok(certificadosService.ActualizarCertificado(tcertificado));
         }
         /*
@@ -158,15 +178,15 @@ namespace certificados.web.Controllers
         public ActionResult<ResponseApp> eliminarCertificado([FromBody] Dictionary<string, object> request)
         {
 
-            if (!request.TryGetValue("idEvento", out var idEventoObj) || idEventoObj == null)
+            if (!request.TryGetValue("idCertificado", out var idCertificadoObj) || idCertificadoObj == null)
             {
                 return BadRequest(Utils.BadResponse("FALTAN PARAMETROS"));
             }
-            if (!int.TryParse(idEventoObj.ToString(), out int idEvento))
+            if (!int.TryParse(idCertificadoObj.ToString(), out int idCertificado))
             {
                 return BadRequest(Utils.BadResponse("ID CERTIFICADO NO VÁLIDO"));
             }
-            return Ok(certificadosService.ElminarCertificado(idEvento));
+            return Ok(certificadosService.ElminarCertificado(idCertificado));
         }
        
         [HttpPost("email/notificar")]

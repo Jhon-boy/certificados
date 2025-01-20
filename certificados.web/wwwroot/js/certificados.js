@@ -137,21 +137,24 @@ async function editarCertificado(id) {
         );
 
         if (response.cod === Utils.COD_OK) {
-            const certificado = response.data;
+            const certificados = response.data; 
+            const certificado = certificados.find(cert => cert.idCertificado === id);
 
-            // Asignar valores a los campos del formulario
-            document.getElementById('certificado-id-editar').value = certificado.idCertificado || '';
-            document.getElementById('certificado-titulo-editar').value = certificado.titulo || '';
-            document.getElementById('certificado-id-evento-editar').value = certificado.idEvento || '';
-            document.getElementById('certificado-id-formato-editar').value = certificado.idFormato || '';
-            document.getElementById('certificado-tipo-editar').value = certificado.tipo || '';
+            if (certificado) {
+                // Asignar valores a los campos del formulario
+                document.getElementById('certificado-id-editar').value = certificado.idCertificado || '';
+                document.getElementById('certificado-titulo-editar').value = certificado.titulo || '';
+                document.getElementById('certificado-id-evento-editar').value = certificado.idEvento || '';
+                document.getElementById('certificado-id-formato-editar').value = certificado.idFormato || '';
+                document.getElementById('certificado-tipo-editar').value = certificado.tipo || '';
+                document.getElementById('certificado-estado-editar').value = certificado.estado;
 
-            // Manejar el estado del certificado
-            document.getElementById('certificado-estado-editar').value = certificado.estado ? 'true' : 'false';
-
-            // Mostrar el modal
-            const modal = new bootstrap.Modal(document.getElementById('modal-editar-certificado'));
-            modal.show();
+                // Mostrar el modal
+                const modal = new bootstrap.Modal(document.getElementById('modal-editar-certificado'));
+                modal.show();
+            } else {
+                Utils.showToast("No se encontró el certificado especificado", 'warning');
+            }
         } else {
             Utils.showToast("Error al cargar datos del certificado", 'danger');
         }
@@ -160,6 +163,7 @@ async function editarCertificado(id) {
         Utils.showToast("Error al obtener los datos del certificado", 'danger');
     }
 }
+
 
 // Manejador para guardar edición
 async function handleEditarCertificado(event) {
@@ -177,7 +181,7 @@ async function handleEditarCertificado(event) {
         IdEvento: parseInt(document.getElementById('certificado-id-evento-editar').value),
         IdFormato: parseInt(document.getElementById('certificado-id-formato-editar').value),
         Tipo: document.getElementById('certificado-tipo-editar').value,
-        Estado: document.getElementById('certificado-estado-editar').checked,
+        Estado: document.getElementById('certificado-estado-editar').value,
         UserModificacion: userInfo.idUsuario
     };
 

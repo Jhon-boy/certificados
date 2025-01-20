@@ -41,7 +41,8 @@
                 <form id="add-decanato-form" novalidate onsubmit="return crearDecanato(event)">
                     <div class="mb-3">
                         <label for="decanato-nombre" class="form-label">Nombre del Decanato</label>
-                        <input type="text" class="form-control" id="decanato-nombre" required>
+                        <input type="text" class="form-control" id="decanato-nombre" required oninput="this.setCustomValidity('')"
+                               oninvalid="this.setCustomValidity('Por favor, complete este campo.')">
                     </div>
                     <div class="mb-3">
                         <label for="decanato-usuario-ingreso" class="form-label">Usuario Ingreso</label>
