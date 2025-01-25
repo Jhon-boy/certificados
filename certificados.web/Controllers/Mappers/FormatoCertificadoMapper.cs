@@ -26,10 +26,19 @@ namespace certificados.web.Controllers.Mappers
         {
             return new TformatoCertificado
             {
-                LogoUniversidad = data.ContainsKey("LogoUniversidad") ? Convert.FromBase64String(data["LogoUniversidad"]) : null,
-                LogoSecundario = data.ContainsKey("LogoSecundario") ? Convert.FromBase64String(data["LogoSecundario"]) : null,
-                MarcarAgua = data.ContainsKey("MarcarAgua") ? Convert.FromBase64String(data["MarcarAgua"]) : null,
+                NombrePlantilla = data.ContainsKey("NombrePlantilla") ? data.ContainsKey("NombrePlantilla").ToString() : null,
+                LineaGrafica = data.ContainsKey("LineaGrafica") ? Convert.FromBase64String(data["LineaGrafica"]) : null,
+                LogoUG = data.ContainsKey("LogoUG") ? Convert.FromBase64String(data["LogoUG"]) : null,
+                Origen = data.ContainsKey("Origen") ? data.ContainsKey("Origen").ToString() : null,
+                Tipo = data.ContainsKey("Tipo") ? data.ContainsKey("Tipo").ToString() : null,
+                Leyenda = data.ContainsKey("Leyenda") ? data.ContainsKey("Leyenda").ToString() : null,
                 Qr = data.ContainsKey("Qr") ? Convert.FromBase64String(data["Qr"]) : null,
+                CargoFirmanteUno = data.ContainsKey("CargoFirmanteUno") ? data.ContainsKey("CargoFirmanteUno").ToString() : null,
+                NombreFirmanteUno = data.ContainsKey("NombreFirmanteUno") ? data.ContainsKey("NombreFirmanteUno").ToString() : null,
+                CargoFirmanteDos = data.ContainsKey("CargoFirmanteDos") ? data.ContainsKey("CargoFirmanteDos").ToString() : null,
+                NombreFirmanteDos = data.ContainsKey("NombreFirmanteDos") ? data.ContainsKey("NombreFirmanteDos").ToString() : null,
+                CargoFirmanteTres = data.ContainsKey("CargoFirmanteTres") ? data.ContainsKey("CargoFirmanteTres").ToString() : null,
+                NombreFirmanteTres = data.ContainsKey("NombreFirmanteTres") ? data.ContainsKey("NombreFirmanteTres").ToString() : null,
                 FCreacion = Utils.timeParsed(DateTime.Now),
                 FModificacion = Utils.timeParsed(DateTime.Now),
                 UsuarioIngreso = data.ContainsKey("UsuarioIngreso") ? data["UsuarioIngreso"] : "admin"
@@ -42,9 +51,19 @@ namespace certificados.web.Controllers.Mappers
             return new TformatoCertificado
             {
                 idFormato = tformatoCertificado.idFormato,
-                LogoUniversidad = tformatoCertificado.LogoUniversidad,
-                LogoSecundario = tformatoCertificado.LogoSecundario,
-                MarcarAgua = tformatoCertificado.MarcarAgua,
+                NombrePlantilla = tformatoCertificado.NombrePlantilla,
+                LineaGrafica = tformatoCertificado.LineaGrafica,
+                LogoUG = tformatoCertificado.LogoUG,
+                Origen = tformatoCertificado.Origen,
+                Tipo = tformatoCertificado.Tipo,
+                Leyenda = tformatoCertificado.Leyenda,
+                Qr = tformatoCertificado.Qr,
+                CargoFirmanteUno = tformatoCertificado.CargoFirmanteUno,
+                NombreFirmanteUno = tformatoCertificado.NombreFirmanteUno,
+                CargoFirmanteDos = tformatoCertificado.CargoFirmanteDos,
+                NombreFirmanteDos = tformatoCertificado.NombreFirmanteDos,
+                CargoFirmanteTres = tformatoCertificado.CargoFirmanteTres,
+                NombreFirmanteTres = tformatoCertificado.NombreFirmanteTres,
                 FModificacion = Utils.timeParsed(DateTime.Now),
                 UsuarioActualizacion = tformatoCertificado.UsuarioActualizacion
             };

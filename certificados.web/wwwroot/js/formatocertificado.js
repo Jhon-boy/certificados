@@ -19,9 +19,9 @@ async function cargarDatosFormatos() {
                     const fila = `
                         <tr>
                             <td>${formato.idFormato}</td>
-                            <td><img src="data:image/png;base64,${formato.logoUniversidad}" alt="Logo Universidad" class="img-thumbnail" style="width: 50px; height: 50px;"></td>
-                            <td><img src="data:image/png;base64,${formato.logoSecundario}" alt="Logo Secundario" class="img-thumbnail" style="width: 50px; height: 50px;"></td>
-                            <td><img src="data:image/png;base64,${formato.marcarAgua}" alt="Marca de Agua" class="img-thumbnail" style="width: 50px; height: 50px;"></td>
+                            <td>${formato.nombrePlantilla}</td>
+                            <td><img src="data:image/png;base64,${formato.logoUG}" alt="Logo UG" class="img-thumbnail" style="width: 50px; height: 50px;"></td>
+                            <td><img src="data:image/png;base64,${formato.lineaGrafica}" alt="Linea Gráfica" class="img-thumbnail" style="width: 50px; height: 50px;"></td>
                             <td>${formato.qr ? `<img src="data:image/png;base64,${formato.qr}" alt="QR" class="img-thumbnail" style="width: 50px; height: 50px;">` : "No disponible"}</td>
                             <td>${formato.usuarioIngreso || 'No disponible'}</td>
                             <td>
@@ -74,18 +74,30 @@ async function handleAgregarFormato(event) {
 
     try {
         // Convertir imágenes a Base64
-        const logoUniversidad = document.getElementById('logo-universidad').files[0]
-            ? await convertirABase64(document.getElementById('logo-universidad').files[0])
+        const lineaGrafica = document.getElementById('linea-grafica').files[0]
+            ? await convertirABase64(document.getElementById('linea-grafica').files[0])
             : null;
-        const logoSecundario = document.getElementById('logo-secundario').files[0]
-            ? await convertirABase64(document.getElementById('logo-secundario').files[0])
-            : null;
-        const marcarAgua = document.getElementById('marca-agua').files[0]
-            ? await convertirABase64(document.getElementById('marca-agua').files[0])
+        const logoUg = document.getElementById('logo-ug').files[0]
+            ? await convertirABase64(document.getElementById('logo-ug').files[0])
             : null;
         const qr = document.getElementById('qr').files[0]
             ? await convertirABase64(document.getElementById('qr').files[0])
             : null;
+
+        // Obtener valores de los campos
+        const nombrePlantilla = document.getElementById('nombre-plantilla').value;
+        const origen = document.getElementById('origen').value;
+        const tipo = document.getElementById('tipo').value;
+        const leyenda = document.getElementById('leyenda').value;
+
+        const firma1Decanato = document.getElementById('firma1-decanato').value;
+        const firma1Nombre = document.getElementById('firma1-nombre').value;
+
+        const firma2Decanato = document.getElementById('firma2-decanato').value;
+        const firma2Nombre = document.getElementById('firma2-nombre').value;
+
+        const firma3Decanato = document.getElementById('firma3-decanato').value;
+        const firma3Nombre = document.getElementById('firma3-nombre').value;
 
         // Validar usuario ingreso
         const userInfoConfig = JSON.parse(localStorage.getItem('userInfo'));
@@ -96,10 +108,18 @@ async function handleAgregarFormato(event) {
 
         const bodyRequest = {
             formatoData: {
-                LogoUniversidad: logoUniversidad,
-                LogoSecundario: logoSecundario,
-                MarcarAgua: marcarAgua,
+                NombrePlantilla: nombrePlantilla,
+                LineaGrafica: lineaGrafica,
+                LogoUg: logoUg,
+                Origen: origen,
+                Tipo: tipo,
                 Qr: qr,
+                Leyenda: leyenda,
+                Firmas: [
+                    { Decanato: firma1Decanato, Nombre: firma1Nombre },
+                    { Decanato: firma2Decanato, Nombre: firma2Nombre },
+                    { Decanato: firma3Decanato, Nombre: firma3Nombre },
+                ],
             },
             UsuarioIngreso: userInfoConfig.idUsuario.toString(), // Asegurarse de que sea string
         };
@@ -132,6 +152,7 @@ async function handleAgregarFormato(event) {
         Utils.showToast("Error al agregar el formato", 'danger');
     }
 }
+
 // Función para editar formato
 async function editarFormato(id) {
     try {

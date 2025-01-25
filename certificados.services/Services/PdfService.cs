@@ -1,17 +1,6 @@
 ﻿using certificados.models.Entitys.dbo;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
-using ZXing;
-using ZXing.QrCode;
-using System.Drawing;
-using iTextSharp.text.pdf.qrcode;
-using Microsoft.IdentityModel.Tokens;
-
 
 namespace certificados.services.Services
 {
@@ -26,11 +15,11 @@ namespace certificados.services.Services
                 documento.Open();
 
                 PdfContentByte cb = writer.DirectContentUnder;
-                AgregarBackGround(cb, formato.MarcarAgua, documento.PageSize);
+                AgregarBackGround(cb, formato.LineaGrafica, documento.PageSize);
 
-                if (formato.LogoUniversidad != null && formato.LogoUniversidad.Length > 0)
+                if (formato.LogoUG != null && formato.LogoUG.Length > 0)
                 {
-                    byte[] imageBytes = formato.LogoUniversidad;
+                    byte[] imageBytes = formato.LogoUG;
                     using (MemoryStream imgMs = new MemoryStream(imageBytes))
                     {
                         Image logo = Image.GetInstance(imgMs);

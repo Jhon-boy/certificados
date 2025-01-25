@@ -51,10 +51,19 @@ namespace certificados.dal.DataAccess
 
                 if (formatoExistente != null)
                 { 
-                    formatoExistente.LogoUniversidad = formato.LogoUniversidad;
-                    formatoExistente.LogoSecundario = formato.LogoSecundario;
-                    formatoExistente.MarcarAgua = formato.MarcarAgua;
+                    formatoExistente.NombrePlantilla = formato.NombrePlantilla;
+                    formatoExistente.LineaGrafica = formato.LineaGrafica;
+                    formatoExistente.LogoUG = formato.LogoUG;
+                    formatoExistente.Origen = formato.Origen;
+                    formatoExistente.Tipo = formato.Tipo;
+                    formatoExistente.Leyenda = formato.Leyenda;
                     formatoExistente.Qr = formato.Qr;
+                    formatoExistente.CargoFirmanteUno = formato.CargoFirmanteUno;
+                    formatoExistente.NombreFirmanteUno = formato.NombreFirmanteUno;
+                    formatoExistente.CargoFirmanteDos = formato.CargoFirmanteDos;
+                    formatoExistente.NombreFirmanteDos = formato.NombreFirmanteDos;
+                    formatoExistente.CargoFirmanteTres = formato.CargoFirmanteTres;
+                    formatoExistente.NombreFirmanteTres = formato.NombreFirmanteTres;
                     formatoExistente.FModificacion = Utils.timeParsed(DateTime.Now);
                     formatoExistente.UsuarioActualizacion = formato.UsuarioActualizacion;
                      

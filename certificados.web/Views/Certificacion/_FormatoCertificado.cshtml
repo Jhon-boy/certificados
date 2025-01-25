@@ -2,10 +2,10 @@
     <!-- Tabs para la vista de Formatos -->
     <ul class="nav nav-tabs" id="formatosTab" role="tablist">
         <li class="nav-item" role="presentation">
-            <a class="nav-link text-dark active" id="tabla-formatos-tab" data-bs-toggle="tab" href="#tabla-formatos" role="tab" aria-controls="tabla-formatos" aria-selected="true">Listar Formatos</a>
+            <a class="nav-link text-dark active" id="tabla-formatos-tab" data-bs-toggle="tab" href="#tabla-formatos" role="tab" aria-controls="tabla-formatos" aria-selected="true">Listar Plantillas</a>
         </li>
         <li class="nav-item" role="presentation">
-            <a class="nav-link text-dark" id="formulario-formatos-tab" data-bs-toggle="tab" href="#formulario-formatos" role="tab" aria-controls="formulario-formatos" aria-selected="false">Agregar Formato</a>
+            <a class="nav-link text-dark" id="formulario-formatos-tab" data-bs-toggle="tab" href="#formulario-formatos" role="tab" aria-controls="formulario-formatos" aria-selected="false">Crear Plantilla</a>
         </li>
     </ul>
 
@@ -17,9 +17,9 @@
                 <thead>
                     <tr>
                         <th>Id Formato</th>
-                        <th>Logo Universidad</th>
-                        <th>Logo Secundario</th>
-                        <th>Marca de Agua</th>
+                        <th>Nombre Plantilla</th>
+                        <th>Logo UG</th>
+                        <th>Linea Gráfica</th>
                         <th>QR</th>
                         <th>Usuario Ingreso</th>
                         <th>Acciones</th>
@@ -37,18 +37,18 @@
             <form id="form-formato" class="border border-2 p-4 rounded" onsubmit="handleAgregarFormato(event)">
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="logo-universidad" class="form-label">Logo Universidad</label>
-                        <input type="file" accept="image/png" class="form-control" id="logo-universidad" name="logo-universidad" required>
+                        <label for="linea-grafica" class="form-label">Línea Gráfica (Subir archivo PNG)</label>
+                        <input type="file" accept="image/png" class="form-control" id="linea-grafica" name="linea-grafica" required>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="logo-secundario" class="form-label">Logo Secundario</label>
-                        <input type="file" accept="image/png" class="form-control" id="logo-secundario" name="logo-secundario" required>
+                        <label for="logo-ug" class="form-label">Logo UG (Subir archivo PNG)</label>
+                        <input type="file" accept="image/png" class="form-control" id="logo-ug" name="logo-ug" required>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="marca-agua" class="form-label">Marca de Agua</label>
-                        <input type="file" accept="image/png" class="form-control" id="marca-agua" name="marca-agua" required>
+                        <label for="nombre-plantilla" class="form-label">Nombre Plantilla</label>
+                        <input type="text" class="form-control" id="nombre-plantilla" name="nombre-plantilla" placeholder="Ingrese el nombre de la plantilla" required>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="qr" class="form-label">QR</label>
@@ -57,8 +57,73 @@
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="usuario-ingreso-formato" class="form-label">Usuario Ingreso</label>
-                        <input type="text" class="form-control" id="usuario-ingreso-formato" name="usuario-ingreso-formato" disabled value="">
+                        <label for="origen" class="form-label">Origen</label>
+                        <select class="form-select" id="origen" name="origen" required>
+                            <option value="">Seleccione una opción</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="tipo" class="form-label">Tipo</label>
+                        <select class="form-select" id="tipo" name="tipo" required>
+                            <option value="">Seleccione una opción</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        <label for="leyenda" class="form-label">Leyenda</label>
+                        <textarea class="form-control" id="leyenda" name="leyenda" rows="3" required></textarea>
+                    </div>
+                </div>
+                <div class="card mb-3">
+                    <div class="card-header bg-primary text-white">
+                        Firma 1
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="firma1-decanato" class="form-label">Decanato</label>
+                                <input type="text" class="form-control" id="firma1-decanato" name="firma1-decanato" placeholder="Ingrese el decanato" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="firma1-nombre" class="form-label">Firmante</label>
+                                <input type="text" class="form-control" id="firma1-nombre" name="firma1-nombre" placeholder="Ingrese el nombre del firmante" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mb-3">
+                    <div class="card-header bg-secondary text-white">
+                        Firma 2
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="firma2-decanato" class="form-label">Decanato</label>
+                                <input type="text" class="form-control" id="firma2-decanato" name="firma2-decanato" placeholder="Ingrese el decanato" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="firma2-nombre" class="form-label">Firmante</label>
+                                <input type="text" class="form-control" id="firma2-nombre" name="firma2-nombre" placeholder="Ingrese el nombre del firmante" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card mb-3">
+                    <div class="card-header bg-success text-white">
+                        Firma 3
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="firma3-decanato" class="form-label">Decanato</label>
+                                <input type="text" class="form-control" id="firma3-decanato" name="firma3-decanato" placeholder="Ingrese el decanato" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="firma3-nombre" class="form-label">Firmante</label>
+                                <input type="text" class="form-control" id="firma3-nombre" name="firma3-nombre" placeholder="Ingrese el nombre del firmante" required>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="d-flex justify-content-center">
@@ -67,6 +132,7 @@
                 </div>
             </form>
         </div>
+
     </div>
 </div>
 

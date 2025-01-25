@@ -30,12 +30,11 @@
                         <li onclick="cargarDatosRoles()" class="nav-item"><a class="nav-link text-white" href="#" id="link-roles" data-view="Roles"><i class="bi bi-shield-lock"></i> Roles</a></li>
                         <li onclick="cargarDatospersonas()" class="nav-item"><a class="nav-link text-white" href="#" id="link-personas" data-view="Personas"><i class="bi bi-people"></i> Usuarios</a></li>
                         <li onclick="cargarDatosGrupos()" class="nav-item"><a class="nav-link text-white" href="#" id="link-grupo" data-view="Grupo"><i class="bi bi-person-lines-fill"></i> Grupo</a></li>
-                        <li onclick="cargarDatosDocentes()" class="nav-item"><a class="nav-link text-white" href="#" id="link-docente" data-view="Docente"><i class="bi bi-person-workspace"></i> Docentes</a></li>
-                        <li  onclick="cargarDatosDecanatos()" class="nav-item"><a class="nav-link text-white" href="#" id="link-decanato" data-view="Decanato"><i class="bi bi-diagram-3"></i> Decanatos</a></li>
+                        @* <li onclick="cargarDatosDocentes()" class="nav-item"><a class="nav-link text-white" href="#" id="link-docente" data-view="Docente"><i class="bi bi-person-workspace"></i> Docentes</a></li> *@
+                        <li onclick="cargarDatosDecanatos()" class="nav-item"><a class="nav-link text-white" href="#" id="link-decanato" data-view="Decanato"><i class="bi bi-diagram-3"></i> Decanatos</a></li>
                         <li onclick="cargarDatosEventos()"  class="nav-item"><a class="nav-link text-white" href="#" id="link-evento" data-view="Eventos"><i class="bi bi-calendar-event"></i> Eventos</a></li>
                         <li onclick="cargarDatosModalidades()" class="nav-item"><a class="nav-link text-white" href="#" id="link-modalidad" data-view="Modalidad"><i class="bi bi-layout-text-sidebar"></i> Modalidad</a></li>  
                         <li onclick="cargarDatosCiclos()" class="nav-item"><a class="nav-link text-white" href="#" id="link-ciclo" data-view="Ciclo"><i class="bi bi-circle-half"></i> Ciclo</a></li>
-                        <li onclick="cargarDatosFormatos()" class="nav-item"><a class="nav-link text-white" href="#" id="link-formatos" data-view="Formatos"><i class="bi bi-file-earmark-plus-fill"></i> Formato Certificado</a></li>
                     </ul>
                 </div>
             </li>
@@ -46,7 +45,7 @@
                 </a>
             </li>
 
-            <li class="nav-item">
+            @*<li class="nav-item">
                <a class="nav-link  text-white" onclick="toggleCollapse('submenu6')"> 
                     <i class="bi bi-person-video2"></i> Facilitador <i class="bi bi-caret-down-fill arrow"></i>
                 </a>
@@ -56,7 +55,7 @@
                         <li onclick="cargarDatosFacilitadores()" class="nav-item"><a class="nav-link text-white" href="#" id="link-manatenimientoparticipante" data-view="Facilitador"><i class="bi bi-receipt"></i> Registrar </a></li>
                     </ul>
                 </div>
-            </li>
+            </li> *@
 
             <li class="nav-item">
                 <a class="nav-link  text-white" onclick="toggleCollapse('submenu7')">
@@ -70,10 +69,15 @@
                 </div>
             </li>
 
-            <li onclick="cargarDatosCertificados()" class="nav-item">
-                <a class="nav-link text-white" href="#" id="link-expositor" data-view="Certificado">
-                    <i class="bi bi-clipboard-check"></i> Certificación
+            <li class="nav-item">
+                <a class="nav-link  text-white" onclick="toggleCollapse('submenu8')">
+                    <i class="bi bi-clipboard-check"></i>Certificación <i class="bi bi-caret-down-fill arrow"></i>
                 </a>
+                <div class="submenu" id="submenu8" style="display: none;">
+                    <ul class="nav flex-column ms-3">
+                        <li onclick="cargarDatosFormatos()" class="nav-item"><a class="nav-link text-white" href="#" id="link-formatos" data-view="Formatos"><i class="bi bi-file-earmark-plus-fill"></i> Plantilla</a></li>
+                    </ul>
+                </div>
             </li>
 
             <li class="nav-item">
@@ -150,7 +154,7 @@
     <script src="~/js/roles.js" asp-append-version="true"></script>
     <script src="~/js/personas.js" asp-append-version="true"></script>
     <script src="~/js/grupo.js" asp-append-version="true"></script>
-    <script src="~/js/docente.js" asp-append-version="true"></script>
+    @* <script src="~/js/docente.js" asp-append-version="true"></script> *@
     <script src="~/js/modalidad.js" asp-append-version="true"></script>
     <script src="~/js/decanato.js" asp-append-version="true"></script>
     <script src="~/js/eventos.js" asp-append-version="true"></script>
@@ -160,8 +164,8 @@
     <script src="~/js/actaCalificacion.js" asp-append-version="true"></script>
     <script src="~/js/perfil.js" asp-append-version="true"></script>
     <script src="~/js/Config.js" asp-append-version="true"></script>
-    <script src="~/js/verFacilitador.js" asp-append-version="true"></script>
-    <script src="~/js/Facilitador.js" asp-append-version="true"></script>
+    @* <script src="~/js/verFacilitador.js" asp-append-version="true"></script> *@
+    @* <script src="~/js/Facilitador.js" asp-append-version="true"></script> *@
     <script src="~/js/certificados.js" asp-append-version="true"></script>
     <script src="~/js/formatocertificado.js" asp-append-version="true"></script>
 </body>
