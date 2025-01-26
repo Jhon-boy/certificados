@@ -25,12 +25,6 @@ async function cargarDatosFormatos() {
                             <td>${formato.qr ? `<img src="data:image/png;base64,${formato.qr}" alt="QR" class="img-thumbnail" style="width: 50px; height: 50px;">` : "No disponible"}</td>
                             <td>${formato.usuarioIngreso || 'No disponible'}</td>
                             <td>
-                                <i class="bi bi-pencil-fill text-success me-3" 
-                                   style="cursor: pointer;" 
-                                   onclick="editarFormato(${formato.idFormato})" 
-                                   data-bs-toggle="tooltip" 
-                                   data-bs-placement="top" 
-                                   title="Editar Formato"></i>
                                 <i class="bi bi-trash-fill text-danger" 
                                    style="cursor: pointer;" 
                                    onclick="eliminarFormato(${formato.idFormato})" 
@@ -173,11 +167,12 @@ async function editarFormato(id) {
             const formato = response.data;
             document.getElementById('editar-id-formato').value = formato.idFormato;
             document.getElementById('editar-nombre-plantilla').value = formato.nombrePlantilla;
-            document.getElementById('editar-logo-ug').value = '';  
-            document.getElementById('editar-linea-grafica').value = '';
-            document.getElementById('editar-qr').value = '';
             document.getElementById('editar-usuario-ingreso').value = formato.usuarioIngreso;
+            document.getElementById('editar-logo-ug-preview').src = formato.logoUg ? `data:image/png;base64,${formato.logoUg}` : '';
+            document.getElementById('editar-linea-grafica-preview').src = formato.lineaGrafica ? `data:image/png;base64,${formato.lineaGrafica}` : '';
+            document.getElementById('editar-qr-preview').src = formato.qr ? `data:image/png;base64,${formato.qr}` : '';
 
+            // Mostrar el modal
             const modal = new bootstrap.Modal(document.getElementById('modal-editar-formato'));
             modal.show();
         } else {
@@ -200,18 +195,18 @@ async function handleEditarFormato(event) {
     event.preventDefault();
 
     // Obtener datos del formulario
-    const idFormato = document.getElementById('formato-id-editar').value;
-    const logoUniversidad = await convertirABase64(document.getElementById('logo-universidad-editar').files[0]);
-    const logoSecundario = await convertirABase64(document.getElementById('logo-secundario-editar').files[0]);
-    const marcarAgua = await convertirABase64(document.getElementById('marca-agua-editar').files[0]);
-    const qr = await convertirABase64(document.getElementById('qr-editar').files[0]);
+    const idFormato = document.getElementById('editar-id-formato').value;
+    const nombrePlantilla = document.getElementById('editar-nombre-plantilla').value;
+    const logoUG = await convertirABase64(document.getElementById('editar-logo-ug').files[0]);
+    const lineaGrafica = await convertirABase64(document.getElementById('editar-linea-grafica').files[0]);
+    const qr = await convertirABase64(document.getElementById('editar-qr').files[0]);
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
 
     const bodyRequest = {
         idFormato: idFormato,
-        LogoUniversidad: logoUniversidad,
-        LogoSecundario: logoSecundario,
-        MarcarAgua: marcarAgua,
+        nombrePlantilla: logoUniversidad,
+        logoUG: logoSecundario,
+        lineaGrafica: marcarAgua,
         Qr: qr,
         UserModificacion: userInfo.idUsuario
     };

@@ -35,5 +35,9 @@ namespace certificados.services.Services
 
             return tformatoCertificadoDA.EliminarFormatoCertificado(idFormato);
         }
+        public ResponseApp modificarFormato(TformatoCertificado tformato)
+        {
+            return tformatoCertificadoDA.ModificarFormatoCertificado(tformato);
+        }
     }
 }
