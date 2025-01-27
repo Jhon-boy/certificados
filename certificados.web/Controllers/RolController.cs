@@ -14,9 +14,9 @@ namespace certificados.web.Controllers
             
         public RolController(RolService rolService)
         {
-
             this.rolService = rolService;
         }
+
         [HttpPost("crear")]
         public ActionResult<ResponseApp> crearRol([FromBody] Dictionary<string, object> requestBody) {
             if (requestBody == null || !requestBody.Any())
@@ -34,6 +34,7 @@ namespace certificados.web.Controllers
 
             return Ok(rolService.CrearRol(dto));
         }
+
         [HttpPost("modificar")]
         public ActionResult<ResponseApp> modificarRol([FromBody] Dictionary<string, JsonElement> requestBody) {
 
@@ -68,9 +69,9 @@ namespace certificados.web.Controllers
         [HttpGet("all")]
         public ResponseApp obtenerRoles()
         {
-
             return rolService.ListarRoles();
         }
+
         [HttpPost("id")]
         public ActionResult ObtenerRolById([FromBody] Dictionary<string, object> requestBody)
         {
@@ -80,7 +81,6 @@ namespace certificados.web.Controllers
             {
                 return BadRequest(Utils.BadResponse("FALTA PARAMETROS"));
             }
-
             return Ok(rolService.BuscarRol(idRol));
         }
 

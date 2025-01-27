@@ -33,7 +33,7 @@ namespace certificados.services.Utils
             {
                 return "";
             }
-            string cleanedData = Regex.Replace(data, @"[^a-zA-Z0-9\s]+", "");
+            string cleanedData = Regex.Replace(data, @"[^a-zA-Z0-9áéíóúÁÉÍÓÚ\s]+", "");
             return cleanedData.Trim();
         }
 
