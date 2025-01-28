@@ -111,7 +111,7 @@
                 <!-- Botones -->
                 <div class="col-12 d-flex mb-2 justify-content-center">
                     <button type="submit" class="btn btn-primary me-3">Guardar</button>
-                    <button class="btn btn-danger" type="button" onclick="resetPersonaForm(event)">Cancelar</button>
+                    <button class="btn btn-danger" type="button" onclick="resetPersonaForm(event)">Limpiar</button>
                 </div>
             </form>
 
@@ -234,31 +234,31 @@
             <div class="modal-body">
                 <div class="row mb-3">
                     <div class="col-6">
-                        <label for="persona-cedula" class="form-label">Cédula</label>
-                        <input type="text" class="form-control" id="persona-cedula" readonly placeholder="Ingresa la cédula">
+                        <label for="editar-persona-cedula" class="form-label">Cédula</label>
+                        <input type="text" class="form-control" id="editar-persona-cedula" readonly placeholder="Ingresa la cédula">
                     </div>
                     <div class="col-6">
-                        <label for="persona-nombres" class="form-label">Nombres</label>
-                        <input type="text" class="form-control" id="persona-nombres" placeholder="Ingresa los nombres">
+                        <label for="editar-persona-nombres" class="form-label">Nombres</label>
+                        <input type="text" class="form-control" id="editar-persona-nombres" placeholder="Ingresa los nombres">
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-6">
-                        <label for="persona-apellidos" class="form-label">Apellidos</label>
-                        <input type="text" class="form-control" id="persona-apellidos" placeholder="Ingresa los apellidos">
+                        <label for="editar-persona-apellidos" class="form-label">Apellidos</label>
+                        <input type="text" class="form-control" id="editar-persona-apellidos" placeholder="Ingresa los apellidos">
                     </div>
 
                     <div class="col-6">
-                        <label for="persona-email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="persona-email" placeholder="Ingresa el correo electrónico">
+                        <label for="editar-persona-email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="editar-persona-email" placeholder="Ingresa el correo electrónico">
                     </div>
                 </div>
 
                 <div class="row mb-3">
                     <div class="col-3">
-                        <label for="persona-genero" class="form-label">Género</label>
-                        <select class="form-control" id="persona-genero">
+                        <label for="editar-persona-genero" class="form-label">Género</label>
+                        <select class="form-control" id="editar-persona-genero">
                             <option value="M">Masculino</option>
                             <option value="F">Femenino</option>
                             <option value="O">Otro</option>
@@ -266,13 +266,13 @@
                     </div>
 
                     <div class="col-3">
-                        <label for="persona-edad" class="form-label">Edad</label>
-                        <input type="number" class="form-control" id="persona-edad" placeholder="Ingresa la edad">
+                        <label for="editar-persona-edad" class="form-label">Edad</label>
+                        <input type="number" class="form-control" id="editar-persona-edad" placeholder="Ingresa la edad">
                     </div>
 
                     <div class="col-3">
-                        <label for="persona-rol" class="form-label">Rol</label>
-                        <select id="persona-rol" class="form-select" required>
+                        <label for="editar-persona-rol" class="form-label">Rol</label>
+                        <select id="editar-persona-rol" class="form-select" required>
                             <option value="">Seleccione un rol</option>
                         </select>
                     </div>
@@ -280,25 +280,25 @@
 
                 <div class="row mb-3">
                     <div class="col-3">
-                        <label for="estadopersona" class="form-label">Estado</label>
-                        <select id="estadopersona" class="form-select" required>
+                        <label for="editar-estadopersona" class="form-label">Estado</label>
+                        <select id="editar-estadopersona" class="form-select" required>
                             <option value="ACT">Activar</option>
                             <option value="INA">Inactivar</option>
                         </select>
                     </div>
                     <div class="col-4">
-                        <label for="userIngreso" class="form-label">Usuario Ingreso</label>
-                        <input type="text" class="form-control" id="userIngreso" readonly placeholder="Ingresa el correo electrónico">
+                        <label for="editar-userIngreso" class="form-label">Usuario Ingreso</label>
+                        <input type="text" class="form-control" id="editar-userIngreso" readonly placeholder="Ingresa el correo electrónico" disabled>
                     </div>
                     <div class="col-4">
-                        <label for="userIngreso" class="form-label">Usuario Actualizacion</label>
-                        <input type="text" class="form-control" id="userActualizar" readonly placeholder="Ingresa el correo electrónico">
+                        <label for="editar-userIngreso" class="form-label">Usuario Actualizacion</label>
+                        <input type="text" class="form-control" id="editar-userActualizar" readonly placeholder="Ingresa el correo electrónico" disabled>
                     </div>
                 </div>
             </div>
             <div class="modal-footer col-12 d-flex mb-2 justify-content-center">
-                <button type="button" class="btn btn-secondary me-3" data-bs-dismiss="modal">Cerrar</button>
                 <button type="button" class="btn btn-primary" id="btn-guardar-cambios" onclick="confirmarEditarPersona()">Guardar</button>
+                <button type="button" class="btn btn-secondary me-3" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>
