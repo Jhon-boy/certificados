@@ -54,16 +54,6 @@ async function cargarDatosGrupos() {
                     tablaBody.insertAdjacentHTML("beforeend", fila);
                 });
 
-                // Inicializar DataTables o reiniciarlo
-                if ($.fn.DataTable.isDataTable("#tabla-grupo")) {
-                    $("#tabla-grupo").DataTable().cargarDatosGrupos();
-                }
-                $("#tabla-grupo").DataTable({
-                    language: {
-                        url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
-                    }
-                });
-
                 // Establecer usuario actual en el formulario
                 document.getElementById("grupo-usuario").value = userInfo.nombre;
                 document.getElementById("persona-usuario-ingreso").value = userInfo.nombre;
@@ -75,18 +65,15 @@ async function cargarDatosGrupos() {
                 tooltipTriggerList.forEach(function (tooltipTriggerEl) {
                     new bootstrap.Tooltip(tooltipTriggerEl);
                 });
-            } else {
 
-                if ($.fn.DataTable.isDataTable("#tabla-grupo")) {
-                    $("#tabla-grupo").DataTable().cargarDatosGrupos();
-                }
-
+                // Inicializar DataTables o reiniciarlo
                 $("#tabla-grupo").DataTable({
                     language: {
                         url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
                     }
                 });
 
+            } else {
                 tablaBody.innerHTML = '<tr><td colspan="4" class="text-center">No se encontraron grupos.</td></tr>';
                 Utils.showToast('NO EXISTEN GRUPOS REGISTRADOS', 'info');
             }
@@ -130,6 +117,11 @@ async function handleAgregarGrupo(event) {
 
         if (response.cod === Utils.COD_OK) {
             Utils.showToast('GRUPO REGISTRADO EXITOSAMENTE', 'info');
+
+            if ($.fn.DataTable.isDataTable('#tabla-grupo')) {
+                $('#tabla-grupo').DataTable().clear().destroy();
+            }
+
             cargarDatosGrupos();
             limpiarFormularioGrupo();
             // Cambiar a la pestaña de la tabla
@@ -206,6 +198,15 @@ async function handleEditarGrupo(event) {
 
         if (response.cod === Utils.COD_OK) {
             Utils.showToast("Grupo actualizado exitosamente", 'info');
+
+            if ($.fn.DataTable.isDataTable('#tabla-grupo')) {
+                $('#tabla-grupo').DataTable().clear().destroy();
+            }
+
+            if ($.fn.DataTable.isDataTable('#tabla-grupo-personas')) {
+                $('#tabla-grupo-personas').DataTable().clear().destroy();
+            }
+
             cargarDatosGrupos();
             const modal = bootstrap.Modal.getInstance(document.getElementById('modal-editar'));
             modal.hide();
@@ -236,6 +237,15 @@ async function eliminarGrupo(id) {
 
         if (response.cod === Utils.COD_OK) {
             Utils.showToast("Grupo eliminado exitosamente", 'success');
+
+            if ($.fn.DataTable.isDataTable('#tabla-grupo')) {
+                $('#tabla-grupo').DataTable().clear().destroy();
+            }
+
+            if ($.fn.DataTable.isDataTable('#tabla-grupo-personas')) {
+                $('#tabla-grupo-personas').DataTable().clear().destroy();
+            }
+
             cargarDatosGrupos();
         } else {
             const messageClient = response.message || "Error al eliminar el grupo.";
@@ -279,29 +289,15 @@ async function cargarDatosGrupoPersonas() {
                 tablaBody.insertAdjacentHTML("beforeend", fila);
             });
 
-            // Inicializar DataTables o reiniciarlo
-            if ($.fn.DataTable.isDataTable("#tabla-grupo-personas")) {
-                $("#tabla-grupo-personas").DataTable().cargarDatosGrupoPersonas();
-            }
-            $("#tabla-grupo-personas").DataTable({
-                language: {
-                    url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
-                }
-            });
-
             Utils.showToast("DATOS GRUPO PERSONAS CARGADOS EXITOSAMENTE", "success");
-        } else {
 
-            // Inicializar DataTables o reiniciarlo
-            if ($.fn.DataTable.isDataTable("#tabla-grupo-personas")) {
-                $("#tabla-grupo-personas").DataTable().cargarDatosGrupoPersonas();
-            }
             $("#tabla-grupo-personas").DataTable({
                 language: {
                     url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
                 }
             });
 
+        } else {
             tablaBody.innerHTML = '<tr><td colspan="5" class="text-center">No se encontraron grupo personas.</td></tr>';
             Utils.showToast("NO EXISTEN GRUPO DE PERSONAS REGISTRADAS", "info");
         }
@@ -357,7 +353,11 @@ async function handleAgregarGrupoPersonas(event) {
 
         if (response.cod === Utils.COD_OK) {
             Utils.showToast('GRUPO DE PERSONAS REGISTRADO EXITOSAMENTE', 'info');
-            // Llamar a una funcion para recargar los datos si es necesario
+
+            if ($.fn.DataTable.isDataTable('#tabla-grupo-personas')) {
+                $('#tabla-grupo-personas').DataTable().clear().destroy();
+            }
+
             cargarDatosGrupoPersonas();
             limpiarFormularioGrupoPersonas();
             // Cambiar a la pestaña de la tabla si es necesario
@@ -390,6 +390,11 @@ async function eliminarGrupoPersona(idGrupoPersona, cedula) {
 
         if (response.cod === Utils.COD_OK) {
             Utils.showToast("Grupo eliminado exitosamente", 'success');
+
+            if ($.fn.DataTable.isDataTable('#tabla-grupo-personas')) {
+                $('#tabla-grupo-personas').DataTable().clear().destroy();
+            }
+
             cargarDatosGrupos();
         } else {
             const messageClient = response.message || "Error al eliminar el grupo.";

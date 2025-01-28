@@ -64,9 +64,7 @@
                     </div>
                     <div class="col-md-6 mb-3">
                         <label for="tipo" class="form-label">Tipo</label>
-                        <select class="form-select" id="tipo" name="tipo" required>
-                            <option value="">Seleccione una opción</option>
-                        </select>
+                        <input type="text" class="form-control" id="tipo" name="tipo" placeholder="Ingrese el tipo" required>
                     </div>
                 </div>
                 <div class="row">
@@ -138,7 +136,7 @@
 
 <!-- Modal de edición -->
 <div class="modal fade" id="modal-editar-formato" tabindex="-1" aria-labelledby="modal-editar-formato-label" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="modal-editar-formato-label">Editar Formato</h5>
@@ -149,33 +147,42 @@
                 <form id="form-editar-formato" class="border border-2 p-4 rounded" onsubmit="handleEditarFormato(event)">
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="editar-logo-universidad" class="form-label">Logo Universidad</label>
-                            <input type="file" accept="image/png" class="form-control" id="editar-logo-universidad" name="editar-logo-universidad">
+                            <label for="editar-id-formato" class="form-label">Id Formato</label>
+                            <input type="text" class="form-control" id="editar-id-formato" name="editar-id-formato" disabled>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="editar-logo-secundario" class="form-label">Logo Secundario</label>
-                            <input type="file" accept="image/png" class="form-control" id="editar-logo-secundario" name="editar-logo-secundario">
+                            <label for="editar-nombre-plantilla" class="form-label">Nombre Plantilla</label>
+                            <input type="text" class="form-control" id="editar-nombre-plantilla" name="editar-nombre-plantilla" required>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="editar-marca-agua" class="form-label">Marca de Agua</label>
-                            <input type="file" accept="image/png" class="form-control" id="editar-marca-agua" name="editar-marca-agua">
+                            <label for="editar-logo-ug" class="form-label">Logo UG</label>
+                            <input type="file" accept="image/png" class="form-control" id="editar-logo-ug" name="editar-logo-ug">
+                            <img id="editar-logo-ug-preview" src="" alt="Logo UG Preview" class="mt-2" style="max-width: 100px;">
                         </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editar-linea-grafica" class="form-label">Línea Gráfica</label>
+                            <input type="file" accept="image/png" class="form-control" id="editar-linea-grafica" name="editar-linea-grafica">
+                            <img id="editar-linea-grafica-preview" src="" alt="Línea Gráfica Preview" class="mt-2" style="max-width: 100px;">
+                        </div>
+                    </div>
+
+                    <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="editar-qr" class="form-label">QR</label>
                             <input type="file" accept="image/png" class="form-control" id="editar-qr" name="editar-qr">
+                            <img id="editar-qr-preview" src="" alt="QR Preview" class="mt-2" style="max-width: 100px;">
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="editar-usuario-ingreso" class="form-label">Usuario Ingreso</label>
                             <input type="text" class="form-control" id="editar-usuario-ingreso" name="editar-usuario-ingreso" disabled value="admin">
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <input type="hidden" id="formato-id-editar" name="formato-id-editar">
-                        </div>
                     </div>
+
+                    <input type="hidden" id="formato-id-editar" name="formato-id-editar">
+
                     <div class="d-flex justify-content-center">
                         <button type="submit" class="btn btn-primary mx-2">Guardar Cambios</button>
                         <button type="button" class="btn btn-secondary mx-2" data-bs-dismiss="modal">Cerrar</button>
@@ -185,3 +192,5 @@
         </div>
     </div>
 </div>
+
+

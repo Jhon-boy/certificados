@@ -107,7 +107,7 @@ namespace certificados.dal.DataAccess
 
             try
             {
-                var listaRoles = context.Trol.Where(e => e.Estado == true).ToList();
+                var listaRoles = context.Trol.Where(e => e.Estado == true || e.Estado == false).ToList();
                 if (listaRoles.Any())
                 {
                     response = Utils.OkResponse(listaRoles);

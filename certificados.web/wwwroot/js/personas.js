@@ -64,15 +64,23 @@ async function cargarDatospersonas() {
                 //Cargamos los Roles;
                 modalEliminarPersona = new bootstrap.Modal(document.getElementById('confirmarEliminacionModal'));
 
+                userInfoPersona = JSON.parse(localStorage.getItem('userInfo'));
+                document.getElementById("usuarioIngreso").value = `${userInfoPersona.nombre}`;
+                document.getElementById("nombres").addEventListener("input", generarClave);
+                document.getElementById("apellidos").addEventListener("input", generarClave);
+
+                $('#tabla-persona').DataTable({
+                    language: {
+                        url: 'https://cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json'
+                    }
+                });
+
             } else {
                 tablaBody.innerHTML = '<tr><td colspan="5" class="text-center">No se encontraron personas.</td></tr>';
                 Utils.showToast('NO EXISTEN personaES REGISTRADOS', 'info');
             }
         }, 120);
-        userInfoPersona = JSON.parse(localStorage.getItem('userInfo'));
-        document.getElementById("usuarioIngreso").value = `${userInfoPersona.nombre}`;
-        document.getElementById("nombres").addEventListener("input", generarClave);
-        document.getElementById("apellidos").addEventListener("input", generarClave);
+
         await cargarRoles();
         habilitarValidacioPersonas();
 
@@ -99,7 +107,7 @@ async function cargarRoles() {
 
             // Selecciona ambos selects por sus IDs
             const selectAgregar = document.getElementById("idRol"); // Select del formulario
-            const selectEditar = document.getElementById("persona-rol"); // Select del modal
+            const selectEditar = document.getElementById("editar-persona-rol"); // Select del modal
 
             // Limpia las opciones existentes en ambos selects
             [selectAgregar, selectEditar].forEach((select) => {
@@ -145,16 +153,15 @@ async function editarpersona(cedula) {
         if (response && response.cod === Utils.COD_OK) {
             const persona = response.data;
              
-            document.getElementById("persona-cedula").value = persona.cedula || "";
-            document.getElementById("persona-nombres").value = persona.nombres || "";
-            document.getElementById("persona-apellidos").value = persona.apellidos || "";
-            document.getElementById("persona-edad").value = persona.edad || "";
-            document.getElementById("persona-genero").value = persona.genero || "";
-            document.getElementById("persona-email").value = persona.mDatos?.email || "";
-            document.getElementById("userIngreso").value = persona.usuarioIngreso || "";
-            document.getElementById("userActualizar").value = userInfoPersona.nombre || "";
-             
-            const selectRol = document.getElementById("persona-rol");
+            document.getElementById("editar-persona-cedula").value = persona.cedula || "";
+            document.getElementById("editar-persona-nombres").value = persona.nombres || "";
+            document.getElementById("editar-persona-apellidos").value = persona.apellidos || "";
+            document.getElementById("editar-persona-edad").value = persona.edad || "";
+            document.getElementById("editar-persona-genero").value = persona.genero || "";
+            document.getElementById("editar-persona-email").value = persona.mDatos?.email || "";
+            document.getElementById("editar-userIngreso").value = persona.usuarioIngreso || "";
+            document.getElementById("editar-userActualizar").value = userInfoPersona.nombre || "";
+            const selectRol = document.getElementById("editar-persona-rol");
             const rolUsuario = persona.mDatos?.rol || "";
              
             const optionMatch = Array.from(selectRol.options).find((option) =>
@@ -192,6 +199,11 @@ async function confirmarEliminacionPersona() {
 
         if (response && response.cod === Utils.COD_OK) {
             Utils.showToast("Usuario eliminado exitosamente", "success");
+
+            if ($.fn.DataTable.isDataTable('#tabla-persona')) {
+                $('#tabla-persona').DataTable().clear().destroy();
+            }
+
             cargarDatospersonas();
         } else {
             const messageClient = response.message || "Error al eliminar el Persona.";
@@ -249,6 +261,11 @@ async function confirmarEditarPersona() {
         if (responseEdit && responseEdit.cod === Utils.COD_OK) {
             Utils.showToast("Persona actualizada correctamente", "success");
             modalE.hide();
+
+            if ($.fn.DataTable.isDataTable('#tabla-persona')) {
+                $('#tabla-persona').DataTable().clear().destroy();
+            }
+
             cargarDatospersonas();
         } else {
             const messageClient = responseEdit.message || "Error al actualizar la persona.";
@@ -387,6 +404,15 @@ async function savePersona(event) {
 
         if (responseRequest.cod === Utils.COD_OK) {
             Utils.showToast("Persona guardada con éxito", "success");
+
+            if ($.fn.DataTable.isDataTable('#tabla-persona')) {
+                $('#tabla-persona').DataTable().clear().destroy();
+            }
+
+            const tablaTab = document.querySelector('#home-tab');
+            const tab = new bootstrap.Tab(tablaTab);
+            tab.show();
+
             resetPersonaForm(event);
             cargarDatospersonas();
         } else {
@@ -620,6 +646,11 @@ async function procesarArchivoCSV(event) {
             } catch (error) {
                 matriculadosErrores.push({ fila, error: "Error en la solicitud al servidor" });
             } finally {
+
+                if ($.fn.DataTable.isDataTable('#tabla-persona')) {
+                    $('#tabla-persona').DataTable().clear().destroy();
+                }
+
                 cargarDatospersonas();
             }
         }

@@ -46,9 +46,19 @@ async function cargarDatosRoles() {
                     tablaBody.insertAdjacentHTML("beforeend", fila);
                 });
                 Utils.showToast('DATOS CARGADOS EXITOSAMENTE', 'success');
+
+                let userInfo = JSON.parse(localStorage.getItem('userInfo'));
+                document.getElementById("usuarioIngreso").value = `${userInfo.nombre}`;
+
                 const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
                 tooltipTriggerList.forEach(function (tooltipTriggerEl) {
                     new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+
+                $('#tabla-rol').DataTable({
+                    language: {
+                        url: 'https://cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json'
+                    }
                 });
 
             } else { 
@@ -56,9 +66,6 @@ async function cargarDatosRoles() {
                 Utils.showToast('NO EXISTEN ROLES REGISTRADOS', 'info');
             }
         }, 150);
-        let userInfo = JSON.parse(localStorage.getItem('userInfo'));
-        document.getElementById("usuarioIngreso").value = `${userInfo.nombre}`;
-        habilitarValidacio();
 
     } catch (error) {
         Utils.showToast("Error cargando datos iniciales", 'error');
@@ -82,12 +89,20 @@ async function agregarRol(event) {
         Observacion: document.getElementById('rolDescripcion').value,
     };
 
-
     try {
         const rolesResponse = await httpRequest(`${Utils.path}/rol/crear`, "POST", bodyRequest);
 
         if (rolesResponse.cod === Utils.COD_OK) {
             Utils.showToast('ROL REGISTRADO EXITOSAMENTE', 'info');
+
+            if ($.fn.DataTable.isDataTable('#tabla-rol')) {
+                $('#tabla-rol').DataTable().clear().destroy();
+            }
+
+            const tablaTab = document.querySelector('#home-tab');
+            const tab = new bootstrap.Tab(tablaTab);
+            tab.show();
+
             limpiarRol(event);
             cargarDatosRoles();
         } else {
@@ -116,26 +131,7 @@ function limpiarRol(event) {
         form.classList.remove('was-validated');
     }
 }
-//Validador
-function habilitarValidacio() {
 
-    //(() => {
-    //    'use strict';
-         
-    //    const forms = document.querySelectorAll('.needs-validation');
-         
-    //    Array.from(forms).forEach(form => {
-    //        form.addEventListener('submit', event => {
-    //            if (!form.checkValidity()) {
-    //                event.preventDefault();
-    //                event.stopPropagation();
-    //            }
-    //            form.classList.add('was-validated');
-    //        }, false);
-    //    });
-    //})();
-
-}
 function generarAccionesHtml(tipo, nombre) {
     return `
         <div class="text-end">
@@ -161,6 +157,11 @@ async function confirmarEliminacion( ) {
 
         if (response && response.cod === Utils.COD_OK) {
             Utils.showToast("Rol eliminado exitosamente", "success");
+
+            if ($.fn.DataTable.isDataTable('#tabla-rol')) {
+                $('#tabla-rol').DataTable().clear().destroy();
+            }
+
             cargarDatosRoles();
         } else {
             const messageClient = response.message || "Error al eliminar el rol.";
@@ -183,10 +184,8 @@ async function editarRol(idRol) {
         
         document.getElementById('rolIdEdit').value = rol.idRol;
         document.getElementById('rolNombreEdit').value = rol.nombre;
-        document.getElementById('rolEstadoEdit').value = rol.estado ? "true" : "false";
-
-        document.getElementById('usuarioIngresoEdit').value = rol.usuarioIngreso;
         document.getElementById('rolDescripcionEdit').value = rol.observacion;
+        document.getElementById('rolEstadoEdit').value = rol.estado ? "true" : "false";
             
         const modal = new bootstrap.Modal(document.getElementById('editarRolModal'));
         modal.show();
@@ -241,6 +240,14 @@ async function confirmarEditar(event) {
 
         if (response.cod === Utils.COD_OK) {
             Utils.showToast("Rol actualizado con éxito", 'info');
+
+            if ($.fn.DataTable.isDataTable('#tabla-rol')) {
+                $('#tabla-rol').DataTable().clear().destroy();
+            }
+
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editarRolModal'));
+            modal.hide();
+
             cargarDatosRoles();
         } else {
             const messageClient = rolesResponse.message || "Ocurrió un error inesperado.";
