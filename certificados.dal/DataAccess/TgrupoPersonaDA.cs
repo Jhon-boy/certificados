@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.util;
 
 namespace certificados.dal.DataAccess
 {
@@ -106,19 +107,22 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public ResponseApp BuscarGrupoPersona(int idGrupoPersona)
+        public ResponseApp BuscarGrupoPersona(int idGrupoPersona, bool estado)
         {
             ResponseApp response = Utils.BadResponse(null);
             try
-            { 
+            {
+
                 var grupoPersona = context.TgrupoPersona
                     .Include(gp => gp.Tgrupo)
                     .Include(gp => gp.Tpersona)
                     .Where(gp => gp.Tgrupo.IdGrupo == idGrupoPersona).ToList();
+                
 
                 if (grupoPersona != null)
                 {
-                    response = Utils.OkResponse(grupoPersona);
+                   response = estado? Utils.OkResponse(grupoPersona.Where(e => e.Estado == "PEN").ToList()) 
+                        :  Utils.OkResponse(grupoPersona.Where(gp => gp.Estado=="APR").ToList()); 
                 }
                 else
                 {
@@ -159,6 +163,53 @@ namespace certificados.dal.DataAccess
                 throw new Exception($"ERROR AL LISTAR A LA PERSONA ${cedula} con el GRUPO: {id}, error: {ex.Message}");
             }
 
+            return response;
+        }
+
+        public ResponseApp AprobarGruposPersonas(List<string> cedulas, int id) {
+            ResponseApp response = Utils.BadResponse(null);
+            using (var transaction = context.Database.BeginTransaction())
+            {
+                Dictionary<string, object> data = new Dictionary<string, object>();
+                try
+                { 
+                    var personas = context.TgrupoPersona
+                        .Where(gp => cedulas.Contains(gp.Cedula) && gp.IdGrupo == id)
+                        .ToList();
+                     
+                    List<string> apr = new List<string>();
+                    List<string> noapr = new List<string>();
+
+                    foreach (string cedula in cedulas)
+                    {
+                        var persona = personas.FirstOrDefault(gp => gp.Cedula.Equals(cedula));
+
+                        if (persona != null)
+                        {
+                            persona.Estado = "APR";
+                            context.TgrupoPersona.Update(persona);
+                            apr.Add(cedula);
+                        }
+                        else
+                        {
+                            noapr.Add(cedula);
+                        }
+                    }
+                     
+                    context.SaveChanges();
+                    transaction.Commit();
+
+                    data.Add("Aprobados", apr);
+                    data.Add("NoAprobados", noapr);
+
+                    response = Utils.OkResponse(data);
+                }
+                catch (Exception ex) {
+                    transaction.Rollback();
+                    response = Utils.BadResponse($"ERROR AL INSERTAR GRUPO-PERSONA: {ex.Message}");
+                    throw new Exception($"ERROR AL INSERTAR GRUPO - PERSONA: {ex.Message}");
+                }
+            } 
             return response;
         }
     }

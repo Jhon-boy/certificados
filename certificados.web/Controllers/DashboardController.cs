@@ -92,5 +92,9 @@ namespace certificados.web.Controllers
         {
             return PartialView("~/Views/Certificacion/_FormatoCertificado.cshtml");
         }
+        public IActionResult Emitir()
+        {
+            return PartialView("~/Views/Certificacion/_Emitir.cshtml");
+        }
     }
 }

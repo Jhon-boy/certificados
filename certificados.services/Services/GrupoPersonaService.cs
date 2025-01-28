@@ -28,8 +28,8 @@ namespace certificados.services.Services
         return tgrupoPersonaDA.ListarGrupoPersonas();
         }
 
-        public ResponseApp BuscarById(int id) { 
-            return tgrupoPersonaDA.BuscarGrupoPersona(id);
+        public ResponseApp BuscarById(int id, bool estado = false) { 
+            return tgrupoPersonaDA.BuscarGrupoPersona(id, estado);
         }
         public ResponseApp BuscarCedulaId(int id, string cedula) { 
             return tgrupoPersonaDA.BuscarCedulaIdGrupo(id, cedula);
@@ -37,6 +37,9 @@ namespace certificados.services.Services
 
         public ResponseApp EliminarGrupo(int id, string cedula) {
             return tgrupoPersonaDA.EliminarGrupoPersona(id,  cedula);
+        }
+        public ResponseApp AprobarGrupos(List<String> cedulas, int id) { 
+            return tgrupoPersonaDA.AprobarGruposPersonas(cedulas, id);
         }
     }
 }

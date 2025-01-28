@@ -95,7 +95,7 @@ const Utils = (() => {
         document.body.appendChild(tempDivSuccess);
 
         const toast = new bootstrap.Toast(tempDivSuccess.firstChild);
-        toast.show();
+        //toast.show();
 
         tempDivSuccess.firstChild.addEventListener('hidden.bs.toast', () => {
             tempDivSuccess.remove();

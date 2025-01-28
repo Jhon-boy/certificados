@@ -63,7 +63,23 @@ namespace certificados.web.Controllers
             {
                 return Utils.BadResponse("El parámetro 'id' no es válido.");
             }
-            return grupoPersonaService.BuscarById(id);
+            return grupoPersonaService.BuscarById(id, false);
+        }
+
+        [HttpPost("pendientes")]
+        public ActionResult<ResponseApp> BuscarGrupoPreAprobar([FromBody] Dictionary<string, object> request)
+        {
+            if (!request.ContainsKey("idGrupo"))
+            {
+                return Utils.BadResponse("Faltan parámetros en la solicitud.");
+            }
+            int id;
+
+            if (!int.TryParse(request["idGrupo"]?.ToString(), out id))
+            {
+                return Utils.BadResponse("El parámetro 'id' no es válido.");
+            }
+            return grupoPersonaService.BuscarById(id, true);
         }
 
         [HttpPost("crear")]
@@ -135,6 +151,17 @@ namespace certificados.web.Controllers
                 return Utils.BadResponse("El parámetro 'idGrupoPersona' no es válido.");
             }
             return grupoPersonaService.EliminarGrupo(id, cedula );
+        }
+        [HttpPost("aprobar")]
+        public ActionResult<ResponseApp> AprobarGrupos([FromBody] AprobarParticipantesDTO data) {
+
+            if (data == null) {
+                return Utils.BadResponse(CONSTANTES.MESSAGE_DATA_ERRORS);
+            }
+            if (data.Aprobados.Count <= 0) {
+                return Utils.BadResponse("NO EXISTEN DATOS DE APROBACION");
+            }
+            return grupoPersonaService.AprobarGrupos(data.Aprobados, data.IdGrupo);
         }
     }
 }

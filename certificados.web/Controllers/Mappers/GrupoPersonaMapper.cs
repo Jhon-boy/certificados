@@ -50,7 +50,7 @@ namespace certificados.web.Controllers.Mappers
                 UsusarioIngreso = dto.UsuarioIngreso,
                 Tpersona = persona,
                 Tgrupo = grupo,
-                Estado = "APR"
+                Estado = "PEN"
             };
         }
 
