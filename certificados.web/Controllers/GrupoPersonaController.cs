@@ -161,7 +161,7 @@ namespace certificados.web.Controllers
             if (data.Aprobados.Count <= 0) {
                 return Utils.BadResponse("NO EXISTEN DATOS DE APROBACION");
             }
-            return grupoPersonaService.AprobarGrupos(data.Aprobados, data.IdGrupo);
+            return grupoPersonaService.AprobarGrupos(data.Aprobados, data.IdGrupo, data.usuarioActualizacion);
         }
     }
 }

@@ -166,7 +166,7 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public ResponseApp AprobarGruposPersonas(List<string> cedulas, int id) {
+        public ResponseApp AprobarGruposPersonas(List<string> cedulas, int id, string usuarioActualizacion) {
             ResponseApp response = Utils.BadResponse(null);
             using (var transaction = context.Database.BeginTransaction())
             {
@@ -182,11 +182,13 @@ namespace certificados.dal.DataAccess
 
                     foreach (string cedula in cedulas)
                     {
-                        var persona = personas.FirstOrDefault(gp => gp.Cedula.Equals(cedula));
+                        var persona = context.TgrupoPersona.FirstOrDefault(gp => gp.Tpersona.Cedula == cedula && gp.IdGrupo == id);
+                            //personas.FirstOrDefault(gp => gp.Cedula.Equals(cedula));
 
                         if (persona != null)
                         {
                             persona.Estado = "APR";
+                            persona.UsuarioActualizacion = usuarioActualizacion;
                             context.TgrupoPersona.Update(persona);
                             apr.Add(cedula);
                         }

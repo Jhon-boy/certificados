@@ -38,8 +38,8 @@ namespace certificados.services.Services
         public ResponseApp EliminarGrupo(int id, string cedula) {
             return tgrupoPersonaDA.EliminarGrupoPersona(id,  cedula);
         }
-        public ResponseApp AprobarGrupos(List<String> cedulas, int id) { 
-            return tgrupoPersonaDA.AprobarGruposPersonas(cedulas, id);
+        public ResponseApp AprobarGrupos(List<String> cedulas, int id, string usuarioActualizacion) { 
+            return tgrupoPersonaDA.AprobarGruposPersonas(cedulas, id, usuarioActualizacion);
         }
     }
 }

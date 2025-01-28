@@ -1,4 +1,5 @@
 ﻿// Función para cargar datos de grupos 
+let userInfoEmitir = JSON.parse(localStorage.getItem('userInfo'));
 async function cargarDatosCertificadosEmicion() {
     try {
         const response = await Utils.httpRequest(
@@ -97,6 +98,7 @@ async function listarIntegrantes(id) {
             escucharCambiosCheckboxes();
         } else {
             Utils.showToast('NO EXISTEN INTEGRANTES EN ESTE GRUPO', 'info');
+            return;
         }
 
     } catch (error) {
@@ -161,3 +163,75 @@ function manejarHabilitacionCheckboxes(condicion) {
     }
 }
 
+function obtenerDatosAprobados() { 
+    const selectGrupo = document.getElementById("persona-id-grupo");
+    const idGrupo = selectGrupo.value;
+
+    if (!idGrupo) {
+        Utils.showToast("Por favor selecciona un grupo antes de continuar", "info");
+        return null;  
+    }
+     
+    const tablaBody = document.querySelector("#tabla-certificado tbody");
+    const filas = tablaBody.querySelectorAll("tr");
+    const cedulasAprobadas = [];
+
+    filas.forEach(fila => {
+        const estado = fila.querySelector(".estado").textContent.trim();
+        if (estado === "Aprobado") {
+            const cedula = fila.querySelector("td:nth-child(1)").textContent.trim();
+            cedulasAprobadas.push(cedula);
+        }
+    });
+
+    if (cedulasAprobadas.length === 0) {
+        Utils.showToast("No hay integrantes con estado 'Aprobado'", "info");
+        return null;
+    }
+
+    // Estructura del payload
+    const datosAprobados = {
+        IdGrupo: parseInt(idGrupo, 10),
+        Aprobados: cedulasAprobadas,
+        usuarioActualizacion: `${userInfoEmitir.idUsuario}`
+    };
+
+    return datosAprobados;
+} 
+async function enviarDatosAprobados() {
+    const datosApr = obtenerDatosAprobados();
+    if (!datosApr) return;
+    try {
+        const requestApr = await Utils.httpRequest(
+            `${Utils.path}/grupoPersona/aprobar`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(datosApr)
+            },
+            true
+        );
+        if (requestApr.cod === Utils.COD_OK) {
+            Utils.showToast('DATOS PROCESADOS EXITOSAMENTE', 'info');
+            limpiarTabla();
+            cargarDatosCertificadosEmicion();
+        } else {
+            const messageClient = requestApr.message || "Ocurrió un error inesperado.";
+            const messageTech = requestApr.data || null;
+            Utils.showErrorModal(messageClient, messageTech);
+        }
+
+    } catch (error) {
+        console.error("Error al enviar los datos aprobados:", error);
+        Utils.showToast("Error al procesar la solicitud", "error");
+    }
+
+}
+
+
+function limpiarTabla() {
+    const tablaBody = document.querySelector("#tabla-certificado tbody");
+    if (tablaBody) {
+        tablaBody.innerHTML = ''; // Vacía la tabla
+    }
+}
