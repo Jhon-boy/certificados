@@ -34,8 +34,15 @@ async function cargarDatosEventos() {
             `; 
                     tablaBody.insertAdjacentHTML("beforeend", fila);
                 });
-                 cargarDatosTipoEvento();
                 Utils.showToast('DATOS CARGADOS EXITOSAMENTE', 'success');
+
+                $('#tabla-evento').DataTable({
+                    language: {
+                        url: 'https://cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json'
+                    }
+                });
+
+                cargarDatosTipoEvento();
             } else {
                 tablaBody.innerHTML = '<tr><td colspan="5" class="text-center">No se encontraron eventos.</td></tr>';
                 Utils.showToast('NO EXISTEN ROLES REGISTRADOS', 'info');
@@ -80,6 +87,13 @@ async function cargarDatosTipoEvento() {
             `;
                     tablaBody.insertAdjacentHTML("beforeend", fila);
                 });
+
+                $('#tabla-tipoevento').DataTable({
+                    language: {
+                        url: 'https://cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json'
+                    }
+                });
+
             } else {
                 tablaBody.innerHTML = '<tr><td colspan="5" class="text-center">No se encontraron eventos.</td></tr>';
                 Utils.showToast('NO EXISTEN ROLES REGISTRADOS', 'info');
@@ -117,6 +131,11 @@ async function crearTipoEvento(event) {
             true);
         if (createEvent.cod == Utils.COD_OK) {
             Utils.showToast("Evento creado", "success");
+
+            if ($.fn.DataTable.isDataTable('#tabla-tipoevento')) {
+                $('#tabla-tipoevento').DataTable().clear().destroy();
+            }
+
             cargarDatosTipoEvento();
         } else {
             const messageClient = rolesResponse.message || "Ocurrió un error inesperado.";
@@ -209,8 +228,16 @@ async function confirmarEditarEvento(event) {
             true);
 
         if (updateEvent.cod == Utils.COD_OK) {
-            cargarDatosEventos();
             Utils.showToast("Evento Actualizado", "success");
+
+            if ($.fn.DataTable.isDataTable('#tabla-evento')) {
+                $('#tabla-evento').DataTable().clear().destroy();
+            }
+            if ($.fn.DataTable.isDataTable('#tabla-tipoevento')) {
+                $('#tabla-tipoevento').DataTable().clear().destroy();
+            }
+
+            cargarDatosEventos();
         } else {
             const messageClient = rolesResponse.message || "Ocurrió un error inesperado.";
             const messageTech = rolesResponse.data || null;
@@ -291,8 +318,13 @@ async function confirmarEditarTipoEvento(event) {
             },
             true);
         if (updateEvent.cod == Utils.COD_OK) {
-            cargarDatosTipoEvento();
             Utils.showToast("Evento Actualizado", "success");
+
+            if ($.fn.DataTable.isDataTable('#tabla-tipoevento')) {
+                $('#tabla-tipoevento').DataTable().clear().destroy();
+            }
+
+            cargarDatosTipoEvento();
         } else {
             const messageClient = rolesResponse.message || "Ocurrió un error inesperado.";
             const messageTech = rolesResponse.data || null;
