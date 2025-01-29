@@ -15,6 +15,14 @@ namespace certificados.services.Services
         // Insertar Ciclo
         public ResponseApp InsertarCiclo(Tciclo ciclo)
         {
+            ResponseApp grupoResponse = ConsultarCicloPorNombre(ciclo.Nombre);
+            dynamic data = grupoResponse.Data;
+
+            if (ciclo.Nombre.Equals(data.Nombre))
+            {
+                return Utils.Utils.BadResponse("MODALIDAD " + ciclo.Nombre.ToString() + " YA EXISTENTE");
+            }
+
             return cicloDA.insertarCiclo(ciclo);
         }
 
@@ -40,6 +48,12 @@ namespace certificados.services.Services
         public ResponseApp ListarCiclos()
         {
             return cicloDA.listarCiclos();
+        }
+
+        // Consultar Ciclo por ID
+        public ResponseApp ConsultarCicloPorNombre(String nombre)
+        {
+            return cicloDA.consultarCicloPorNombre(nombre);
         }
     }
 }

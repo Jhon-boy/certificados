@@ -155,5 +155,32 @@ namespace certificados.dal.DataAccess
 
             return response;
         }
+
+        // Consultar Modalidad por ID
+        public ResponseApp ConsultarModalidadPorNombre(String nombre)
+        {
+            ResponseApp response = Utils.BadResponse(null);
+
+            try
+            {
+                var modalidadExistente = context.Tmodalidad.FirstOrDefault(m => m.Nombre == nombre);
+
+                if (modalidadExistente != null)
+                {
+                    response = Utils.OkResponse(modalidadExistente);
+                }
+                else
+                {
+                    response.Message = "MODALIDAD NO EXISTE";
+                }
+            }
+            catch (Exception ex)
+            {
+                response.Message = $"ERROR AL CONSULTAR MODALIDAD: {ex.Message}";
+                throw new Exception($"ERROR AL CONSULTAR MODALIDAD: {ex.Message}");
+            }
+
+            return response;
+        }
     }
 }

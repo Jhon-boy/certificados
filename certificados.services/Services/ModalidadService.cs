@@ -20,6 +20,14 @@ namespace certificados.services.Services
         // Insertar Modalidad
         public ResponseApp InsertarModalidad(Tmodalidad modalidad)
         {
+            ResponseApp grupoResponse = ConsultarModalidadPorNombre(modalidad.Nombre);
+            dynamic data = grupoResponse.Data;
+
+            if (modalidad.Nombre.Equals(data.Nombre))
+            {
+                return Utils.Utils.BadResponse("MODALIDAD " + modalidad.Nombre.ToString() + " YA EXISTENTE");
+            }
+
             return tmodalidadDA.InsertarModalidad(modalidad);
         }
 
@@ -45,6 +53,12 @@ namespace certificados.services.Services
         public ResponseApp ListarModalidades()
         {
             return tmodalidadDA.ListarModalidades();
+        }
+
+        // Consultar Modalidad por NOMBRE
+        public ResponseApp ConsultarModalidadPorNombre(String nombre)
+        {
+            return tmodalidadDA.ConsultarModalidadPorNombre(nombre);
         }
     }
 }

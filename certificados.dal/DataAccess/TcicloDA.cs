@@ -150,5 +150,32 @@ namespace certificados.dal.DataAccess
 
             return response;
         }
+
+        // Consultar Ciclo por ID
+        public ResponseApp consultarCicloPorNombre(String nombre)
+        {
+            ResponseApp response = Utils.BadResponse(null);
+
+            try
+            {
+                var cicloExistente = context.Tciclo.FirstOrDefault(m => m.Nombre == nombre);
+
+                if (cicloExistente != null)
+                {
+                    response = Utils.OkResponse(cicloExistente);
+                }
+                else
+                {
+                    response.Message = "CICLO NO EXISTE";
+                }
+            }
+            catch (Exception ex)
+            {
+                response.Message = $"ERROR AL CONSULTAR CICLO: {ex.Message}";
+                throw new Exception($"ERROR AL CONSULTAR CICLO: {ex.Message}");
+            }
+
+            return response;
+        }
     }
 }

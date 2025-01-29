@@ -122,6 +122,10 @@ async function handleAgregarGrupo(event) {
                 $('#tabla-grupo').DataTable().clear().destroy();
             }
 
+            if ($.fn.DataTable.isDataTable('#tabla-grupo-personas')) {
+                $('#tabla-grupo-personas').DataTable().clear().destroy();
+            }
+
             cargarDatosGrupos();
             limpiarFormularioGrupo();
             // Cambiar a la pestaña de la tabla
