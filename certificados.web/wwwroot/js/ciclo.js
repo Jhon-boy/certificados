@@ -50,6 +50,13 @@ async function cargarDatosCiclos() {
                 tooltipTriggerList.forEach(function (tooltipTriggerEl) {
                     new bootstrap.Tooltip(tooltipTriggerEl);
                 });
+
+                $('#tabla-ciclo').DataTable({
+                    language: {
+                        url: 'https://cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json'
+                    }
+                });
+
             } else {
                 tablaBody.innerHTML = '<tr><td colspan="4" class="text-center">No se encontraron ciclos.</td></tr>';
                 Utils.showToast('NO EXISTEN CICLOS REGISTRADOS', 'info');
@@ -92,6 +99,11 @@ async function handleAgregarCiclo(event) {
 
         if (response.cod === Utils.COD_OK) {
             Utils.showToast('CICLO REGISTRADO EXITOSAMENTE', 'info');
+
+            if ($.fn.DataTable.isDataTable('#tabla-ciclo')) {
+                $('#tabla-ciclo').DataTable().clear().destroy();
+            }
+
             cargarDatosCiclos();
             limpiarFormularioCiclo();
             // Cambiar a la pestaña de la tabla
@@ -168,6 +180,11 @@ async function handleEditarCiclo(event) {
 
         if (response.cod === Utils.COD_OK) {
             Utils.showToast("Ciclo actualizado exitosamente", 'info');
+
+            if ($.fn.DataTable.isDataTable('#tabla-ciclo')) {
+                $('#tabla-ciclo').DataTable().clear().destroy();
+            }
+
             cargarDatosCiclos();
             const modal = bootstrap.Modal.getInstance(document.getElementById('modal-editar'));
             modal.hide();
@@ -198,6 +215,11 @@ async function eliminarCiclo(id) {
 
         if (response.cod === Utils.COD_OK) {
             Utils.showToast("Ciclo eliminado exitosamente", 'success');
+
+            if ($.fn.DataTable.isDataTable('#tabla-ciclo')) {
+                $('#tabla-ciclo').DataTable().clear().destroy();
+            }
+
             cargarDatosCiclos();
         } else {
             const messageClient = response.message || "Error al eliminar el ciclo.";
