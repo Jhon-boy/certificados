@@ -37,7 +37,7 @@ async function cargarDatosFormatos() {
                     tablaBody.insertAdjacentHTML("beforeend", fila);
                 });
                 Utils.showToast('DATOS CARGADOS EXITOSAMENTE', 'success');
-                document.getElementById("usuario-ingreso-formato").value = userInfo.nombre;
+                //document.getElementById("usuario-ingreso-formato").value = userInfo.nombre;
 
                 // Inicializar tooltips
                 const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));

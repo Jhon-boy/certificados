@@ -159,5 +159,29 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
+        public ResponseApp BuscarGrupoPorNombre(String nombre)
+        {
+            ResponseApp response = Utils.BadResponse(null);
+            try
+            {
+                var grupo = context.Tgrupo.FirstOrDefault(g => g.Nombre == nombre);
+
+                if (grupo != null)
+                {
+                    response = Utils.OkResponse(grupo);
+                }
+                else
+                {
+                    response = Utils.BadResponse("GRUPO NO EXISTE");
+                }
+            }
+            catch (Exception ex)
+            {
+                response.Message = $"ERROR AL BUSCAR GRUPO: {ex.Message}";
+                throw new Exception($"ERROR AL BUSCAR GRUPO: {ex.Message}");
+            }
+            return response;
+        }
+
     }
 }

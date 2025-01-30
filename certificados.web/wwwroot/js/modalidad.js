@@ -50,6 +50,13 @@ async function cargarDatosModalidades() {
                 tooltipTriggerList.forEach(function (tooltipTriggerEl) {
                     new bootstrap.Tooltip(tooltipTriggerEl);
                 });
+
+                $('#tabla-modalidad').DataTable({
+                    language: {
+                        url: 'https://cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json'
+                    }
+                });
+
             } else {
                 tablaBody.innerHTML = '<tr><td colspan="5" class="text-center">No se encontraron modalidades.</td></tr>';
                 Utils.showToast('NO EXISTEN MODALIDADES REGISTRADAS', 'info');
@@ -92,6 +99,11 @@ async function handleAgregarModalidad(event) {
 
         if (response.cod === Utils.COD_OK) {
             Utils.showToast('MODALIDAD REGISTRADA EXITOSAMENTE', 'info');
+
+            if ($.fn.DataTable.isDataTable('#tabla-modalidad')) {
+                $('#tabla-modalidad').DataTable().clear().destroy();
+            }
+
             cargarDatosModalidades();
             limpiarFormularioModalidad();
             // Cambiar a la pestaña de la tabla
@@ -168,6 +180,11 @@ async function handleEditarModalidad(event) {
 
         if (response.cod === Utils.COD_OK) {
             Utils.showToast("Modalidad actualizada exitosamente", 'info');
+
+            if ($.fn.DataTable.isDataTable('#tabla-modalidad')) {
+                $('#tabla-modalidad').DataTable().clear().destroy();
+            }
+
             cargarDatosModalidades();
             const modal = bootstrap.Modal.getInstance(document.getElementById('modal-editar'));
             modal.hide();
@@ -198,6 +215,11 @@ async function eliminarModalidad(id) {
 
         if (response.cod === Utils.COD_OK) {
             Utils.showToast("Modalidad eliminada exitosamente", 'success');
+
+            if ($.fn.DataTable.isDataTable('#tabla-modalidad')) {
+                $('#tabla-modalidad').DataTable().clear().destroy();
+            }
+
             cargarDatosModalidades();
         } else {
             const messageClient = response.message || "Error al eliminar la modalidad.";

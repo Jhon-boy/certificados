@@ -45,17 +45,17 @@
                 </a>
             </li>
 
-            @*<li class="nav-item">
+            <li class="nav-item">
                <a class="nav-link  text-white" onclick="toggleCollapse('submenu6')"> 
                     <i class="bi bi-person-video2"></i> Facilitador <i class="bi bi-caret-down-fill arrow"></i>
                 </a>
                 <div class="submenu" id="submenu6" style="display: none;">
                     <ul class="nav flex-column ms-3">
-                        <li onclick="cargarFacilitador()" class="nav-item"><a class="nav-link text-white" href="#" id="link-registrarfacilitador" data-view="VerFacilitador"><i class="bi bi-calendar-event"></i> Ver</a></li>
-                        <li onclick="cargarDatosFacilitadores()" class="nav-item"><a class="nav-link text-white" href="#" id="link-manatenimientoparticipante" data-view="Facilitador"><i class="bi bi-receipt"></i> Registrar </a></li>
+                    @*<li onclick="cargarFacilitador()" class="nav-item"><a class="nav-link text-white" href="#" id="link-registrarfacilitador" data-view="VerFacilitador"><i class="bi bi-calendar-event"></i> Ver</a></li>*@
+                        <li onclick="cargarDatosCertificadosEmicion()" class="nav-item"><a class="nav-link text-white" href="#" id="link-aprobarparticipante" data-view="AprobarParticipantes"><i class="bi bi-receipt"></i> Aprobar</a></li>
                     </ul>
                 </div>
-            </li> *@
+            </li> 
 
             <li class="nav-item">
                 <a class="nav-link  text-white" onclick="toggleCollapse('submenu7')">
@@ -76,7 +76,7 @@
                 <div class="submenu" id="submenu8" style="display: none;">
                     <ul class="nav flex-column ms-3">
                         <li onclick="cargarDatosFormatos()" class="nav-item"><a class="nav-link text-white" href="#" id="link-formatos" data-view="Formatos"><i class="bi bi-file-earmark-plus-fill"></i> Plantilla</a></li>
-                        <li onclick="cargarDatosCertificadosEmicion()" class="nav-item"><a class="nav-link text-white" href="#" id="link-formatos" data-view="Emitir"><i class="bi bi-card-checklist"></i> Emitir</a></li>
+                        <li onclick="" class="nav-item"><a class="nav-link text-white" href="#" id="link-formatos" data-view="Emitir"><i class="bi bi-card-checklist"></i> Emitir</a></li>
                     </ul>
                 </div>
             </li>

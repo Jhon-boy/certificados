@@ -43,6 +43,13 @@ async function cargarDatosDecanatos() {
                 tooltipTriggerList.forEach(function (tooltipTriggerEl) {
                     new bootstrap.Tooltip(tooltipTriggerEl);
                 });
+
+                $('#tabla-decanato').DataTable({
+                    language: {
+                        url: 'https://cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json'
+                    }
+                });
+
             } else {
                 tablaBody.innerHTML = '<tr><td colspan="6" class="text-center">No se encontraron decanatos.</td></tr>';
                 Utils.showToast('NO EXISTEN DECANATOS REGISTRADOS', 'info');
@@ -92,6 +99,11 @@ async function guardarCambiosDecanato() {
 
         if (response.cod === "OK") {
             Utils.showToast("Decanato actualizado exitosamente", "success");
+
+            if ($.fn.DataTable.isDataTable('#tabla-decanato')) {
+                $('#tabla-decanato').DataTable().clear().destroy();
+            }
+
             cargarDatosDecanatos();
         } else {
             Utils.showToast("Error al actualizar el decanato", "danger");
@@ -125,6 +137,15 @@ async function crearDecanato(event) {
         if (responseCrear.cod === "OK") {
             Utils.showToast("Decanato actualizado exitosamente", "success");
             document.getElementById("decanato-nombre").value = "";
+
+            if ($.fn.DataTable.isDataTable('#tabla-decanato')) {
+                $('#tabla-decanato').DataTable().clear().destroy();
+            }
+
+            const tablaTab = document.querySelector('#home-tab');
+            const tab = new bootstrap.Tab(tablaTab);
+            tab.show();
+
             cargarDatosDecanatos();  
         } else {
             const messageClient = responseCrear.message || "Error al actualizar la persona.";
@@ -164,6 +185,11 @@ async function eliminarDecanato(idDecanato) {
 
         if (response.cod === "OK") {
             Utils.showToast("Decanato actualizado exitosamente", "success");
+
+            if ($.fn.DataTable.isDataTable('#tabla-decanato')) {
+                $('#tabla-decanato').DataTable().clear().destroy();
+            }
+
             cargarDatosDecanatos();
         } else {
             Utils.showToast("Error al actualizar el decanato", "danger");

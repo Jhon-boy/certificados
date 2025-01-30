@@ -21,6 +21,13 @@ namespace certificados.services.Services
         // Insertar un nuevo grupo
         public ResponseApp InsertarGrupo(Tgrupo tgrupo)
         {
+            ResponseApp grupoResponse = BuscarGrupoPorNombre(tgrupo.Nombre);
+            dynamic data = grupoResponse.Data;
+
+            if (tgrupo.Nombre.Equals(data.Nombre)) {
+                return Utils.Utils.BadResponse("GRUPO " + tgrupo.Nombre.ToString() + " YA EXISTENTE");
+            }
+
             if (tgrupo.Cantidad <= 0 || tgrupo.Nombre.Length <= 1)
             {
                 return Utils.Utils.BadResponse("PARAMETROS DE CREACION NO VALIDO");
@@ -60,6 +67,12 @@ namespace certificados.services.Services
             {
                 return Utils.Utils.BadResponse($"ERROR AL CONSULTAR TODOS LOS GRUPOS: {ex.Message}");
             }
+        }
+
+        // Buscar un grupo por nombre
+        public ResponseApp BuscarGrupoPorNombre(String nombre)
+        {
+            return tgrupoDA.BuscarGrupoPorNombre(nombre);
         }
     }
 }
