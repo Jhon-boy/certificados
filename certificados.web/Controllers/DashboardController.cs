@@ -95,6 +95,10 @@ namespace certificados.web.Controllers
         public IActionResult AprobarParticipantes()
         {
             return PartialView("~/Views/Facilitador/_AprobarParticipantes.cshtml");
+        }       
+        public IActionResult GenerarCertificado()
+        {
+            return PartialView("~/Views/Certificacion/_GenerarCertificados.cshtml");
         }
     }
 }

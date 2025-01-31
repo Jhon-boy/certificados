@@ -1,6 +1,6 @@
 ﻿// Función para cargar datos de grupos 
 let userInfoEmitir = JSON.parse(localStorage.getItem('userInfo'));
-async function cargarDatosCertificadosEmicion() {
+async function cargarDatosGenerarCertificados() {
     try {
         const response = await Utils.httpRequest(
             `${Utils.path}/grupo/all`,
@@ -12,19 +12,19 @@ async function cargarDatosCertificadosEmicion() {
         );
 
         setTimeout(() => {
- 
-            const selectGrupo = document.getElementById("persona-id-grupo"); 
-             
-            selectGrupo.innerHTML = '<option value="">Selecciona un grupo</option>'; 
+
+            const selectGrupo = document.getElementById("persona-id-grupo");
+
+            selectGrupo.innerHTML = '<option value="">Selecciona un grupo</option>';
 
             if (response.cod === Utils.COD_OK && response.data.length > 0) {
                 response.data.forEach(grupo => {
-                     
+
                     const option = document.createElement("option");
                     option.value = grupo.idGrupo;
-                    option.textContent = grupo.nombre;  
-                    selectGrupo.appendChild(option); 
-                }); 
+                    option.textContent = grupo.nombre;
+                    selectGrupo.appendChild(option);
+                });
                 const selectGrupoEvent = document.querySelector("#persona-id-grupo");
                 selectGrupoEvent.addEventListener("change", async (event) => {
                     const idGrupoSeleccionado = event.target.value;
@@ -34,29 +34,29 @@ async function cargarDatosCertificadosEmicion() {
                 });
 
 
-                $('#tabla-certificado').DataTable({
+                $('#tabla-generar-certificado').DataTable({
                     language: {
                         url: 'https://cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json'
                     }
                 });
-                 
-            } else { 
-                
+
+            } else {
+
                 Utils.showToast('NO EXISTEN GRUPOS REGISTRADOS', 'info');
             }
         }, 150);
-         
+
     } catch (error) {
         Utils.showToast("Error cargando datos iniciales", 'error');
     }
 }
- 
+
 async function listarIntegrantes(id) {
 
     try {
 
         const payload = {
-            idGrupo:id
+            idGrupo: id
         }
         const requestIntegrantes = await Utils.httpRequest(
             `${Utils.path}/grupoPersona/pendientes`,
@@ -67,14 +67,14 @@ async function listarIntegrantes(id) {
             },
             true
         );
-        const tablaBody = document.querySelector("#tabla-certificado tbody");
+        const tablaBody = document.querySelector("#tabla-generar-certificado tbody");
         tablaBody.innerHTML = '';
 
         if (requestIntegrantes.cod == Utils.COD_OK && requestIntegrantes.data.length > 0) {
-            requestIntegrantes.data.forEach(persona => { 
+            requestIntegrantes.data.forEach(persona => {
                 const asistenciaMarcada = true; // Por defecto desmarcado
                 const calificacionMarcada = true; // Por defecto desmarcado
-                 
+
                 const estado = asistenciaMarcada && calificacionMarcada ? "Aprobado" : "Pendiente";
 
                 const fila = `
@@ -117,7 +117,7 @@ async function listarIntegrantes(id) {
 function reseteoSeleccion() {
     const selectCondicion = document.querySelector("#condicion");
     if (selectCondicion) {
-        selectCondicion.value = "1"; 
+        selectCondicion.value = "1";
     }
 }
 
@@ -134,7 +134,7 @@ function escucharCambiosCheckboxes() {
 // Función para actualizar los estados según la condición seleccionada
 function actualizarEstados() {
     const condicion = document.querySelector("#condicion").value;
-    const filas = document.querySelectorAll("#tabla-certificado tbody tr");
+    const filas = document.querySelectorAll("#tabla-generar-certificado tbody tr");
 
     filas.forEach(fila => {
         const asistenciaMarcada = fila.querySelector(".asistencia").checked;
@@ -150,7 +150,7 @@ function actualizarEstados() {
             estado = asistenciaMarcada ? "Aprobado" : "No Aprobado";
         }
 
-        fila.querySelector(".estado").textContent = estado;  
+        fila.querySelector(".estado").textContent = estado;
     });
 }
 
@@ -158,28 +158,28 @@ function manejarHabilitacionCheckboxes(condicion) {
     const checkboxesAsistencia = document.querySelectorAll(".asistencia");
     const checkboxesCalificacion = document.querySelectorAll(".calificacion");
 
-    if (condicion === "2") {   
-        checkboxesAsistencia.forEach(cb => cb.disabled = true);   
-        checkboxesCalificacion.forEach(cb => cb.disabled = false);   
-    } else if (condicion === "3") {  
-        checkboxesAsistencia.forEach(cb => cb.disabled = false);   
-        checkboxesCalificacion.forEach(cb => cb.disabled = true);   
+    if (condicion === "2") {
+        checkboxesAsistencia.forEach(cb => cb.disabled = true);
+        checkboxesCalificacion.forEach(cb => cb.disabled = false);
+    } else if (condicion === "3") {
+        checkboxesAsistencia.forEach(cb => cb.disabled = false);
+        checkboxesCalificacion.forEach(cb => cb.disabled = true);
     } else {  // AMBOS
-        checkboxesAsistencia.forEach(cb => cb.disabled = false);   
-        checkboxesCalificacion.forEach(cb => cb.disabled = false);  
+        checkboxesAsistencia.forEach(cb => cb.disabled = false);
+        checkboxesCalificacion.forEach(cb => cb.disabled = false);
     }
 }
 
-function obtenerDatosAprobados() { 
+function obtenerDatosAprobados() {
     const selectGrupo = document.getElementById("persona-id-grupo");
     const idGrupo = selectGrupo.value;
 
     if (!idGrupo) {
         Utils.showToast("Por favor selecciona un grupo antes de continuar", "info");
-        return null;  
+        return null;
     }
-     
-    const tablaBody = document.querySelector("#tabla-certificado tbody");
+
+    const tablaBody = document.querySelector("#tabla-generar-certificado tbody");
     const filas = tablaBody.querySelectorAll("tr");
     const cedulasAprobadas = [];
 
@@ -204,7 +204,7 @@ function obtenerDatosAprobados() {
     };
 
     return datosAprobados;
-} 
+}
 async function enviarDatosAprobados() {
     const datosApr = obtenerDatosAprobados();
     if (!datosApr) return;
@@ -221,8 +221,8 @@ async function enviarDatosAprobados() {
         if (requestApr.cod === Utils.COD_OK) {
             Utils.showToast('DATOS PROCESADOS EXITOSAMENTE', 'info');
 
-            if ($.fn.DataTable.isDataTable('#tabla-certificado')) {
-                $('#tabla-certificado').DataTable().clear().destroy();
+            if ($.fn.DataTable.isDataTable('#tabla-generar-certificado')) {
+                $('#tabla-generar-certificado').DataTable().clear().destroy();
             }
 
             limpiarTabla();
@@ -240,9 +240,8 @@ async function enviarDatosAprobados() {
 
 }
 
-
 function limpiarTabla() {
-    const tablaBody = document.querySelector("#tabla-certificado tbody");
+    const tablaBody = document.querySelector("#tabla-generar-certificado tbody");
     if (tablaBody) {
         tablaBody.innerHTML = ''; // Vacía la tabla
     }

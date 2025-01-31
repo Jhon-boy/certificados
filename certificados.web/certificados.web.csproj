@@ -21,4 +21,11 @@
     <ProjectReference Include="..\certificados.services\certificados.services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Views\Certificacion\_GenerarCertificados.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
