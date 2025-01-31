@@ -52,14 +52,14 @@
 
 
                 if (data.response.cod === Utils.COD_OK) {
-               
+
                     const usuario = {
                         idUsuario: data.response.data.USUARIO.idUsuario,
                         email: data.response.data.USUARIO.email,
                         cedula: data.response.data.USUARIO.cedula,
-                        nombre: data.response.data.PERSONA.nombres, 
+                        nombre: data.response.data.PERSONA.nombres,
                         apellidos: data.response.data.PERSONA.apellidos,
-                        edad: data.response.data.USUARIO.edad, 
+                        edad: data.response.data.USUARIO.edad,
                         roles: data.response.data.PERSONA.mDatos.rol
                     };
 
@@ -68,6 +68,7 @@
                     // Redirige al dashboard
                     if (data.redirectTo) {
                         window.location.href = data.redirectTo;
+
                     } else {
                         showFeedback('Login exitoso, redirigiendo...', 'success');
                     }

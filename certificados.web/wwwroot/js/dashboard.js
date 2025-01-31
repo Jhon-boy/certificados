@@ -17,9 +17,9 @@ function logOut() {
     Utils.backToIndex();
 
 }
-
 document.addEventListener('DOMContentLoaded', function () {
     Utils.cleanRoute();
+
     const submenuLinks = document.querySelectorAll('.nav-link[data-view]');
     usuarioLogeado = document.getElementById("userLog");
     userInfo = JSON.parse(localStorage.getItem('userInfo'));
@@ -63,6 +63,6 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => {
                 console.error('Error al cargar la vista:', error);
             });
-    }
+    } 
 });
 
