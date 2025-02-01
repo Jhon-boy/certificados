@@ -27,7 +27,7 @@
                 selectGrupoEvent.addEventListener("change", async (event) => {
                     const idGrupoSeleccionado = event.target.value;
                     if (idGrupoSeleccionado) {
-                        await listarIntegrantes(idGrupoSeleccionado);
+                        await listarIntegrantesAprobados(idGrupoSeleccionado);
                     }
                 });
 
@@ -49,7 +49,7 @@
     }
 }
 
-async function listarIntegrantes(id) {
+async function listarIntegrantesAprobados(id) {
 
     try {
 
