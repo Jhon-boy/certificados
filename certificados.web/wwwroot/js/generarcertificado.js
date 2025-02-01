@@ -1,6 +1,4 @@
-﻿// Función para cargar datos de grupos 
-let userInfoEmitir = JSON.parse(localStorage.getItem('userInfo'));
-async function cargarDatosGenerarCertificados() {
+﻿async function cargarDatosGenerarCertificados() {
     try {
         const response = await Utils.httpRequest(
             `${Utils.path}/grupo/all`,
@@ -13,7 +11,7 @@ async function cargarDatosGenerarCertificados() {
 
         setTimeout(() => {
 
-            const selectGrupo = document.getElementById("persona-id-grupo");
+            const selectGrupo = document.getElementById("persona-id-grupo-generar");
 
             selectGrupo.innerHTML = '<option value="">Selecciona un grupo</option>';
 
@@ -25,7 +23,7 @@ async function cargarDatosGenerarCertificados() {
                     option.textContent = grupo.nombre;
                     selectGrupo.appendChild(option);
                 });
-                const selectGrupoEvent = document.querySelector("#persona-id-grupo");
+                const selectGrupoEvent = document.querySelector("#persona-id-grupo-generar");
                 selectGrupoEvent.addEventListener("change", async (event) => {
                     const idGrupoSeleccionado = event.target.value;
                     if (idGrupoSeleccionado) {
@@ -83,12 +81,12 @@ async function listarIntegrantes(id) {
                     <td>${persona.tpersona.nombres} ${persona.tpersona.apellidos}</td>
                      <td>
                         <div class="form-check">
-                            <input class="form-check-input asistencia" type="checkbox" checked>
+                            <input class="form-check-input asistencia" type="checkbox" checked disabled>
                         </div>
                     </td>
                     <td>
                         <div class="form-check">
-                            <input class="form-check-input calificacion" type="checkbox" checked>
+                            <input class="form-check-input calificacion" type="checkbox" checked disabled>
                         </div>
                     </td> 
                     <td  class="estado">${estado}</td>
@@ -171,7 +169,7 @@ function manejarHabilitacionCheckboxes(condicion) {
 }
 
 function obtenerDatosAprobados() {
-    const selectGrupo = document.getElementById("persona-id-grupo");
+    const selectGrupo = document.getElementById("persona-id-grupo-generar");
     const idGrupo = selectGrupo.value;
 
     if (!idGrupo) {
@@ -200,12 +198,12 @@ function obtenerDatosAprobados() {
     const datosAprobados = {
         IdGrupo: parseInt(idGrupo, 10),
         Aprobados: cedulasAprobadas,
-        usuarioActualizacion: `${userInfoEmitir.idUsuario}`
+        usuarioActualizacion: `${userInfo.idUsuario}`
     };
 
     return datosAprobados;
 }
-async function enviarDatosAprobados() {
+async function generarAprobados() {
     const datosApr = obtenerDatosAprobados();
     if (!datosApr) return;
     try {

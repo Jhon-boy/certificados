@@ -1,15 +1,13 @@
 ﻿<div class="container mt-1">
-    <!-- Tabs para el formulario y la tabla -->
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
-            <a class="nav-link text-dark active" id="generar-tab" data-bs-toggle="tab" href="#generar" role="tab" aria-controls="generar" aria-selected="true">Aprobar Participantes</a>
+            <a class="nav-link text-dark active" id="generar-certificado" data-bs-toggle="tab" href="#generar" role="tab" aria-controls="generar" aria-selected="true">Participantes Aprobados</a>
         </li>
     </ul>
 
     <div class="tab-content" id="myTabContent">
         <br />
-        <!-- Contenido de la pestaña de generar certificados -->
-        <div class="tab-pane fade show active" id="generar" role="tabpanel" aria-labelledby="generar-tab">
+        <div class="tab-pane fade show active" id="generar" role="tabpanel" aria-labelledby="generar-certificado">
             <div class="card my-5 mx-2">
                 <div class="card-header">
                     <h5>Configuración del Certificado</h5>
@@ -17,7 +15,6 @@
                 <div class="card-body">
                     <form>
                         <div class="row g-3">
-                            <!-- Beneficiario -->
                             <div class="col-md-6 col-lg-5">
                                 <div class="form-group">
                                     <label for="beneficiario" class="form-label">Beneficiario</label>
@@ -26,17 +23,15 @@
                                     </select>
                                 </div>
                             </div>
-                            <!-- Grupo -->
                             <div class="col-md-6 col-lg-5">
                                 <div class="form-group">
                                     <label for="grupo" class="form-label">Grupo</label>
-                                    <select class="form-select" id="persona-id-grupo" name="persona-id-grupo" required oninput="this.setCustomValidity('')"
+                                    <select class="form-select" id="persona-id-grupo-generar" name="persona-id-grupo-generar" required oninput="this.setCustomValidity('')"
                                             oninvalid="this.setCustomValidity('Por favor, complete este campo.')">
                                         <option value="">Selecciona un grupo</option>
                                     </select>
                                 </div>
                             </div>
-                            <!-- Condición -->
                             <div class="col-md-6 col-lg-5">
                                 <div class="form-group">
                                     <label for="condicion" class="form-label">Condición</label>
@@ -79,7 +74,7 @@
             </div>
             <div class="row justify-content-center">
                 <div class="col-auto">
-                    <button onclick="enviarDatosAprobados()" class="btn btn-primary me-2">Guardar</button>
+                    <button onclick="generarAprobados()" class="btn btn-primary me-2">Generar</button>
                     <button class="btn btn-secondary">Cancelar</button>
                 </div>
             </div>
