@@ -170,7 +170,7 @@ function manejarHabilitacionCheckboxes(condicion) {
     }
 }
 
-function obtenerDatosAprobados() { 
+function obtenerDatosAprobadosC() { 
     const selectGrupo = document.getElementById("persona-id-grupo");
     const idGrupo = selectGrupo.value;
 
@@ -206,7 +206,7 @@ function obtenerDatosAprobados() {
     return datosAprobados;
 } 
 async function enviarDatosAprobados() {
-    const datosApr = obtenerDatosAprobados();
+    const datosApr = obtenerDatosAprobadosC();
     if (!datosApr) return;
     try {
         const requestApr = await Utils.httpRequest(
