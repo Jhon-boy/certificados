@@ -74,12 +74,13 @@ namespace certificados.web.Controllers
                 return Utils.BadResponse("Faltan parámetros en la solicitud.");
             }
             int id;
+            Boolean estado = !request.ContainsKey("estado") ? true : false;
 
             if (!int.TryParse(request["idGrupo"]?.ToString(), out id))
             {
                 return Utils.BadResponse("El parámetro 'id' no es válido.");
             }
-            return grupoPersonaService.BuscarById(id, true);
+            return grupoPersonaService.BuscarById(id, estado);
         }
 
         [HttpPost("crear")]

@@ -51,6 +51,12 @@ async function inciarDatosActaCalificacion() {
 
                 Utils.showToast('DATOS CARGADOS EXITOSAMENTE', 'success');
 
+                $('#tabla-actas-calificacion').DataTable({
+                    language: {
+                        url: 'https://cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json'
+                    }
+                });
+
             } else {
                 Utils.showToast('NO EXISTEN EVENTOS REGISTRADOS', 'info');
             }
@@ -99,7 +105,14 @@ async function agregarActaCalificacion(event) {
 
         if (responseCalificacion.cod === Utils.COD_OK) {
             Utils.showToast("Acta registrado exitosamente", "success");
+
+            if ($.fn.DataTable.isDataTable('#tabla-actas-calificacion')) {
+                $('#tabla-actas-calificacion').DataTable().clear().destroy();
+            }
+
             limpiarCampos();
+            inciarDatosActaCalificacion();
+
         } else {
             const messageClient = responseCalificacion.message || "Ocurrió un error inesperado.";
             const messageTech = responseCalificacion.data || null;
@@ -180,7 +193,7 @@ async function cargarActaCalificacion() {
             },
             true
         );
-        const tableBody = document.querySelector("#tabla-actas tbody");
+        const tableBody = document.querySelector("#tabla-actas-calificacion tbody");
         tableBody.innerHTML = "";
 
         if (eventosAllResponse.cod === Utils.COD_OK) {

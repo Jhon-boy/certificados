@@ -50,6 +50,12 @@ async function inciarDatosActaAsistencia() {
                 });
 
                 Utils.showToast('DATOS CARGADOS EXITOSAMENTE', 'success');
+
+                $('#tabla-actas').DataTable({
+                    language: {
+                        url: 'https://cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json'
+                    }
+                });
                  
             } else {
                 Utils.showToast('NO EXISTEN EVENTOS REGISTRADOS', 'info');
@@ -100,7 +106,13 @@ async function agregarActaAsistencia(event) {
 
         if (responseAsistencia.cod === Utils.COD_OK) {
             Utils.showToast("Acta registrado exitosamente", "success");
+
+            if ($.fn.DataTable.isDataTable('#tabla-actas')) {
+                $('#tabla-actas').DataTable().clear().destroy();
+            }
+
             limpiarCampos();
+            inciarDatosActaAsistencia();
         } else {
             const messageClient = responseAsistencia.message || "Ocurrió un error inesperado.";
             const messageTech = responseAsistencia.data || null;

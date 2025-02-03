@@ -395,6 +395,10 @@ async function eliminarGrupoPersona(idGrupoPersona, cedula) {
         if (response.cod === Utils.COD_OK) {
             Utils.showToast("Grupo eliminado exitosamente", 'success');
 
+            if ($.fn.DataTable.isDataTable('#tabla-grupo')) {
+                $('#tabla-grupo').DataTable().clear().destroy();
+            }
+
             if ($.fn.DataTable.isDataTable('#tabla-grupo-personas')) {
                 $('#tabla-grupo-personas').DataTable().clear().destroy();
             }

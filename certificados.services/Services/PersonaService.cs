@@ -142,5 +142,11 @@ namespace certificados.services.Services
             }
             return response;
         }
+
+        public ResponseApp buscarPersonaPorCedula(String cedula)
+        {
+
+            return personaDataAcces.buscarObjPersona(cedula);
+        }
     }
 }

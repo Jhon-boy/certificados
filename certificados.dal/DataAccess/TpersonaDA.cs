@@ -362,6 +362,30 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
+        public ResponseApp buscarObjPersona(String cedula)
+        {
+            ResponseApp response = Utils.BadResponse(null);
+            try
+            {
+                var personaObj = context.Tpersona.FirstOrDefault(p => p.Cedula == cedula);
+
+                if (personaObj != null)
+                {
+                    response = Utils.OkResponse(personaObj);
+                }
+                else
+                {
+                    response = Utils.BadResponse("PERSONA NO EXISTE");
+                }
+            }
+            catch (Exception ex)
+            {
+                response = Utils.BadResponse($"ERROR AL BUSCAR PERSONA: {ex.Message}");
+                throw new Exception($"ERROR AL BUSCAR PERSONA: {ex.Message}");
+            }
+            return response;
+        }
+
 
     }
 

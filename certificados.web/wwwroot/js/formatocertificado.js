@@ -44,6 +44,13 @@ async function cargarDatosFormatos() {
                 tooltipTriggerList.forEach(function (tooltipTriggerEl) {
                     new bootstrap.Tooltip(tooltipTriggerEl);
                 });
+
+                $('#tabla-formato').DataTable({
+                    language: {
+                        url: 'https://cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json'
+                    }
+                });
+
             } else {
                 tablaBody.innerHTML = '<tr><td colspan="7" class="text-center">No se encontraron formatos.</td></tr>';
                 Utils.showToast('NO EXISTEN FORMATOS REGISTRADOS', 'info');
@@ -133,6 +140,11 @@ async function handleAgregarFormato(event) {
 
         if (response.cod === Utils.COD_OK) {
             Utils.showToast('FORMATO REGISTRADO EXITOSAMENTE', 'success');
+
+            if ($.fn.DataTable.isDataTable('#tabla-formato')) {
+                $('#tabla-formato').DataTable().clear().destroy();
+            }
+
             limpiarFormularioFormato();
             cargarDatosFormatos();
 
@@ -255,6 +267,11 @@ async function eliminarFormato(id) {
 
         if (response.cod === Utils.COD_OK) {
             Utils.showToast("Formato eliminado exitosamente", 'success');
+
+            if ($.fn.DataTable.isDataTable('#tabla-formato')) {
+                $('#tabla-formato').DataTable().clear().destroy();
+            }
+
             cargarDatosFormatos();
         } else {
             const messageClient = response.message || "Error al eliminar el formato.";

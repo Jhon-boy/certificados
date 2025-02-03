@@ -32,6 +32,13 @@ async function cargarDatosCertificadosEmicion() {
                         await listarIntegrantes(idGrupoSeleccionado);
                     }
                 });
+
+
+                $('#tabla-certificado').DataTable({
+                    language: {
+                        url: 'https://cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json'
+                    }
+                });
                  
             } else { 
                 
@@ -213,6 +220,11 @@ async function enviarDatosAprobados() {
         );
         if (requestApr.cod === Utils.COD_OK) {
             Utils.showToast('DATOS PROCESADOS EXITOSAMENTE', 'info');
+
+            if ($.fn.DataTable.isDataTable('#tabla-certificado')) {
+                $('#tabla-certificado').DataTable().clear().destroy();
+            }
+
             limpiarTabla();
             cargarDatosCertificadosEmicion();
         } else {

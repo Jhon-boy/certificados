@@ -30,13 +30,19 @@ async function cargarDatosPlanificacion() {
                         <td>${evento.dominio}</td>
                         <td>${Utils.formatFecha(evento.fechaInicio)} - ${Utils.formatFecha(evento.fechaFin)}</td>
                         <td>${evento.tmodalidad.nombre}</td>
-                        <td>${evento.lugar}</td>
                         <td>${evento.idGrupo}</td>
                     </tr>
                 `;
                         tablaBody.insertAdjacentHTML("beforeend", fila);
                     });
                     Utils.showToast('EVENTOS CARGADOS EXITOSAMENTE', 'success');
+
+                    $('#tabla-evento').DataTable({
+                        language: {
+                            url: 'https://cdn.datatables.net/plug-ins/1.10.21/i18n/Spanish.json'
+                        }
+                    });
+
                 } else {
                     tablaBody.innerHTML = '<tr><td colspan="7" class="text-center">No hay eventos en curso.</td></tr>';
                     Utils.showToast('NO EXISTEN EVENTOS EN CURSO', 'info');
@@ -252,7 +258,7 @@ async function handleAgregarPlanificacion(event) {
         "FechaInicio": `${document.getElementById('fecha-inicio').value}T08:30:00`,
         "FechaFin": `${document.getElementById('fecha-fin').value}T12:30:00`,
         "Horas": `${parseInt(document.getElementById('horas').value, 10)}`,
-        "Lugar": `${document.getElementById('lugarDesarrollo').value}`,
+        "Lugar": null,
         "ConCertificado": `${document.getElementById('con-certificado').value}`,
         "Periodo": `${document.getElementById('ciclo-evento').value}`,
         "Tematica": `${document.getElementById('tematica').value}`,
@@ -278,8 +284,18 @@ async function handleAgregarPlanificacion(event) {
          
         if (responseCreate.cod === Utils.COD_OK) {
             Utils.showToast('PLANIFICACIÓN REGISTRADA EXITOSAMENTE', 'info');
+
+            if ($.fn.DataTable.isDataTable('#tabla-evento')) {
+                $('#tabla-evento').DataTable().clear().destroy();
+            }
+
             cargarDatosPlanificacion();
             limpiarFormularioPlanificacion(); 
+
+            const tablaTab = document.querySelector('#listar-planificacion-tab');
+            const tab = new bootstrap.Tab(tablaTab);
+            tab.show();
+
         } else {
             const messageClient = responseCreate.message || "Ocurrió un error inesperado.";
             const messageTech = responseCreate.data || null;
