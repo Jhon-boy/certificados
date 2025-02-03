@@ -19,7 +19,7 @@
         </div>
 
         <ul class="nav flex-column mt-4">
-            <li class="nav-item"><a class="nav-link text-white" href="#" id="link-roles" data-view="Inicio"><i class="bi  bi-house"></i> Home</a></li>
+            <li onclick="cargarDatosDashboard()" class="nav-item"><a class="nav-link text-white" href="#" id="link-roles" data-view="Inicio"><i class="bi  bi-house"></i> Home</a></li>
 
             <li class="nav-item mt-3">
                 <a class="nav-link text-white" onclick="toggleCollapse('submenu1')">
@@ -100,11 +100,11 @@
                 </div>
                 <div class="col-auto">
                     <div class="user-menu dropdown">
-                        <button class="btn dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
+                        <button id="dropdownUser"  class="btn dropdown-toggle d-flex align-items-center" type="button" data-bs-toggle="dropdown">
                             <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=40" alt="Usuario" class="me-2">
                             <span id="userLog" class="me-2"></span>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow-sm   submenu" id="submenu7">
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm   submenu" id="submenu9">
                             <li onclick="cargarDatosPerfil()" class="nav-item"><a class="nav-link text-dark" href="#" id="link-perfil" data-view="MiPerfil"><i class="bi bi-person me-2"></i>Perfil</a></li>
                             <li onclick="cargarDatosConfiguracion()" class="nav-item"><a class="nav-link text-dark" href="#" id="link-configuracion" data-view="Configuracion"><i class="bi bi-gear me-2"></i>Configuración</a></li>
           

@@ -64,5 +64,25 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('Error al cargar la vista:', error);
             });
     } 
+
+    const dropdownButton = document.getElementById('dropdownUser');
+    const dropdownMenu = document.getElementById('submenu9');
+
+    dropdownButton.addEventListener('click', function () {
+        const isVisible = dropdownMenu.classList.contains('show');
+        if (isVisible) {
+            dropdownMenu.classList.remove('show');
+        } else {
+            dropdownMenu.classList.add('show');
+        }
+    });
+     
+    document.addEventListener('click', function (event) {
+        if (!dropdownMenu.contains(event.target) && event.target !== dropdownButton) {
+            dropdownMenu.classList.remove('show');
+        }
+    });
+
+
 });
 
