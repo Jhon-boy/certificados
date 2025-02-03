@@ -378,6 +378,15 @@ namespace certificados.web.Controllers
                     };
                     document.Add(descripcionParagraph);
 
+                    // Agregar QR a la derecha
+                    if (dataFormato.Qr != null)
+                    {
+                        var qrImage = iTextSharp.text.Image.GetInstance((byte[])dataFormato.Qr);
+                        qrImage.ScaleAbsolute(100, 100); // Escalar la imagen QR
+                        qrImage.Alignment = iTextSharp.text.Image.ALIGN_LEFT;
+                        document.Add(qrImage);
+                    }
+
                     // Insertar tabla con los firmantes y cargos
                     var table = new iTextSharp.text.pdf.PdfPTable(3); // Tabla con 3 columnas
 
@@ -410,15 +419,6 @@ namespace certificados.web.Controllers
                     });
 
                     document.Add(table);
-
-                    // Agregar QR a la derecha
-                    if (dataFormato.Qr != null)
-                    {
-                        var qrImage = iTextSharp.text.Image.GetInstance((byte[])dataFormato.Qr);
-                        qrImage.ScaleAbsolute(100, 100); // Escalar la imagen QR
-                        qrImage.Alignment = iTextSharp.text.Image.ALIGN_RIGHT;
-                        document.Add(qrImage);
-                    }
 
                     // Finalizar y guardar el documento en el stream
                     document.Close();

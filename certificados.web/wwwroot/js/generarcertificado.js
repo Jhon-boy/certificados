@@ -260,6 +260,32 @@ async function generarCertificado(cedula) {
         if (requestApr.cod === Utils.COD_OK) {
             const data = requestApr.data;
 
+            // Mostrar el PDF en el modal
+            const pdfViewer = document.getElementById('pdfViewer');
+            const downloadLink = document.getElementById('downloadLink');
+
+            // Convertir base64 a blob
+            const byteCharacters = atob(data);
+            const byteNumbers = new Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteNumbers[i] = byteCharacters.charCodeAt(i);
+            }
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray], { type: 'application/pdf' });
+
+            // Crear una URL para el blob
+            const url = URL.createObjectURL(blob);
+
+            // Mostrar el PDF en el iframe
+            pdfViewer.src = url;
+
+            // Configurar el enlace de descarga
+            downloadLink.href = url;
+
+            // Mostrar el modal
+            const pdfModal = new bootstrap.Modal(document.getElementById('pdfModal'));
+            pdfModal.show();
+
             Utils.showToast('DATOS PROCESADOS EXITOSAMENTE', 'info');
             cargarDatosGenerarCertificados(); // Cargar o actualizar los datos si es necesario
         } else {
