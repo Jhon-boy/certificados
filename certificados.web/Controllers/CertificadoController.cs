@@ -4,13 +4,8 @@ using certificados.services.Services;
 using certificados.services.Utils;
 using certificados.web.Controllers.Mappers;
 using certificados.web.Models.DTO;
-using iText.IO.Image;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using iText.Kernel.Pdf.Canvas;
-using iText.Kernel.Geom;
-using iText.Kernel.Pdf;
 using iTextSharp.text;
 
 namespace certificados.web.Controllers
@@ -339,55 +334,65 @@ namespace certificados.web.Controllers
                         float logoHeight = 60f;
                         logoImage.ScaleAbsolute(logoWidth, logoHeight);
                         document.Add(logoImage);
-                        agregarSaltodeLinea(document, 2);
+                        agregarSaltodeLinea(document, 1);
                     }
 
                     // Nombre del decanato centrado debajo del logo
+                    BaseColor ROJO = new BaseColor(135, 206, 250);
                     var decanatoParagraph = new iTextSharp.text.Paragraph(nombreDecanato)
                     {
                         Alignment = iTextSharp.text.Element.ALIGN_CENTER,
-                        Font = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 16)
+                        Font = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 14, iTextSharp.text.Font.NORMAL, ROJO)
                     };
                     document.Add(decanatoParagraph);
-                    document.Add(new iTextSharp.text.Paragraph("\n"));
+                    agregarSaltodeLinea(document, 1);
 
                     // Titulo del certificado
                     var tituloParagraph = new iTextSharp.text.Paragraph(tituloCertificado)
                     {
                         Alignment = iTextSharp.text.Element.ALIGN_CENTER,
-                        Font = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 20)
+                        Font = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 20, iTextSharp.text.Font.NORMAL, new BaseColor(39, 72, 104))
                     };
                     document.Add(tituloParagraph);
-                    document.Add(new iTextSharp.text.Paragraph("\n"));
+                    agregarSaltodeLinea(document, 1);
 
                     // Nombre a quien se le confiere el certificado
                     var tipoParagraph = new iTextSharp.text.Paragraph(tipo + " a:")
                     {
                         Alignment = iTextSharp.text.Element.ALIGN_CENTER,
-                        Font = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 14)
+                        Font = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 20, iTextSharp.text.Font.NORMAL, new BaseColor(4, 60, 127))
                     };
                     document.Add(tipoParagraph);
-                    document.Add(new iTextSharp.text.Paragraph("\n"));
+                    agregarSaltodeLinea(document, 1);
 
                     // Nombre a quien se le confiere el certificado
                     var nombreParagraph = new iTextSharp.text.Paragraph(apellidosPersona + " " + nombresPersona)
                     {
                         Alignment = iTextSharp.text.Element.ALIGN_CENTER,
-                        Font = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 14)
+                        Font = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 14, iTextSharp.text.Font.NORMAL, new BaseColor(11, 48, 90))
                     };
                     document.Add(nombreParagraph);
-                    document.Add(new iTextSharp.text.Paragraph("\n"));
+                    agregarSaltodeLinea(document, 1);
 
                     // Descripción del certificado
                     var descripcionParagraph = new iTextSharp.text.Paragraph(descripcionCertificado)
                     {
-                        Alignment = iTextSharp.text.Element.ALIGN_LEFT,
-                        Font = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12)
+                        Alignment = iTextSharp.text.Element.ALIGN_CENTER,
+                        Font = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12, iTextSharp.text.Font.NORMAL, new BaseColor(39, 72, 104))
                     };
                     document.Add(descripcionParagraph);
-                    document.Add(new iTextSharp.text.Paragraph("\n"));
-                    document.Add(new iTextSharp.text.Paragraph("\n"));
-                    document.Add(new iTextSharp.text.Paragraph("\n"));
+                    agregarSaltodeLinea(document, 1);
+
+                    // Fecha de emision del certificado
+                    DateTime fechaActual = DateTime.Now;
+                    string fechaFormateada = $"Guayaquil, {fechaActual.Day} de {fechaActual.ToString("MMMM", new System.Globalization.CultureInfo("es-ES"))} de {fechaActual.Year}";
+                    var fechaParagraph = new iTextSharp.text.Paragraph(fechaFormateada)
+                    {
+                        Alignment = iTextSharp.text.Element.ALIGN_RIGHT,
+                        Font = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 11, iTextSharp.text.Font.NORMAL, new BaseColor(39, 72, 104))
+                    };
+                    document.Add(fechaParagraph);
+                    agregarSaltodeLinea(document, 2);
 
                     // Crear una tabla con 2 columnas: una para el QR y otra para la tabla de firmantes
                     var mainTable = new iTextSharp.text.pdf.PdfPTable(2);
@@ -397,7 +402,7 @@ namespace certificados.web.Controllers
                     if (dataFormato.Qr != null)
                     {
                         var qrImage = iTextSharp.text.Image.GetInstance((byte[])dataFormato.Qr);
-                        qrImage.ScaleAbsolute(100, 100); // Escalar la imagen QR
+                        qrImage.ScaleAbsolute(80, 80); // Escalar la imagen QR
                         qrImage.Alignment = iTextSharp.text.Image.ALIGN_LEFT;
 
                         // Crear una celda para el QR
@@ -405,7 +410,8 @@ namespace certificados.web.Controllers
                         {
                             BorderWidth = 0, // Hacer el borde transparente
                             HorizontalAlignment = iTextSharp.text.Element.ALIGN_LEFT,
-                            VerticalAlignment = iTextSharp.text.Element.ALIGN_MIDDLE
+                            VerticalAlignment = iTextSharp.text.Element.ALIGN_MIDDLE,
+                            PaddingRight = 5
                         };
                         mainTable.AddCell(qrCell);
                     }
@@ -415,34 +421,34 @@ namespace certificados.web.Controllers
                     firmantesTable.DefaultCell.BorderWidth = 0; // Hacer los bordes transparentes
 
                     // Firmantes (nombres)
-                    firmantesTable.AddCell(new iTextSharp.text.pdf.PdfPCell(new iTextSharp.text.Phrase(firmante1, new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12)))
+                    firmantesTable.AddCell(new iTextSharp.text.pdf.PdfPCell(new iTextSharp.text.Phrase(firmante1, new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12, iTextSharp.text.Font.NORMAL, new BaseColor(11, 48, 90))))
                     {
                         HorizontalAlignment = iTextSharp.text.Element.ALIGN_CENTER,
                         BorderWidth = 0
                     });
-                    firmantesTable.AddCell(new iTextSharp.text.pdf.PdfPCell(new iTextSharp.text.Phrase(firmante2, new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12)))
+                    firmantesTable.AddCell(new iTextSharp.text.pdf.PdfPCell(new iTextSharp.text.Phrase(firmante2, new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12, iTextSharp.text.Font.NORMAL, new BaseColor(11, 48, 90))))
                     {
                         HorizontalAlignment = iTextSharp.text.Element.ALIGN_CENTER,
                         BorderWidth = 0
                     });
-                    firmantesTable.AddCell(new iTextSharp.text.pdf.PdfPCell(new iTextSharp.text.Phrase(firmante3, new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12)))
+                    firmantesTable.AddCell(new iTextSharp.text.pdf.PdfPCell(new iTextSharp.text.Phrase(firmante3, new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12, iTextSharp.text.Font.NORMAL, new BaseColor(11, 48, 90))))
                     {
                         HorizontalAlignment = iTextSharp.text.Element.ALIGN_CENTER,
                         BorderWidth = 0
                     });
 
                     // Cargos (debajo de los firmantes)
-                    firmantesTable.AddCell(new iTextSharp.text.pdf.PdfPCell(new iTextSharp.text.Phrase(cargo1, new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 10)))
+                    firmantesTable.AddCell(new iTextSharp.text.pdf.PdfPCell(new iTextSharp.text.Phrase(cargo1, new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 10, iTextSharp.text.Font.NORMAL, new BaseColor(39, 72, 104))))
                     {
                         HorizontalAlignment = iTextSharp.text.Element.ALIGN_CENTER,
                         BorderWidth = 0
                     });
-                    firmantesTable.AddCell(new iTextSharp.text.pdf.PdfPCell(new iTextSharp.text.Phrase(cargo2, new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 10)))
+                    firmantesTable.AddCell(new iTextSharp.text.pdf.PdfPCell(new iTextSharp.text.Phrase(cargo2, new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 10, iTextSharp.text.Font.NORMAL, new BaseColor(39, 72, 104))))
                     {
                         HorizontalAlignment = iTextSharp.text.Element.ALIGN_CENTER,
                         BorderWidth = 0
                     });
-                    firmantesTable.AddCell(new iTextSharp.text.pdf.PdfPCell(new iTextSharp.text.Phrase(cargo3, new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 10)))
+                    firmantesTable.AddCell(new iTextSharp.text.pdf.PdfPCell(new iTextSharp.text.Phrase(cargo3, new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 10, iTextSharp.text.Font.NORMAL, new BaseColor(39, 72, 104))))
                     {
                         HorizontalAlignment = iTextSharp.text.Element.ALIGN_CENTER,
                         BorderWidth = 0
@@ -457,10 +463,7 @@ namespace certificados.web.Controllers
                     };
                     mainTable.AddCell(firmantesCell);
 
-                    // Añadir la tabla principal al documento
                     document.Add(mainTable);
-
-                    // Finalizar y guardar el documento en el stream
                     document.Close();
 
                     // Convertir a array de bytes
