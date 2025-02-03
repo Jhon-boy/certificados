@@ -1,83 +1,65 @@
-﻿<div class="container mt-1">
+﻿<div class="container mt-4">
+    <!-- Tabs -->
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
-            <a class="nav-link text-dark active" id="generar-certificado" data-bs-toggle="tab" href="#generar" role="tab" aria-controls="generar" aria-selected="true">Participantes Aprobados</a>
+            <a class="nav-link active" id="home-tab" data-bs-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Participantes Aprobados</a>
         </li>
     </ul>
-
+    <br />
     <div class="tab-content" id="myTabContent">
-        <br />
-        <div class="tab-pane fade show active" id="generar" role="tabpanel" aria-labelledby="generar-certificado">
-            <div class="card my-5 mx-2">
-                <div class="card-header">
-                    <h5>Configuración del Certificado</h5>
-                </div>
-                <div class="card-body">
-                    <form>
-                        <div class="row g-3">
-                            <div class="col-md-6 col-lg-5">
-                                <div class="form-group">
-                                    <label for="beneficiario" class="form-label">Beneficiario</label>
-                                    <select class="form-select" id="beneficiario">
-                                        <option value="participantes" selected>Participantes</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-lg-5">
-                                <div class="form-group">
-                                    <label for="grupo" class="form-label">Grupo</label>
-                                    <select class="form-select" id="persona-id-grupo-generar" name="persona-id-grupo-generar" required oninput="this.setCustomValidity('')"
-                                            oninvalid="this.setCustomValidity('Por favor, complete este campo.')">
-                                        <option value="">Selecciona un grupo</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6 col-lg-5">
-                                <div class="form-group">
-                                    <label for="condicion" class="form-label">Condición</label>
-                                    <select class="form-select" id="condicion">
-                                        <option value="1" selected>Ambos</option>
-                                        <option value="2">Calificación</option>
-                                        <option value="3">Asistencia</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
+        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+            <form id="formParticipante" class="border border-2 p-4 rounded mt-3">
+                <div class="row">
+                    <!-- Beneficiario Select -->
+                    <div class="col-12 col-md-4 mb-3">
+                        <label for="beneficiario" class="form-label">Beneficiario</label>
+                        <select id="beneficiario" class="form-select">
+                            <option value="participantes" selected>Participantes</option>
+                        </select>
+                    </div>
 
-            <div class="card mx-2 my-5">
-                <div class="card-header">
-                    <h5>Lista de Participantes</h5>
-                </div>
-                <div class="container my-1">
-                    <div class="row">
-                        <div class="col">
-                            <table id="tabla-generar-certificado" class="table table-striped table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Cédula</th>
-                                        <th>Nombres</th>
-                                        <th>Asistencia</th>
-                                        <th>Calificaciones</th>
-                                        <th>Estado</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <!-- Aquí se cargarán los registros de certificados -->
-                                </tbody>
-                            </table>
-                        </div>
+                    <!-- Grupo Select -->
+                    <div class="col-12 col-md-4 mb-3">
+                        <label for="grupo" class="form-label">Grupo</label>
+                        <select id="grupo" class="form-select">
+                            <option selected>Selecciona Grupo</option>
+                            <!-- Opciones dinámicas se agregarán aquí -->
+                        </select>
+                    </div>
+
+                    <!-- Condición Select -->
+                    <div class="col-12 col-md-4 mb-3">
+                        <label for="formato" class="form-label">Formato</label>
+                        <select id="formato" class="form-select">
+                            <option selected>Selecciona Formato</option>
+                        </select>
                     </div>
                 </div>
-            </div>
-            <div class="row justify-content-center">
-                <div class="col-auto">
-                    <button onclick="generarAprobados()" class="btn btn-primary me-2">Generar</button>
-                    <button class="btn btn-secondary">Cancelar</button>
+                <div class="row">
+                    <div class="col-12 col-md-4 mb-3">
+                        <label for="decanato" class="form-label">Decanato</label>
+                        <select id="decanato" class="form-select">
+                            <option selected>Seleccionar Decanato</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
+            </form>
+            <br />
+            <br />
+            <table class="table mt-4" id="tablaParticipantes">
+                <thead>
+                    <tr>
+                        <th>Cédula</th>
+                        <th>Nombres</th>
+                        <th>Asistencia</th>
+                        <th>Calificaciones</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

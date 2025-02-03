@@ -4,9 +4,15 @@ using certificados.services.Services;
 using certificados.services.Utils;
 using certificados.web.Controllers.Mappers;
 using certificados.web.Models.DTO;
-using iTextSharp.text.pdf.codec.wmf;
+using iText.IO.Image;
+using iText.Layout.Element;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
+using iText.Layout;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using iText.Kernel.Pdf.Canvas;
+using iText.Kernel.Geom;
+using iText.Kernel.Pdf;
 
 namespace certificados.web.Controllers
 {
@@ -19,9 +25,12 @@ namespace certificados.web.Controllers
         private readonly GrupoService grupoService;
         private readonly GrupoPersonaService grupoPersonaService;
         private readonly DocenteService docenteService;
+        private readonly PersonaService personaService;
+        private readonly DecanatoService decanatoService;
+
 
         public CertificadoController(CertificadosService certificadosService, EventoService evento, GrupoService grupoService,
-            GrupoPersonaService grupoPersonaService, DocenteService docenteService, FormatoCertificadoService formato)
+            GrupoPersonaService grupoPersonaService, DocenteService docenteService, FormatoCertificadoService formato, PersonaService personaService, DecanatoService decanatoService)
         {
             this.certificadosService = certificadosService;
             this.eventoService = evento;
@@ -29,6 +38,8 @@ namespace certificados.web.Controllers
             this.grupoPersonaService = grupoPersonaService;
             this.grupoService = grupoService;
             this.docenteService = docenteService;
+            this.personaService = personaService;
+            this.decanatoService = decanatoService;
         }
 
         /*
@@ -122,7 +133,7 @@ namespace certificados.web.Controllers
                 IdEvento = int.Parse(idEvento.ToString()),
                 IdFormato = int.Parse(idFormato.ToString()),
                 Tipo = tipo.ToString(),
-                Estado = Boolean.Parse(estado.ToString()),
+                Estado = System.Boolean.Parse(estado.ToString()),
                 UsuarioActualizacion = userModificacion.ValueKind == JsonValueKind.Number ? userModificacion.GetInt32().ToString() : userModificacion.GetString(),
                 Tevento = evento,
                 TformatoCertificado = formato
@@ -253,5 +264,185 @@ namespace certificados.web.Controllers
             return certificadosService.Emitir(certificado.Tevento, listaPersonas, certificado, Listadocente, certificado.Tevento.Tdecanato);
             // return certificadosService.Notificar(tevento, listaPersonas);
         }
+
+        [HttpPost("generarcertificado")]
+        public ActionResult<ResponseApp> GenerarCertificado([FromBody] Dictionary<string, object> request)
+        {
+            try
+            {
+                // Validar y obtener los datos del request
+                if (!request.ContainsKey("cedula") || !request.ContainsKey("idFormato") || !request.ContainsKey("idDecanato"))
+                {
+                    return BadRequest(Utils.BadResponse("Faltan parámetros requeridos en la solicitud."));
+                }
+
+                var cedula = ((JsonElement)request["cedula"]).ToString();
+                var idFormato = int.Parse(((JsonElement)request["idFormato"]).ToString());
+                var idDecanato = int.Parse(((JsonElement)request["idDecanato"]).ToString());
+
+                // Obtener datos de la persona, formato y decanato
+                var persona = personaService.buscarPersonaPorCedula(cedula);
+                var formato = formatoCertificadoService.ListarFormatoByID(idFormato);
+                var decanatoResponse = decanatoService.ObtenerDecanatoById(idDecanato);
+
+                if (persona == null || formato == null || decanatoResponse == null)
+                {
+                    return BadRequest(Utils.BadResponse("No se encontraron los datos necesarios para generar el certificado."));
+                }
+
+                dynamic dataPersona = persona.Data;
+                dynamic dataFormato = formato.Data;
+                dynamic dataDecanato = decanatoResponse.Data;
+
+                // Obtener la información del request
+                var lineaGrafica = dataFormato.LineaGrafica;
+                var logoug = dataFormato.LogoUG;
+                var nombreDecanato = dataDecanato.Nombre;
+                var tituloCertificado = "Confieren el presente";
+                var nombresPersona = dataPersona.Nombres;
+                var apellidosPersona = dataPersona.Apellidos;
+                var tipo = dataFormato.Tipo;
+                var descripcionCertificado = dataFormato.Leyenda;
+
+                // Firmantes
+                var firmante1 = dataFormato.NombreFirmanteUno;
+                var cargo1 = dataFormato.CargoFirmanteUno;
+                var firmante2 = dataFormato.NombreFirmanteDos;
+                var cargo2 = dataFormato.CargoFirmanteDos;
+                var firmante3 = dataFormato.NombreFirmanteTres;
+                var cargo3 = dataFormato.CargoFirmanteTres;
+
+                // Crear un documento PDF en formato A4 horizontal
+                using (var memoryStream = new MemoryStream())
+                {
+                    // Crear el documento PDF
+                    var document = new iTextSharp.text.Document(iTextSharp.text.PageSize.A4.Rotate());
+                    var writer = iTextSharp.text.pdf.PdfWriter.GetInstance(document, memoryStream);
+                    document.Open();
+
+                    // Agregar la línea gráfica como fondo
+                    if (lineaGrafica != null)
+                    {
+                        var backgroundImage = iTextSharp.text.Image.GetInstance((byte[])lineaGrafica);
+                        backgroundImage.ScaleAbsolute(document.PageSize.Width, document.PageSize.Height);
+                        backgroundImage.SetAbsolutePosition(0, 0);
+                        backgroundImage.Alignment = iTextSharp.text.Image.UNDERLYING; // Colocar la imagen como fondo
+                        writer.DirectContentUnder.AddImage(backgroundImage);
+                    }
+
+                    // Insertar logo centrado
+                    if (logoug != null)
+                    {
+                        var logoImage = iTextSharp.text.Image.GetInstance((byte[])logoug);
+                        logoImage.Alignment = iTextSharp.text.Image.ALIGN_CENTER;
+                        document.Add(logoImage);
+                    }
+
+                    // Nombre del decanato centrado debajo del logo
+                    var decanatoParagraph = new iTextSharp.text.Paragraph(nombreDecanato)
+                    {
+                        Alignment = iTextSharp.text.Element.ALIGN_CENTER,
+                        Font = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 16)
+                    };
+                    document.Add(decanatoParagraph);
+
+                    // Titulo del certificado
+                    var tituloParagraph = new iTextSharp.text.Paragraph(tituloCertificado)
+                    {
+                        Alignment = iTextSharp.text.Element.ALIGN_CENTER,
+                        Font = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 20)
+                    };
+                    document.Add(tituloParagraph);
+
+                    // Nombre a quien se le confiere el certificado
+                    var tipoParagraph = new iTextSharp.text.Paragraph(tipo + "a:")
+                    {
+                        Alignment = iTextSharp.text.Element.ALIGN_CENTER,
+                        Font = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 14)
+                    };
+                    document.Add(tipoParagraph);
+
+                    // Nombre a quien se le confiere el certificado
+                    var nombreParagraph = new iTextSharp.text.Paragraph(apellidosPersona + " " + nombresPersona)
+                    {
+                        Alignment = iTextSharp.text.Element.ALIGN_CENTER,
+                        Font = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 14)
+                    };
+                    document.Add(nombreParagraph);
+
+                    // Descripción del certificado
+                    var descripcionParagraph = new iTextSharp.text.Paragraph(descripcionCertificado)
+                    {
+                        Alignment = iTextSharp.text.Element.ALIGN_LEFT,
+                        Font = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12)
+                    };
+                    document.Add(descripcionParagraph);
+
+                    // Insertar tabla con los firmantes y cargos
+                    var table = new iTextSharp.text.pdf.PdfPTable(3); // Tabla con 3 columnas
+
+                    // Firmantes (nombres)
+                    table.AddCell(new iTextSharp.text.pdf.PdfPCell(new iTextSharp.text.Phrase(firmante1, new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12)))
+                    {
+                        HorizontalAlignment = iTextSharp.text.Element.ALIGN_CENTER
+                    });
+                    table.AddCell(new iTextSharp.text.pdf.PdfPCell(new iTextSharp.text.Phrase(firmante2, new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12)))
+                    {
+                        HorizontalAlignment = iTextSharp.text.Element.ALIGN_CENTER
+                    });
+                    table.AddCell(new iTextSharp.text.pdf.PdfPCell(new iTextSharp.text.Phrase(firmante3, new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12)))
+                    {
+                        HorizontalAlignment = iTextSharp.text.Element.ALIGN_CENTER
+                    });
+
+                    // Cargos (debajo de los firmantes)
+                    table.AddCell(new iTextSharp.text.pdf.PdfPCell(new iTextSharp.text.Phrase(cargo1, new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 10)))
+                    {
+                        HorizontalAlignment = iTextSharp.text.Element.ALIGN_CENTER
+                    });
+                    table.AddCell(new iTextSharp.text.pdf.PdfPCell(new iTextSharp.text.Phrase(cargo2, new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 10)))
+                    {
+                        HorizontalAlignment = iTextSharp.text.Element.ALIGN_CENTER
+                    });
+                    table.AddCell(new iTextSharp.text.pdf.PdfPCell(new iTextSharp.text.Phrase(cargo3, new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 10)))
+                    {
+                        HorizontalAlignment = iTextSharp.text.Element.ALIGN_CENTER
+                    });
+
+                    document.Add(table);
+
+                    // Agregar QR a la derecha
+                    if (dataFormato.Qr != null)
+                    {
+                        var qrImage = iTextSharp.text.Image.GetInstance((byte[])dataFormato.Qr);
+                        qrImage.ScaleAbsolute(100, 100); // Escalar la imagen QR
+                        qrImage.Alignment = iTextSharp.text.Image.ALIGN_RIGHT;
+                        document.Add(qrImage);
+                    }
+
+                    // Finalizar y guardar el documento en el stream
+                    document.Close();
+
+                    // Convertir a array de bytes
+                    var pdfBytes = memoryStream.ToArray();
+
+                    // Regresar el archivo PDF generado
+                    var response = new ResponseApp
+                    {
+                        Cod = "OK",
+                        Message = "CERTIFICADO GENERADO CON ÉXITO",
+                        Data = Convert.ToBase64String(pdfBytes)
+                    };
+
+                    return Ok(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(Utils.BadResponse($"Error al generar el certificado: {ex.Message}"));
+            }
+        }
+
+
     }
 }
