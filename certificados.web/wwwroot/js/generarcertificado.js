@@ -22,6 +22,10 @@ async function cargarDatosGenerarCertificados() {
                     selectGrupo.appendChild(option);
                 });
 
+                if ($.fn.DataTable.isDataTable('#tablaParticipantes')) {
+                    $('#tablaParticipantes').DataTable().clear().destroy();
+                }
+
                 // Inicializar DataTable para la tabla de participantes
                 $('#tablaParticipantes').DataTable({
                     language: {
@@ -42,8 +46,8 @@ async function cargarDatosGenerarCertificados() {
             }
         }, 150);
 
-        await cargarFormatos();
-        await cargarDecanatos();
+        await cargarFormatosGenerar();
+        await cargarDecanatosGenerar();
 
     } catch (error) {
         Utils.showToast("Error cargando datos iniciales", 'error');
@@ -92,7 +96,7 @@ async function listarIntegrantesAprobados(id) {
                         </td>
                         <td class="estado">${estado}</td>
                         <td>
-                            <i class="bi bi-send-check-fill text-success me-3"
+                            <i class="i bi-file-earmark-pdf-fill text-success me-3"
                             style="cursor: pointer;"
                             onclick="generarCertificado('${persona.tpersona.cedula}')" 
                             data-bs-toggle="tooltip" 
@@ -106,13 +110,6 @@ async function listarIntegrantesAprobados(id) {
 
             // Resetear la condición
             reseteoSeleccionCertificado();
-
-            const selectCondicion = document.getElementById("condicion");
-            selectCondicion.onchange = () => {
-                actualizarEstadosCertificado();
-                manejarHabilitacionCheckboxesCert(selectCondicion.value);
-            };
-
             escucharCambiosCheckboxesCert();
 
         } else {
@@ -287,7 +284,7 @@ async function generarCertificado(cedula) {
             pdfModal.show();
 
             Utils.showToast('DATOS PROCESADOS EXITOSAMENTE', 'info');
-            cargarDatosGenerarCertificados(); // Cargar o actualizar los datos si es necesario
+
         } else {
             const messageClient = requestApr.message || "Ocurrió un error inesperado.";
             const messageTech = requestApr.data || null;
@@ -299,16 +296,7 @@ async function generarCertificado(cedula) {
     }
 }
 
-
-// Limpiar la tabla
-function limpiarTablaAprobados() {
-    const tablaBody = document.querySelector("#tablaParticipantes tbody");
-    if (tablaBody) {
-        tablaBody.innerHTML = ''; // Vacía la tabla
-    }
-}
-
-async function cargarFormatos() {
+async function cargarFormatosGenerar() {
     try {
         const responseFormato = await Utils.httpRequest(
             `${Utils.path}/formato/all`,
@@ -335,7 +323,7 @@ async function cargarFormatos() {
     }
 }
 
-async function cargarDecanatos() {
+async function cargarDecanatosGenerar() {
     try {
         const responseDecanato = await Utils.httpRequest(
             `${Utils.path}/decanato/all`,
@@ -362,3 +350,6 @@ async function cargarDecanatos() {
     }
 }
 
+async function limpiarFrmGenerarCertificado() {
+    document.getElementById('formParticipante').reset();
+}
