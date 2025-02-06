@@ -17,9 +17,72 @@ function logOut() {
     Utils.backToIndex();
 
 }
+function RolesByUsuarios() {
+    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+    const rolesUsuario = userInfo?.roles || [];
+    const permisosUsuario = new Set();
+     
+
+    // Roles con permisos asociados (en minúsculas)
+    const rolesByUsuarios = {
+        "admin": ["inicio", "mantenimiento", "planificacion", "facilitador", "actas", "certificacion", "consultas"],
+        "facilitador": ["inicio", "facilitador", "actas"],
+        "decano": ["inicio", "mantenimiento", "planificacion", "certificacion", "consultas"],
+        "vicerrector": ["inicio", "consultas"],
+    };
+
+    // Normalizar roles y recolectar permisos
+    rolesUsuario.forEach(rol => {
+        const rolNormalizado = rol.trim().toLowerCase();
+        if (rolesByUsuarios[rolNormalizado]) {
+            rolesByUsuarios[rolNormalizado].forEach(modulo => {
+                permisosUsuario.add(modulo.toLowerCase());
+            });
+        }
+    });
+     
+     
+    document.querySelectorAll(".nav-item").forEach(item => { 
+        if (item.closest("header.main-header")) {
+            return;
+        }
+
+        let tienePermiso = false;
+
+        // Verificar clases en el <li> (ej: Home tiene modulo-inicio en el li)
+        const clasesItem = [...item.classList];
+        const moduloEnItem = clasesItem.find(clase =>
+            clase.startsWith("modulo-")
+        );
+        if (moduloEnItem) {
+            const nombreModulo = moduloEnItem.replace("modulo-", "").toLowerCase();
+            if (permisosUsuario.has(nombreModulo)) {
+                tienePermiso = true;
+            }
+        }
+         
+        if (!tienePermiso) {
+            const iconos = item.querySelectorAll("i[class*='modulo-']");
+            iconos.forEach(icono => {
+                const clasesIcono = [...icono.classList];
+                const moduloEnIcono = clasesIcono.find(clase =>
+                    clase.startsWith("modulo-")
+                );
+                if (moduloEnIcono) {
+                    const nombreModulo = moduloEnIcono.replace("modulo-", "").toLowerCase();
+                    if (permisosUsuario.has(nombreModulo)) {
+                        tienePermiso = true;
+                    }
+                }
+            });
+        }
+
+        item.style.display = tienePermiso ? "" : "none"; 
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     Utils.cleanRoute();
-
     const submenuLinks = document.querySelectorAll('.nav-link[data-view]');
     usuarioLogeado = document.getElementById("userLog");
     userInfo = JSON.parse(localStorage.getItem('userInfo'));
@@ -64,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.error('Error al cargar la vista:', error);
             });
     } 
-
+    RolesByUsuarios();
     const dropdownButton = document.getElementById('dropdownUser');
     const dropdownMenu = document.getElementById('submenu9');
 
@@ -82,7 +145,6 @@ document.addEventListener('DOMContentLoaded', function () {
             dropdownMenu.classList.remove('show');
         }
     });
-
 
 });
 

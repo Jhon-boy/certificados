@@ -137,7 +137,7 @@ namespace certificados.dal.DataAccess
             ResponseApp response = Utils.BadResponse(null);
             try
             {
-                var usuario = context.Tusuario.FirstOrDefault(u => u.Email == email);
+                var usuario = context.Tusuario.Include(pg => pg.Trol).FirstOrDefault(u => u.Email == email);
 
                 if (usuario != null)
                 {

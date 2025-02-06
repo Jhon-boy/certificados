@@ -246,6 +246,16 @@ const Utils = (() => {
         });
     }
 
+    const rolesByUsuario = {
+        "admin": ["inicio", "mantenimiento", "planificacion", "facilitador", "actas", "certificacion", "consultas"],
+        "facilitador": ["inicio", "facilitador", "actas"],
+        "decano": ["inicio", "mantenimiento", "planificacion", "certificacion", "consultas"],
+    }
+    const  obtenerRolesUsuario = () => {
+        const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+        return userInfo?.roles || [];
+    }
+
 
     createLoader(); // Crea el loader al inicializar
 
@@ -265,7 +275,9 @@ const Utils = (() => {
         formatFecha,
         marcarError,
         validarFormulario,
-        convertirArchivoABase64
+        convertirArchivoABase64,
+        rolesByUsuario,
+        obtenerRolesUsuario
  
     };
 })();

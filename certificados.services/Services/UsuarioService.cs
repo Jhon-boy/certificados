@@ -40,6 +40,10 @@ namespace certificados.services.Services
                     response.Message = usuario.Estado != "ACT" ? "USUARIO NO ESTA ACTIVO" : "CREDENCIALES INVALIDAS";
                     return response;
                 }
+                if (!CONSTANTES.ROLES.Contains(usuario.Trol.Nombre.ToUpper())) {
+                    response.Message = "USUARIO NO TIENE PERMISO";
+                    return response;
+                }
                 var usuarioResponse = _personaDA.BuscarPersona(usuario.Cedula);
 
                 if (usuarioResponse.Cod.Equals(CONSTANTES.COD_OK)) { 

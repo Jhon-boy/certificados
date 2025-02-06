@@ -34,5 +34,6 @@ namespace certificados.services.Utils
         //Para datos duplicados
         public static string MESSAGE_DATA_EXISTE = "DATOS DUPLICADOS:  ";
         public static string MESSAGE_DATA_ERRORS = "ERROR EN LOS DATOS DE ENVIO";
+        public static List<string> ROLES = new List<string>() { "ADMIN", "FACILITADOR", "DECANO", "VICERRECTOR" };
     }
 }
