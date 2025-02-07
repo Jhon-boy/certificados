@@ -1,6 +1,7 @@
 ﻿let usuarioLogeado = '';
 let userInfo;
 function toggleCollapse(submenuId) {
+    console.log("PRECIONANDO.....")
     const submenu = document.getElementById(submenuId);
     const arrow = submenu.previousElementSibling.querySelector('.arrow');
 
@@ -21,17 +22,14 @@ function RolesByUsuarios() {
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
     const rolesUsuario = userInfo?.roles || [];
     const permisosUsuario = new Set();
-     
 
-    // Roles con permisos asociados (en minúsculas)
     const rolesByUsuarios = {
         "admin": ["inicio", "mantenimiento", "planificacion", "facilitador", "actas", "certificacion", "consultas"],
         "facilitador": ["inicio", "facilitador", "actas"],
         "decano": ["inicio", "mantenimiento", "planificacion", "certificacion", "consultas"],
         "vicerrector": ["inicio", "consultas"],
     };
-
-    // Normalizar roles y recolectar permisos
+     
     rolesUsuario.forEach(rol => {
         const rolNormalizado = rol.trim().toLowerCase();
         if (rolesByUsuarios[rolNormalizado]) {
@@ -41,31 +39,31 @@ function RolesByUsuarios() {
         }
     });
      
-     
-    document.querySelectorAll(".nav-item").forEach(item => { 
+    document.querySelectorAll(".nav-item").forEach(item => {
+        // Ignorar elementos en el header
         if (item.closest("header.main-header")) {
             return;
         }
+         
+        const isSubmenuItem = item.closest('.submenu') !== null;
+        if (isSubmenuItem) {
+            return;  
+        }
 
         let tienePermiso = false;
-
-        // Verificar clases en el <li> (ej: Home tiene modulo-inicio en el li)
-        const clasesItem = [...item.classList];
-        const moduloEnItem = clasesItem.find(clase =>
+         
+        const moduloEnItem = [...item.classList].find(clase =>
             clase.startsWith("modulo-")
         );
         if (moduloEnItem) {
             const nombreModulo = moduloEnItem.replace("modulo-", "").toLowerCase();
-            if (permisosUsuario.has(nombreModulo)) {
-                tienePermiso = true;
-            }
+            tienePermiso = permisosUsuario.has(nombreModulo);
         }
          
         if (!tienePermiso) {
             const iconos = item.querySelectorAll("i[class*='modulo-']");
             iconos.forEach(icono => {
-                const clasesIcono = [...icono.classList];
-                const moduloEnIcono = clasesIcono.find(clase =>
+                const moduloEnIcono = [...icono.classList].find(clase =>
                     clase.startsWith("modulo-")
                 );
                 if (moduloEnIcono) {
@@ -76,8 +74,18 @@ function RolesByUsuarios() {
                 }
             });
         }
-
-        item.style.display = tienePermiso ? "" : "none"; 
+         
+        item.style.display = tienePermiso ? "" : "none";
+         
+        if (tienePermiso) {
+            const submenu = item.querySelector('.submenu');
+            if (submenu) {
+                const submenuItems = submenu.querySelectorAll('.nav-item');
+                submenuItems.forEach(submenuItem => {
+                    submenuItem.style.display = "";
+                });
+            }
+        }
     });
 }
 
