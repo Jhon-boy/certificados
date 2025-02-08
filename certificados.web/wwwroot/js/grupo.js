@@ -16,9 +16,11 @@ async function cargarDatosGrupos() {
 
             // Obtener el elemento select donde se listarán los grupos
             const selectGrupo = document.getElementById("persona-id-grupo");
+            const selectGrupoIndividual = document.getElementById("persona-id-grupo-individual");
 
             // Limpiar las opciones actuales del select
             selectGrupo.innerHTML = '<option value="">Selecciona un grupo</option>';
+            selectGrupoIndividual.innerHTML = '<option value="">Selecciona un grupo</option>';
 
             if (response.cod === Utils.COD_OK && response.data.length > 0) {
                 response.data.forEach(grupo => {
@@ -28,6 +30,11 @@ async function cargarDatosGrupos() {
                     option.value = grupo.idGrupo;
                     option.textContent = grupo.nombre; // Mostrar el nombre del grupo
                     selectGrupo.appendChild(option);
+
+                    const optionIndividual = document.createElement("option");
+                    optionIndividual.value = grupo.idGrupo;
+                    optionIndividual.textContent = grupo.nombre; // Mostrar el nombre del grupo
+                    selectGrupoIndividual.appendChild(optionIndividual);
 
                     const fila = `
                         <tr>
@@ -378,6 +385,68 @@ async function handleAgregarGrupoPersonas(event) {
     }
 }
 
+// Manejador para crear nuevo grupo persona individual
+async function handleAgregarGrupoPersonasIndividual(event) {
+    const form = event.target.closest("form");
+
+    if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+        form.classList.add('was-validated');
+        return false;
+    }
+    event.preventDefault();
+
+    const grupoId = document.getElementById('persona-id-grupo-individual').value;
+    const cedulaIndividual = document.getElementById('cedula-persona-individual').value;
+    const usuarioIngreso = userInfo.idUsuario;
+
+    if (!grupoId || !cedulaIndividual || !usuarioIngreso) {
+        Utils.showToast("Todos los campos son obligatorios", 'warning');
+        return;
+    }
+
+    const bodyRequest = {
+        IdGrupo: grupoId,
+        Cedulas: [cedulaIndividual],
+        UsuarioIngreso: usuarioIngreso.toString()
+    };
+
+    try {
+        const response = await Utils.httpRequest(
+            `${Utils.path}/grupoPersona/crear`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(bodyRequest)
+            },
+            true
+        );
+
+        if (response.cod === Utils.COD_OK) {
+            Utils.showToast('GRUPO DE PERSONAS REGISTRADO EXITOSAMENTE', 'info');
+
+            if ($.fn.DataTable.isDataTable('#tabla-grupo-personas')) {
+                $('#tabla-grupo-personas').DataTable().clear().destroy();
+            }
+
+            cargarDatosGrupoPersonas();
+            limpiarFormularioGrupoIndividual();
+            // Cambiar a la pestaña de la tabla si es necesario
+            const tablaTab = document.querySelector('#listar-personas-tab');
+            const tab = new bootstrap.Tab(tablaTab);
+            tab.show();
+        } else {
+            const messageClient = response.message || "Ocurrió un error inesperado.";
+            const messageTech = response.data || null;
+            Utils.showErrorModal(messageClient, messageTech);
+        }
+    } catch (error) {
+        Utils.showToast("Error al agregar el grupo personas", 'danger');
+    }
+}
+
+
 async function eliminarGrupoPersona(idGrupoPersona, cedula) {
     if (!confirm('¿Está seguro que desea eliminar este grupo?')) return;
 
@@ -526,4 +595,12 @@ function limpiarFormularioGrupoPersonas() {
     // Eliminar la validación visual (si es necesario)
     const form = document.getElementById('form-grupo-personas');
     form.classList.remove('was-validated');
+}
+
+function limpiarFormularioGrupoIndividual() {
+    const form = document.getElementById('form-crear-gpindividual');
+    if (form) {
+        form.reset(); // Restablecer formulario
+        form.classList.remove('was-validated'); // Eliminar validación
+    }
 }

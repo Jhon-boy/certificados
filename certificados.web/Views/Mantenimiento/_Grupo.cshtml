@@ -11,10 +11,13 @@
             <a class="nav-link text-dark" id="listar-personas-tab" data-bs-toggle="tab" href="#listar-personas" role="tab" aria-controls="listar-personas" aria-selected="false">Listar Grupo Personas</a>
         </li>
         <li class="nav-item" role="presentation">
-            <a class="nav-link text-dark" id="crear-personas-tab" data-bs-toggle="tab" href="#crear-personas" role="tab" aria-controls="crear-personas" aria-selected="false">Agregar Grupo Personas</a>
+            <a class="nav-link text-dark" id="crear-personas-tab" data-bs-toggle="tab" href="#crear-personas" role="tab" aria-controls="crear-personas" aria-selected="false">Crear Grupo Personas Masivo</a>
         </li>
         <li class="nav-item" role="presentation">
-            <a class="nav-link text-dark" id="buscar-grupo-cedula-tab" data-bs-toggle="tab" href="#buscar-grupo-cedula" role="tab" aria-controls="buscar-grupo-cedula" aria-selected="false">Buscar Grupo Persona (ID y Cédula)</a>
+            <a class="nav-link text-dark" id="crear-gpindividual-tab" data-bs-toggle="tab" href="#crear-gpindividual" role="tab" aria-controls="crear-gpindividual" aria-selected="false">Crear Grupo Persona Individual</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link text-dark" id="buscar-grupo-cedula-tab" data-bs-toggle="tab" href="#buscar-grupo-cedula" role="tab" aria-controls="buscar-grupo-cedula" aria-selected="false">Buscar Grupo Persona</a>
         </li>
     </ul>
 
@@ -96,7 +99,7 @@
                     <!-- Campo para seleccionar un grupo -->
                     <div class="col-md-6 mb-3">
                         <label for="persona-id-grupo" class="form-label">Grupo Asociado</label>
-                        <select class="form-control" id="persona-id-grupo" name="persona-id-grupo" required oninput="this.setCustomValidity('')"
+                        <select class="form-select" id="persona-id-grupo" name="persona-id-grupo" required oninput="this.setCustomValidity('')"
                                 oninvalid="this.setCustomValidity('Por favor, complete este campo.')">
                             <option value="">Selecciona un grupo</option>
                             <!-- Opciones dinámicas para los grupos -->
@@ -116,6 +119,31 @@
                     <div class="col-md-6 mb-3">
                         <label for="persona-usuario-ingreso" class="form-label">Usuario Ingreso</label>
                         <input type="text" class="form-control" id="persona-usuario-ingreso" name="persona-usuario-ingreso" placeholder="Ingresa el usuario que realiza el ingreso" disabled required>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <button type="submit" class="btn btn-primary mx-2">Guardar</button>
+                    <button type="reset" class="btn btn-secondary mx-2">Limpiar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Contenido de la pestaña de agregar grupo personas individual -->
+        <div class="tab-pane fade" id="crear-gpindividual" role="tabpanel" aria-labelledby="crear-gpindividual-tab">
+            <!-- Formulario de Agregar Grupo Personas individual -->
+            <form id="form-crear-gpindividual" class="border border-2 p-4 rounded" onsubmit="handleAgregarGrupoPersonasIndividual(event)">
+                <div class="row">
+                    <!-- Campo para seleccionar un grupo -->
+                    <div class="col-md-6 mb-3">
+                        <label for="persona-id-grupo-individual" class="form-label">Grupo Asociado</label>
+                        <select class="form-select" id="persona-id-grupo-individual" name="persona-id-grupo-individual" required oninput="this.setCustomValidity('')"
+                                oninvalid="this.setCustomValidity('Por favor, complete este campo.')">
+                            <option selected disabled value="">Selecciona un grupo</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="cedula-persona-individual" class="form-label">Cédula</label>
+                        <input type="text" class="form-control" id="cedula-persona-individual" name="cedula-persona-individual" placeholder="Ingrese número de cedula" maxlength="10" required>
                     </div>
                 </div>
                 <div class="d-flex justify-content-center">
