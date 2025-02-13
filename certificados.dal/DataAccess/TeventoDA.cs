@@ -115,15 +115,19 @@ namespace certificados.dal.DataAccess
         public ResponseApp EliminarEvento(int idEvento)
         {
             ResponseApp response = Utils.BadResponse(null);
+
             using (var transaction = context.Database.BeginTransaction())
             {
                 try
                 {
+                    var tipoEventoExistente = context.TtipoEvento.FirstOrDefault(e => e.Idtipoevento == idEvento);
                     var eventoExistente = context.Tevento.FirstOrDefault(e => e.Idevento == idEvento);
 
-                    if (eventoExistente != null)
+                    if (eventoExistente != null && tipoEventoExistente != null)
                     {
+                        context.TtipoEvento.Remove(tipoEventoExistente);
                         context.Tevento.Remove(eventoExistente);
+
                         context.SaveChanges();
                         transaction.Commit();
 
@@ -138,11 +142,11 @@ namespace certificados.dal.DataAccess
                 {
                     transaction.Rollback();
                     response = Utils.BadResponse($"ERROR AL ELIMINAR EVENTO: {ex.Message}");
-                    throw new Exception($"ERROR AL eliminar EVEMTO: {ex.Message}");
+                    throw new Exception($"ERROR AL ELIMINAR EVENTO: {ex.Message}");
                 }
-                return response;
             }
 
+            return response;
         }
 
         public ResponseApp ListarEventos()

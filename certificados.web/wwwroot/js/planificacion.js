@@ -31,6 +31,20 @@ async function cargarDatosPlanificacion() {
                         <td>${Utils.formatFecha(evento.fechaInicio)} - ${Utils.formatFecha(evento.fechaFin)}</td>
                         <td>${evento.tmodalidad.nombre}</td>
                         <td>${evento.idGrupo}</td>
+                        <td>
+                            <i class="bi bi-pencil-fill text-success me-3"
+                                   style="cursor: pointer;"
+                                   onclick="editarPlanificacion(${evento.idevento})" 
+                                   data-bs-toggle="tooltip" 
+                                   data-bs-placement="top" 
+                                   title="Editar Planificacion"></i>
+                            <i class="bi bi-trash-fill text-danger" 
+                                style="cursor: pointer;" 
+                                onclick="eliminarPlanificacion(${evento.idevento})" 
+                                data-bs-toggle="tooltip" 
+                                data-bs-placement="top" 
+                                title="Eliminar Planificacion"></i>
+                        </td>
                     </tr>
                 `;
                         tablaBody.insertAdjacentHTML("beforeend", fila);
@@ -318,23 +332,29 @@ function limpiarFormularioPlanificacion() {
 async function editarPlanificacion(id) {
     try {
         const response = await Utils.httpRequest(
-            `${Utils.path}/evento/id`,
+            `${Utils.path}/evento/id`, // Asegúrate de que la URL esté correcta
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ idPlanificacion: id })
+                body: JSON.stringify({ idEvento: id })
             },
             true
         );
 
         if (response.cod === Utils.COD_OK) {
             const planificacion = response.data;
-            document.getElementById('planificacion-id-editar').value = planificacion.idPlanificacion;
-            document.getElementById('planificacion-nombre-editar').value = planificacion.nombre;
-            document.getElementById('planificacion-descripcion-editar').value = planificacion.descripcion;
-            document.getElementById('planificacion-usuario-editar').value = planificacion.usuarioIngreso;
 
-            const modal = new bootstrap.Modal(document.getElementById('modal-editar'));
+            document.getElementById('planificacion-id-editar').value = planificacion.idevento;
+            document.getElementById('tematica-editar').value = planificacion.tematica;
+            document.getElementById('dominio-editar').value = planificacion.dominio;
+            document.getElementById('fecha-inicio-editar').value = Utils.formatearFecha(planificacion.fechaInicio);
+            document.getElementById('fecha-fin-editar').value = Utils.formatearFecha(planificacion.fechaFin);
+            document.getElementById('horas-editar').value = planificacion.horas;
+
+            asignarSelectEditarPlanificacion(planificacion);
+
+            // Mostrar el modal
+            const modal = new bootstrap.Modal(document.getElementById('modal-editar-planificacion'));
             modal.show();
         } else {
             Utils.showToast("Error al cargar datos de la planificación", 'danger');
@@ -343,6 +363,72 @@ async function editarPlanificacion(id) {
         Utils.showToast("Error al obtener los datos de la planificación", 'danger');
     }
 }
+
+//async function handleEditarPlanificacion(event) {
+//    const form = event.target.closest("form");
+
+//    // Validar el formulario
+//    if (!form.checkValidity()) {
+//        form.classList.add('was-validated');
+//        return;
+//    }
+//    event.preventDefault();
+
+//    // Crear el cuerpo de la solicitud para la actualización
+//    const bodyRequest = {
+//        idPlanificacion: document.getElementById('planificacion-id-editar').value,
+//        tematica: document.getElementById('tematica-editar').value,
+//        dominio: document.getElementById('dominio-editar').value,
+//        tipoEvento: document.getElementById('tipo-evento-editar').value,
+//        ciclo: document.getElementById('ciclo-editar').value,
+//        facilitador: document.getElementById('facilitador-editar').value,
+//        modalidad: document.getElementById('modalidad-editar').value,
+//        conCertificado: document.getElementById('con-certificado-editar').value,
+//        grupo: document.getElementById('grupo-editar').value,
+//        decanato: document.getElementById('decanato-editar').value,
+//        fechaInicio: document.getElementById('fecha-inicio-editar').value,
+//        fechaFin: document.getElementById('fecha-fin-editar').value,
+//        horas: document.getElementById('horas-editar').value,
+//        UserModificacion: userInfo.idUsuario
+//    };
+
+//    try {
+//        // Enviar la solicitud de actualización
+//        const response = await Utils.httpRequest(
+//            `${Utils.path}/evento/modificar`, // Asegúrate de que la URL sea correcta
+//            {
+//                method: "POST",
+//                headers: { "Content-Type": "application/json" },
+//                body: JSON.stringify(bodyRequest)
+//            },
+//            true
+//        );
+
+//        if (response.cod === Utils.COD_OK) {
+//            // Mostrar mensaje de éxito
+//            Utils.showToast("Planificación actualizada exitosamente", 'info');
+
+//            // Si estás usando DataTable, puedes actualizar la tabla después de la modificación
+//            if ($.fn.DataTable.isDataTable('#tabla-evento')) {
+//                $('#tabla-evento').DataTable().clear().destroy();
+//            }
+
+//            cargarDatosPlanificacion();
+//            // Cerrar el modal
+//            const modal = bootstrap.Modal.getInstance(document.getElementById('modal-editar-planificacion'));
+//            modal.hide();
+//        } else {
+//            // Si hay un error, mostrar el mensaje de error
+//            const messageClient = response.message || "Ocurrió un error inesperado.";
+//            const messageTech = response.data || null;
+//            Utils.showErrorModal(messageClient, messageTech);
+//        }
+//    } catch (error) {
+//        // Si ocurre un error en la solicitud
+//        Utils.showToast("Error al actualizar la planificación", 'danger');
+//    }
+//}
+
 
 
 // Función para eliminar planificación
@@ -355,7 +441,7 @@ async function eliminarPlanificacion(id) {
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ idPlanificacion: id })
+                body: JSON.stringify({ idEvento: id })
             },
             true
         );
@@ -373,8 +459,38 @@ async function eliminarPlanificacion(id) {
     }
 }
 
+function asignarSelectEditarPlanificacion(planificacion) {
+    // Asignar valores a los campos del formulario
+    document.getElementById('tipo-evento-editar').value = planificacion.ttipoEvento.descripcion || '';
+    //document.getElementById('ciclo-editar').value = planificacion.ciclo || '';
+    //document.getElementById('facilitador-editar').value = planificacion.facilitador || '';
+    document.getElementById('modalidad-editar').value = planificacion.tmodalidad.nombre || '';
+    document.getElementById('con-certificado-editar').value = planificacion.conCertificado || '';
+    document.getElementById('grupo-editar').value = planificacion.tgrupo.nombre || '';
+    document.getElementById('decanato-editar').value = planificacion.tdecanato.nombre || '';
 
-// Función para habilitar validación
+    // Funcion para agregar una opcion a un select si no existe
+    const agregarOpcionSiNoExiste = (selectId, value, text) => {
+        const select = document.getElementById(selectId);
+        const existeOpcion = Array.from(select.options).some(option => option.value === value);
+        if (!existeOpcion) {
+            const option = document.createElement("option");
+            option.value = value;
+            option.textContent = text;
+            select.appendChild(option);
+        }
+    };
+
+    // Agregar opciones a los select si no existen
+    agregarOpcionSiNoExiste("tipo-evento-editar", planificacion.ttipoEvento.idtipoevento, planificacion.ttipoEvento.descripcion);
+    agregarOpcionSiNoExiste("modalidad-editar", planificacion.tmodalidad.idModalidad, planificacion.tmodalidad.nombre);
+    agregarOpcionSiNoExiste("con-certificado-editar", planificacion.conCertificado, "");
+    agregarOpcionSiNoExiste("grupo-editar", planificacion.tgrupo.idGrupo, planificacion.tgrupo.nombre);
+    agregarOpcionSiNoExiste("decanato-editar", planificacion.tdecanato.idDecanato, planificacion.tdecanato.nombre);
+}
+
+
+// Funcion para habilitar validación
 function habilitarValidacionPlanificacion() {
     'use strict';
     const forms = document.querySelectorAll('.needs-validation');

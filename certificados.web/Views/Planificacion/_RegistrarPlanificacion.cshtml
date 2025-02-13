@@ -26,6 +26,7 @@
                             <th>F. Inicio & Fin</th>
                             <th>Modalidad</th>
                             <th>Grupo</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -174,44 +175,100 @@
              </form>
          </div> *@
     </div>
+</div>
 
-    <!-- Modal para editar planificación -->
-    <div class="modal fade" id="modal-editar-planificacion" tabindex="-1" aria-labelledby="modalEditarPlanificacionLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalEditarPlanificacionLabel">Editar Planificación</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="form-editar-planificacion" onsubmit="return handleEditarPlanificacion(event)">
-                        <div class="mb-3">
-                            <label for="editar-id-planificacion" class="form-label">ID Planificación</label>
-                            <input type="text" class="form-control" id="editar-id-planificacion" name="editar-id-planificacion" readonly>
+<!-- Modal de edición con formulario -->
+<div class="modal fade" id="modal-editar-planificacion" tabindex="-1" aria-labelledby="modal-editar-planificacion-label" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-editar-planificacion-label">Editar Planificación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Formulario de Edición de Planificación -->
+                <form id="form-editar-planificacion" class="border border-2 p-4 rounded" onsubmit="handleEditarPlanificacion(event)">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="tematica-editar" class="form-label">Temática</label>
+                            <input type="text" class="form-control" id="tematica-editar" name="tematica-editar" placeholder="Ingresa la temática" value="" required>
                         </div>
-                        <div class="mb-3">
-                            <label for="editar-nombre-planificacion" class="form-label">Nombre</label>
-                            <input type="text" class="form-control" id="editar-nombre-planificacion" name="editar-nombre-planificacion" required>
+                        <div class="col-md-4 mb-3">
+                            <label for="dominio-editar" class="form-label">Dominio</label>
+                            <input class="form-control" id="dominio-editar" name="dominio-editar" value="" required />
                         </div>
-                        <div class="mb-3">
-                            <label for="editar-responsable-planificacion" class="form-label">Responsable</label>
-                            <input type="text" class="form-control" id="editar-responsable-planificacion" name="editar-responsable-planificacion" required>
+                        <div class="col-md-4 mb-3">
+                            <label for="tipo-evento-editar" class="form-label">Tipo de Evento</label>
+                            <select class="form-select" id="tipo-evento-editar" name="tipo-evento-editar" required>
+                                <!-- Opciones dinámicas -->
+                            </select>
                         </div>
-                        <div class="mb-3">
-                            <label for="editar-fecha-inicio-planificacion" class="form-label">Fecha Inicio</label>
-                            <input type="date" class="form-control" id="editar-fecha-inicio-planificacion" name="editar-fecha-inicio-planificacion" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="ciclo-editar" class="form-label">Ciclo</label>
+                            <select class="form-select" id="ciclo-editar" name="ciclo-editar" required>
+                                <!-- Opciones CICLO dinámicas -->
+                            </select>
                         </div>
-                        <div class="mb-3">
-                            <label for="editar-fecha-fin-planificacion" class="form-label">Fecha Fin</label>
-                            <input type="date" class="form-control" id="editar-fecha-fin-planificacion" name="editar-fecha-fin-planificacion" required>
+                        <div class="col-md-4 mb-3">
+                            <label for="facilitador-editar" class="form-label">Facilitador</label>
+                            <select class="form-select" id="facilitador-editar" name="facilitador-editar" required>
+                                <!-- Opciones dinámicas -->
+                            </select>
                         </div>
-                        <div class="d-flex justify-content-end">
-                            <button type="submit" class="btn btn-primary mx-2">Guardar Cambios</button>
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <div class="col-md-4 mb-3">
+                            <label for="modalidad-editar" class="form-label">Modalidad</label>
+                            <select class="form-select" id="modalidad-editar" name="modalidad-editar" required>
+                                <!-- Opciones dinámicas -->
+                            </select>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="con-certificado-editar" class="form-label">Emitir Certificado</label>
+                            <select class="form-select" id="con-certificado-editar" name="con-certificado-editar" required>
+                                <option value="1">Sí</option>
+                                <option value="0">No</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="grupo-editar" class="form-label">Grupo</label>
+                            <select class="form-select" id="grupo-editar" name="grupo-editar" required>
+                                <!-- Opciones dinámicas -->
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="decanato-editar" class="form-label">Decanato</label>
+                            <select class="form-select" id="decanato-editar" name="decanato-editar" required>
+                                <!-- Opciones dinámicas -->
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="fecha-inicio-editar" class="form-label">Fecha Inicio</label>
+                            <input type="date" class="form-control" id="fecha-inicio-editar" name="fecha-inicio-editar" value="" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="fecha-fin-editar" class="form-label">Fecha Fin</label>
+                            <input type="date" class="form-control" id="fecha-fin-editar" name="fecha-fin-editar" value="" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="horas-editar" class="form-label">Horas</label>
+                            <input type="number" class="form-control" id="horas-editar" name="horas-editar" placeholder="Ingrese las horas" value="" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <input type="hidden" id="planificacion-id-editar" name="planificacion-id-editar">
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" class="btn btn-primary mx-2">Guardar Cambios</button>
+                        <button type="button" class="btn btn-secondary mx-2" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-</div>
+</div> 
+

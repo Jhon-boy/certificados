@@ -20,7 +20,7 @@ async function inciarDatosActaCalificacion() {
 
                 const defaultOptionActaCalificacion = document.createElement("option");
                 defaultOptionActaCalificacion.value = "";
-                defaultOptionActaCalificacion.textContent = "Seleccione un evento";
+                defaultOptionActaCalificacion.textContent = "Seleccionar Temática";
                 defaultOptionActaCalificacion.disabled = true;
                 defaultOptionActaCalificacion.selected = true;
                 selectEventoActaAsistencia.appendChild(defaultOptionActaCalificacion);
@@ -28,7 +28,7 @@ async function inciarDatosActaCalificacion() {
                 response.data.forEach(evento => {
                     const option = document.createElement("option");
                     option.value = evento.idevento;
-                    option.textContent = evento.dominio;
+                    option.textContent = evento.tematica;
                     selectEventoActaAsistencia.appendChild(option);
                 });
 

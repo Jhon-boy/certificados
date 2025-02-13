@@ -31,9 +31,9 @@ namespace certificados.web.Controllers
         [HttpGet("all")]
         public ActionResult<ResponseApp> listarEstados()
         {
-
             return Ok(eventoService.ListarEventos());
         }
+
         [HttpPost("crear")]
         public ActionResult<ResponseApp> crearEvento([FromBody] EventoDTO dto) {
             if (dto == null || dto.Horas <0) {
@@ -108,6 +108,7 @@ namespace certificados.web.Controllers
             Tevento tevento = EventoMapper.toEntityUpdate(dto, modalidad, tipoEvento, grupo, tdecanato);
             return Ok(eventoService.ActualizarEvento(tevento));
         }
+
         [HttpPost("id")]
         public ActionResult<ResponseApp> listarById([FromBody] Dictionary<string, object> request) { 
         
@@ -122,6 +123,7 @@ namespace certificados.web.Controllers
             }
             return Ok(eventoService.ListarPorId(idEvento));
         }
+
         [HttpPost("eliminar")]
         public ActionResult<ResponseApp> eliminarById([FromBody] Dictionary<string, object> request)
         {

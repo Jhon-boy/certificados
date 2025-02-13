@@ -20,7 +20,7 @@ async function inciarDatosActaAsistencia() {
 
                 const defaultOptionActaAsistencia = document.createElement("option");
                 defaultOptionActaAsistencia.value = "";
-                defaultOptionActaAsistencia.textContent = "Seleccione un evento";
+                defaultOptionActaAsistencia.textContent = "Seleccionar Temática";
                 defaultOptionActaAsistencia.disabled = true;
                 defaultOptionActaAsistencia.selected = true;
                 selectEventoActaAsistencia.appendChild(defaultOptionActaAsistencia);
@@ -28,7 +28,7 @@ async function inciarDatosActaAsistencia() {
                 response.data.forEach(evento => {
                     const option = document.createElement("option");
                     option.value = evento.idevento;
-                    option.textContent = evento.dominio;
+                    option.textContent = evento.tematica;
                     selectEventoActaAsistencia.appendChild(option);
                 });
                  

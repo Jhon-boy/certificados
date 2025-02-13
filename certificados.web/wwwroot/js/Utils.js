@@ -256,6 +256,18 @@ const Utils = (() => {
         return userInfo?.roles || [];
     }
 
+    const formatearFecha = (fechaISO) => {
+        // Convertir la fecha ISO a un objeto Date
+        const fecha = new Date(fechaISO);
+
+        // Obtener mes, día y año
+        const mes = String(fecha.getMonth() + 1).padStart(2, '0'); // Mes (0-11) + 1
+        const dia = String(fecha.getDate()).padStart(2, '0'); // Día del mes
+        const anio = fecha.getFullYear(); // Año
+
+        return `${anio}-${mes}-${dia}`;
+    };
+
 
     createLoader(); // Crea el loader al inicializar
 
@@ -277,7 +289,8 @@ const Utils = (() => {
         validarFormulario,
         convertirArchivoABase64,
         rolesByUsuario,
-        obtenerRolesUsuario
+        obtenerRolesUsuario,
+        formatearFecha
  
     };
 })();
