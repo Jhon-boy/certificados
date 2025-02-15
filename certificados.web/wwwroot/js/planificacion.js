@@ -92,12 +92,19 @@ async function cargarTipoEvento() {
             true);
         if (tipoResponse.cod === Utils.COD_OK && tipoResponse.data.length > 0) {
             const selectTipoEvento = document.getElementById("tipo-evento");
+            const selectTipoEventoEditar = document.getElementById("tipo-evento-editar");
+
               
             tipoResponse.data.forEach(tipo => {
                 const option = document.createElement("option");
                 option.value = tipo.idtipoevento;  
                 option.textContent = tipo.nombre;  
                 selectTipoEvento.appendChild(option);
+
+                const optionEditar = document.createElement("option");
+                optionEditar.value = tipo.idtipoevento;
+                optionEditar.textContent = tipo.nombre;
+                selectTipoEventoEditar.appendChild(optionEditar);
             });
         } else {  
            Utils.showToast('NO EXISTEN ROLES REGISTRADOS', 'info');
@@ -118,12 +125,18 @@ async function cargarFacultad() {
             true);
         if (decanatoResponse.cod === Utils.COD_OK && decanatoResponse.data.length > 0) {
             const selectDecanato = document.getElementById("decanatoAll");
+            const selectDecanatoEditar = document.getElementById("decanato-editar");
 
             decanatoResponse.data.forEach(tipo => {
                 const option = document.createElement("option");
                 option.value = tipo.idDecanato;
                 option.textContent = tipo.nombre;
                 selectDecanato.appendChild(option);
+
+                const optionEditar = document.createElement("option");
+                optionEditar.value = tipo.idDecanato;
+                optionEditar.textContent = tipo.nombre;
+                selectDecanatoEditar.appendChild(option);
             });
         } else {
             Utils.showToast('NO EXISTEN ROLES REGISTRADOS', 'info');
@@ -212,12 +225,18 @@ async function cargarModalidades() {
         );
         if (responseModalidades.cod === Utils.COD_OK && responseModalidades.data.length > 0) {
             const selectModalidad = document.getElementById("modalidadAll"); 
+            const selectModalidadEditar = document.getElementById("modalidad-editar"); 
 
             responseModalidades.data.forEach(mod => {
                 const option = document.createElement("option");
                 option.value = mod.idModalidad;
                 option.textContent = mod.nombre;
                 selectModalidad.appendChild(option);
+
+                const optionEditar = document.createElement("option");
+                optionEditar.value = mod.idModalidad;
+                optionEditar.textContent = mod.nombre;
+                selectModalidadEditar.appendChild(optionEditar);
             });
         } else {
             Utils.showToast('NO EXISTEN MODALIDADES REGISTRADAS', 'info');
@@ -240,12 +259,18 @@ async function cargarGrupos() {
 
         if (responseGrupos.cod === Utils.COD_OK && responseGrupos.data.length > 0) {
             const selectGrupo = document.getElementById("grupoAll"); 
+            const selectGrupoEditar = document.getElementById("grupo-editar"); 
 
             responseGrupos.data.forEach(grupo => {
                 const option = document.createElement("option");
                 option.value = grupo.idGrupo;
                 option.textContent = grupo.nombre;
                 selectGrupo.appendChild(option);
+
+                const optionEditar = document.createElement("option");
+                optionEditar.value = grupo.idGrupo;
+                optionEditar.textContent = grupo.nombre;
+                selectGrupoEditar.appendChild(optionEditar);
             });
         } else {
             Utils.showToast('NO EXISTEN MODALIDADES REGISTRADAS', 'info');
@@ -332,7 +357,7 @@ function limpiarFormularioPlanificacion() {
 async function editarPlanificacion(id) {
     try {
         const response = await Utils.httpRequest(
-            `${Utils.path}/evento/id`, // Asegúrate de que la URL esté correcta
+            `${Utils.path}/evento/id`, 
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
