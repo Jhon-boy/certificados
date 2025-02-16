@@ -10,12 +10,12 @@ namespace certificados.models.Entitys.auditoria
         [Column("CODIGODOCENTE")]
         [StringLength(10)]
         [Required]
-        public required string CodigoDocente { get; set; }
+        public  string CodigoDocente { get; set; }
 
         [Column("CEDULA")]
         [StringLength(10)]
         [Required]
-        public required string Cedula { get; set; }
+        public  string Cedula { get; set; }
 
         [Column("TITULO")]
         [StringLength(200)]

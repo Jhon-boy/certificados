@@ -1,6 +1,8 @@
 ﻿using certificados.models.Context;
 using certificados.models.Entitys;
+using certificados.models.Entitys.auditoria;
 using certificados.models.Entitys.dbo;
+using certificados.models.Helper;
 using certificados.services.Utils;
 using System;
 using System.Collections.Generic;
@@ -28,6 +30,12 @@ namespace certificados.dal.DataAccess
                     tgrupo.FModificacion = Utils.timeParsed(DateTime.Now);
                     context.Tgrupo.Add(tgrupo);
                     context.SaveChanges();
+
+                    var modAudit = AuditHelper.ConvertToAudit<Tgrupo, TgrupoAuditoria>(tgrupo);
+                    modAudit.IdGrupo = 0;
+                    context.TgrupoAuditoria.Add(modAudit);
+                    context.SaveChanges();
+
                     transaction.Commit();
 
                     response = Utils.OkResponse(tgrupo);

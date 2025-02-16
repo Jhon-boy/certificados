@@ -1,6 +1,8 @@
 ﻿using certificados.models.Context;
 using certificados.models.Entitys;
+using certificados.models.Entitys.auditoria;
 using certificados.models.Entitys.dbo;
+using certificados.models.Helper;
 using certificados.services.Utils;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -17,20 +19,33 @@ namespace certificados.dal.DataAccess
         public ResponseApp InsertarActaAsistencia(TactaAsistencia tactaAsistencia)
         {
             ResponseApp response = Utils.BadResponse(null);
-            try
+            using (var transaccion = context.Database.BeginTransaction())
             {
-                DetachIfTracked(tactaAsistencia.Tevento, tactaAsistencia.IdEvento);
-                tactaAsistencia.Tevento = context.Tevento.Local.FirstOrDefault(e => e.Idevento == tactaAsistencia.Tevento.Idevento)
-                    ?? context.Tevento.Find(tactaAsistencia.IdEvento);
+                try
+                {
+                    DetachIfTracked(tactaAsistencia.Tevento, tactaAsistencia.IdEvento);
+                    tactaAsistencia.Tevento = context.Tevento.Local.FirstOrDefault(e => e.Idevento == tactaAsistencia.Tevento.Idevento)
+                        ?? context.Tevento.Find(tactaAsistencia.IdEvento);
 
-                context.TactaAsistencia.Add(tactaAsistencia);
-                context.SaveChanges(); 
-                response = Utils.OkResponse(tactaAsistencia);
-            }
-            catch (Exception ex)
-            {
-                response = Utils.BadResponse($"ERROR AL INSERTAR ACTA DE ASISTENCIA: {ex.Message}");
-                throw new Exception($"ERROR AL INSERTAR ACTA: {ex.Message}");
+
+                    context.TactaAsistencia.Add(tactaAsistencia);
+                    context.SaveChanges();
+
+
+                    var actaAudit = AuditHelper.ConvertToAudit<TactaAsistencia, TactaAsistenciaAuditoria>(tactaAsistencia);
+                    actaAudit.IdAsistencia = 0;
+                    context.TactaAsistenciaAuditoria.Add(actaAudit);
+                    context.SaveChanges();
+
+                    transaccion.Commit();
+                    response = Utils.OkResponse(tactaAsistencia);
+                }
+                catch (Exception ex)
+                {
+                    transaccion.Rollback();
+                    response = Utils.BadResponse($"ERROR AL INSERTAR ACTA DE ASISTENCIA: {ex.Message}");
+                    throw new Exception($"ERROR AL INSERTAR ACTA: {ex.Message}");
+                }
             }
             return response;
         }

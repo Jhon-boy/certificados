@@ -14,7 +14,7 @@ namespace certificados.models.Entitys.auditoria
         [Column("NOMBRE")]
         [StringLength(100)]
         [Required]
-        public required string Nombre { get; set; }
+        public  string Nombre { get; set; }
 
         [Column("CANTIDAD")]
         [StringLength(100)]

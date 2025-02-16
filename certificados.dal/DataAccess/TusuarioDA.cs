@@ -1,6 +1,8 @@
 ﻿using certificados.models.Context;
 using certificados.models.Entitys;
+using certificados.models.Entitys.auditoria;
 using certificados.models.Entitys.dbo;
+using certificados.models.Helper;
 using certificados.services.Utils;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -19,19 +21,26 @@ namespace certificados.dal.DataAccess
         {
 
             ResponseApp response = Utils.BadResponse(null);
-            try
+            using (var transaccion = context.Database.BeginTransaction())
             {
-                context.Tusuario.Add(tusuario);
-                context.SaveChanges();
+                try
+                {
+                    context.Tusuario.Add(tusuario);
 
-                response = Utils.OkResponse(tusuario);
+                    var userAudit = AuditHelper.ConvertToAudit<Tusuario, TusuarioAuditoria>(tusuario);
+                    context.TusuarioAuditoria.Add(userAudit);
+                    context.SaveChanges();
+                    transaccion.Commit();
+                    response = Utils.OkResponse(tusuario);
+                }
+                catch (Exception ex)
+                {
+                    transaccion.Rollback();
+                    response = Utils.BadResponse($"ERROR AL INSERTAR USUARIO: {ex.Message}");
+                    throw new Exception($"ERROR AL INSERTAR USUARIO: {ex.Message}");
+                }
             }
-            catch (Exception ex)
-            {
 
-                response = Utils.BadResponse($"ERROR AL INSERTAR USUARIO: {ex.Message}");
-                throw new Exception($"ERROR AL INSERTAR USUARIO: {ex.Message}");
-            }
             return response;
         }
 
@@ -68,7 +77,8 @@ namespace certificados.dal.DataAccess
             return response;
         }
 
-        public ResponseApp BuscarUsuarioByCedula(String cedula) {
+        public ResponseApp BuscarUsuarioByCedula(String cedula)
+        {
 
             ResponseApp response = Utils.BadResponse(null);
             try
@@ -94,21 +104,24 @@ namespace certificados.dal.DataAccess
             }
             return response;
         }
-        public ResponseApp ListarUsuario() {
+        public ResponseApp ListarUsuario()
+        {
             ResponseApp response = Utils.BadResponse(null);
             try
             {
-                var listarUsuarios =context.Tusuario.ToList();
+                var listarUsuarios = context.Tusuario.ToList();
                 response = Utils.OkResponse(listarUsuarios);
 
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 response = Utils.BadResponse($"ERROR AL LISTAR USUARIOS: {ex.Message}");
                 throw new Exception($"ERROR AL LISTAR USUARIO: {ex.Message}");
             }
             return response;
         }
-        public ResponseApp EliminarUsuario(String cedula) {
+        public ResponseApp EliminarUsuario(String cedula)
+        {
             ResponseApp response = Utils.BadResponse(null);
             try
             {
@@ -116,7 +129,7 @@ namespace certificados.dal.DataAccess
 
                 if (usuarioExistente != null)
                 {
-                    usuarioExistente.Estado = "INA"; 
+                    usuarioExistente.Estado = "INA";
                     context.SaveChanges();
                     response = Utils.OkResponse(null);
                 }
@@ -142,7 +155,7 @@ namespace certificados.dal.DataAccess
                 if (usuario != null)
                 {
                     return Utils.OkResponse(usuario);
-                } 
+                }
 
             }
             catch (Exception ex)

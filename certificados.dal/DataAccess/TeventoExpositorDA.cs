@@ -1,6 +1,8 @@
 ﻿using certificados.models.Context;
 using certificados.models.Entitys;
+using certificados.models.Entitys.auditoria;
 using certificados.models.Entitys.dbo;
+using certificados.models.Helper;
 using certificados.services.Utils;
 using System;
 using System.Collections.Generic;
@@ -14,22 +16,35 @@ namespace certificados.dal.DataAccess
     {
         private readonly AppDbContext context = appDbContext;
 
-        public ResponseApp InsertarEventoExpositor(TeventoExpositor teventoExpositor) {
+        public ResponseApp InsertarEventoExpositor(TeventoExpositor teventoExpositor)
+        {
 
             ResponseApp response = Utils.BadResponse(null);
-
-            try
+            using (var transaccion = context.Database.BeginTransaction())
             {
-                context.TeventoExpositor.Add(teventoExpositor);
-                context.SaveChanges();
+                try
+                {
+                    context.TeventoExpositor.Add(teventoExpositor);
+                    context.SaveChanges();
 
-                // Retornar respuesta exitosa con el evento expositor creado
-                response = Utils.OkResponse(teventoExpositor);
+
+                    var teventoEx = AuditHelper.ConvertToAudit<TeventoExpositor, TeventoExpositorAuditoria>(teventoExpositor);
+                    teventoEx.IdEventoExpositor = 0;
+                    context.TeventoExpositorAuditoria.Add(teventoEx);
+                    context.SaveChanges();
+
+                    transaccion.Commit();
+                    // Retornar respuesta exitosa con el evento expositor creado
+                    response = Utils.OkResponse(teventoExpositor);
+                }
+                catch (Exception ex)
+                {
+                    transaccion.Rollback();
+                    response = Utils.BadResponse($"ERROR AL INSERTAR EVENTO EXPOSITOR: {ex.Message}");
+                    throw new Exception($"ERROR AL insertar evento expositor: {ex.Message}");
+                }
             }
-            catch (Exception ex) {
-                response = Utils.BadResponse($"ERROR AL INSERTAR EVENTO EXPOSITOR: {ex.Message}");
-                throw new Exception($"ERROR AL insertar evento expositor: {ex.Message}");
-            }
+
             return response;
         }
         public ResponseApp ModificarEventoExpositor(TeventoExpositor eventoExpositor)

@@ -1,6 +1,8 @@
 ﻿using certificados.models.Context;
 using certificados.models.Entitys;
+using certificados.models.Entitys.auditoria;
 using certificados.models.Entitys.dbo;
+using certificados.models.Helper;
 using certificados.services.Utils;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -28,6 +30,12 @@ namespace certificados.dal.DataAccess
 
                     context.TactaCalificacion.Add(tactaCalificacion);
                     context.SaveChanges();
+
+                    var actaAudit = AuditHelper.ConvertToAudit<TactaCalificacion, TactaCalificacionAuditoria>(tactaCalificacion);
+                    actaAudit.IdCalificacion = 0;
+                    context.TactaCalificacionAuditoria.Add(actaAudit);
+                    context.SaveChanges();
+
                     transaction.Commit();
                     response = Utils.OkResponse(tactaCalificacion);
                 }

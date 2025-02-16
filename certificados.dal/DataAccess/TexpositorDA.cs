@@ -1,6 +1,8 @@
 ﻿using certificados.models.Context;
 using certificados.models.Entitys;
+using certificados.models.Entitys.auditoria;
 using certificados.models.Entitys.dbo;
+using certificados.models.Helper;
 using certificados.services.Utils;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -18,41 +20,50 @@ namespace certificados.dal.DataAccess
         public ResponseApp InsertarExpositor(Texpositor texpositor)
         {
             ResponseApp response = Utils.BadResponse(null);
+            using (var transaccion = context.Database.BeginTransaction()) {
+                try
+                {
+                    var trackedEntity = context.ChangeTracker.Entries<Tpersona>()
+                        .FirstOrDefault(e => e.Entity.Cedula == texpositor.Tpersona.Cedula);
 
-            try
-            {
-                var trackedEntity = context.ChangeTracker.Entries<Tpersona>()
-                    .FirstOrDefault(e => e.Entity.Cedula == texpositor.Tpersona.Cedula);
+                    if (trackedEntity != null)
+                    {
+                        trackedEntity.State = EntityState.Detached;
+                    }
 
-                if (trackedEntity != null)
-                {
-                    trackedEntity.State = EntityState.Detached;
-                }
-                
-                if (context.Tpersona.Any(p => p.Cedula == texpositor.Tpersona.Cedula))
-                {
-                    context.Attach(texpositor.Tpersona);
-                }
-                else
-                {
-                    response = Utils.BadResponse($"NO EXISTE LA PERSONA EN LOS REGISTROS");
-                    return response;
-                }
-                var existeExpositor = context.Texpositor.FirstOrDefault(p => p.Tpersona.Cedula == texpositor.Cedula);
+                    if (context.Tpersona.Any(p => p.Cedula == texpositor.Tpersona.Cedula))
+                    {
+                        context.Attach(texpositor.Tpersona);
+                    }
+                    else
+                    {
+                        response = Utils.BadResponse($"NO EXISTE LA PERSONA EN LOS REGISTROS");
+                        return response;
+                    }
+                    var existeExpositor = context.Texpositor.FirstOrDefault(p => p.Tpersona.Cedula == texpositor.Cedula);
 
-                if (existeExpositor != null)
-                {
-                    return Utils.BadResponse($"ESTE USUARIO {texpositor.Cedula} ya esta registrado como Expositor ");
+                    if (existeExpositor != null)
+                    {
+                        return Utils.BadResponse($"ESTE USUARIO {texpositor.Cedula} ya esta registrado como Expositor ");
+                    }
+                    context.Texpositor.Add(texpositor);
+                    context.SaveChanges();
+                    var expositorAudit = AuditHelper.ConvertToAudit<Texpositor, TexpositorAuditoria>(texpositor);
+                    expositorAudit.IdExpositor = 0;
+                    context.TexpositorAuditoria.Add(expositorAudit);
+                    context.SaveChanges();
+
+                    transaccion.Commit();
+                    response = Utils.OkResponse(texpositor);
                 }
-                context.Texpositor.Add(texpositor);
-                context.SaveChanges();
-                response = Utils.OkResponse(texpositor);
+                catch (Exception ex)
+                {
+                    transaccion.Rollback();
+                    response = Utils.BadResponse($"ERROR AL INSERTAR EXPOSITOR: {ex.Message}");
+                    throw new Exception($"ERROR AL INSERTAR expositor: {ex.Message}", ex);
+                }
             }
-            catch (Exception ex)
-            {
-                response = Utils.BadResponse($"ERROR AL INSERTAR EXPOSITOR: {ex.Message}");
-                throw new Exception($"ERROR AL INSERTAR expositor: {ex.Message}", ex);
-            }
+            
 
             return response;
         }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using certificados.services.Utils;
 
 namespace certificados.services.Services
 {
@@ -24,7 +25,7 @@ namespace certificados.services.Services
             ResponseApp grupoResponse = BuscarGrupoPorNombre(tgrupo.Nombre);
             dynamic data = grupoResponse.Data;
 
-            if (tgrupo.Nombre.Equals(data.Nombre)) {
+            if (  grupoResponse.Cod == CONSTANTES.COD_OK && tgrupo.Nombre.Equals(data.Nombre)) {
                 return Utils.Utils.BadResponse("GRUPO " + tgrupo.Nombre.ToString() + " YA EXISTENTE");
             }
 

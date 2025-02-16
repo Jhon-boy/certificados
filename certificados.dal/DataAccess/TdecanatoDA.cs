@@ -1,6 +1,8 @@
 ﻿using certificados.models.Context;
 using certificados.models.Entitys;
+using certificados.models.Entitys.auditoria;
 using certificados.models.Entitys.dbo;
+using certificados.models.Helper;
 using certificados.services.Utils;
 using System;
 using System.Collections.Generic;
@@ -23,6 +25,12 @@ namespace certificados.dal.DataAccess
                 {
                     context.Tdecanato.Add(tdecanato);
                     context.SaveChanges();
+
+                    var decanatoAudit = AuditHelper.ConvertToAudit<Tdecanato, TdecanatoAuditoria>(tdecanato);
+                    decanatoAudit.IdDecanato = 0;
+                    context.TdecanatoAuditoria.Add(decanatoAudit);
+                    context.SaveChanges();
+
                     transaction.Commit();
 
                     response = Utils.OkResponse(tdecanato);

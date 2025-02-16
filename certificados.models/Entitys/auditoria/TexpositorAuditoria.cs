@@ -20,7 +20,7 @@ namespace certificados.models.Entitys.auditoria
         [Column("CEDULA")]
         [StringLength(10)]
         [Required]
-        public required string Cedula { get; set; }
+        public  string Cedula { get; set; }
 
         [Column("USUARIOINGRESO")]
         [StringLength(5)]

@@ -1,7 +1,9 @@
 ﻿using System.Data;
 using certificados.models.Context;
 using certificados.models.Entitys;
+using certificados.models.Entitys.auditoria;
 using certificados.models.Entitys.dbo;
+using certificados.models.Helper;
 using certificados.services.Utils;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,31 +14,46 @@ namespace certificados.dal.DataAccess
     {
         private readonly AppDbContext context = appDbContext;
 
-        public ResponseApp insertarRol(Trol tRol) {
+        public ResponseApp insertarRol(Trol tRol)
+        {
             ResponseApp response = Utils.BadResponse(null);
-            try
-            {
-                var existeRol = context.Trol.Any(e => e.Nombre.ToLower() == tRol.Nombre.ToLower());
-                if (existeRol) {
-                     response.Message = "El nombre de este ROL ya Existe";
-                    return response;
+
+            using (var transaccion = context.Database.BeginTransaction()) { 
+             try
+                {
+                    var existeRol = context.Trol.Any(e => e.Nombre.ToLower() == tRol.Nombre.ToLower());
+                    if (existeRol)
+                    {
+                        response.Message = "El nombre de este ROL ya Existe";
+                        return response;
+                    }
+                    Trol insertRol = new Trol();
+                    insertRol.Nombre = Utils.SafeString(tRol.Nombre);
+                    insertRol.Observacion = Utils.SafeString(tRol.Observacion);
+                    insertRol.FCreacion = Utils.timeParsed(DateTime.Now);
+                    insertRol.UsuarioIngreso = Utils.SafeString(tRol.UsuarioIngreso);
+                    insertRol.Estado = tRol.Estado;
+                    context.Trol.Add(insertRol);
+                    context.SaveChanges();
+                    //Aqui creo de nuevo
+                    var rolAudit = AuditHelper.ConvertToAudit<Trol, TrolAuditoria>(insertRol);
+                    rolAudit.IdRol = 0;  
+                    context.TrolAuditoria.Add(rolAudit);
+                    context.SaveChanges();
+                    transaccion.Commit();
+                    response = Utils.OkResponse(tRol);
+
                 }
-                Trol insertRol = new Trol();
-                insertRol.Nombre = Utils.SafeString(tRol.Nombre);
-                insertRol.Observacion = Utils.SafeString(tRol.Observacion);
-                insertRol.FCreacion = Utils.timeParsed(DateTime.Now);
-                insertRol.UsuarioIngreso = Utils.SafeString(tRol.UsuarioIngreso);
-                insertRol.Estado = tRol.Estado;
-                context.Trol.Add(insertRol);
-                context.SaveChanges();
-                response = Utils.OkResponse(tRol);
+                catch (Exception ex)
+                { 
+                    transaccion.Rollback();
+                    response.Message = $"PROBLEMAS AL INSERTAR ROL: {ex.Message}";
 
+                    throw new Exception($"ERROR AL INSERTAR ROL: {ex.Message}");
+                }
             }
-            catch (Exception ex) {
-                response.Message = $"PROBLEMAS AL INSERTAR ROL: {ex.Message}";
-
-                throw new Exception($"ERROR AL INSERTAR ROL: {ex.Message}");
-            }
+               
+            
             return response;
         }
 

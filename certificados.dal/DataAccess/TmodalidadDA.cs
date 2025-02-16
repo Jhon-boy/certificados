@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using certificados.models.Entitys.auditoria;
+using certificados.models.Helper;
 
 namespace certificados.dal.DataAccess
 {
@@ -17,26 +19,40 @@ namespace certificados.dal.DataAccess
         public ResponseApp InsertarModalidad(Tmodalidad modalidad)
         {
             ResponseApp response = Utils.BadResponse(null);
-            try
+            using (var transaccion = context.Database.BeginTransaction())
             {
-                Tmodalidad nuevaModalidad = new Tmodalidad
+
+                try
                 {
-                    Nombre = Utils.SafeString(modalidad.Nombre),
-                    Descripcion = Utils.SafeString(modalidad.Descripcion),
-                    Fcreacion = Utils.timeParsed(DateTime.Now),
-                    UsusarioIngreso = Utils.SafeString(modalidad.UsusarioIngreso)
-                };
+                    Tmodalidad nuevaModalidad = new Tmodalidad
+                    {
+                        Nombre = Utils.SafeString(modalidad.Nombre),
+                        Descripcion = Utils.SafeString(modalidad.Descripcion),
+                        Fcreacion = Utils.timeParsed(DateTime.Now),
+                        UsusarioIngreso = Utils.SafeString(modalidad.UsusarioIngreso)
+                    };
 
-                context.Tmodalidad.Add(nuevaModalidad);
-                context.SaveChanges();
 
-                response = Utils.OkResponse(nuevaModalidad);
+                    context.Tmodalidad.Add(nuevaModalidad);
+                    context.SaveChanges();
+
+                    var modAudit = AuditHelper.ConvertToAudit<Tmodalidad, TmodalidadAuditoria>(nuevaModalidad);
+                    modAudit.IdModalidad = 0;
+                    context.TmodalidadAuditoria.Add(modAudit);
+                    context.SaveChanges();
+
+                    transaccion.Commit();
+                    response = Utils.OkResponse(nuevaModalidad);
+                }
+                catch (Exception ex)
+                {
+                    transaccion.Rollback();
+                    response.Message = $"PROBLEMAS AL INSERTAR MODALIDAD: {ex.Message}";
+                    throw new Exception($"ERROR AL INSERTAR MODALIDAD: {ex.Message}");
+                }
             }
-            catch (Exception ex)
-            {
-                response.Message = $"PROBLEMAS AL INSERTAR MODALIDAD: {ex.Message}";
-                throw new Exception($"ERROR AL INSERTAR MODALIDAD: {ex.Message}");
-            }
+
+
             return response;
         }
 

@@ -23,7 +23,7 @@ namespace certificados.services.Services
             ResponseApp grupoResponse = ConsultarModalidadPorNombre(modalidad.Nombre);
             dynamic data = grupoResponse.Data;
 
-            if (modalidad.Nombre.Equals(data.Nombre))
+            if ( data !=null && modalidad.Nombre.Equals(data.Nombre))
             {
                 return Utils.Utils.BadResponse("MODALIDAD " + modalidad.Nombre.ToString() + " YA EXISTENTE");
             }

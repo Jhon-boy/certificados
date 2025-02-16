@@ -1,6 +1,8 @@
 ﻿using certificados.models.Context;
 using certificados.models.Entitys;
+using certificados.models.Entitys.auditoria;
 using certificados.models.Entitys.dbo;
+using certificados.models.Helper;
 using certificados.services.Utils;
 using Microsoft.SqlServer.Server;
 using System;
@@ -25,8 +27,14 @@ namespace certificados.dal.DataAccess
                     tformatoCertificado.FCreacion = Utils.timeParsed(DateTime.Now);
                     context.TformatoCertificado.Add(tformatoCertificado);
                     context.SaveChanges();
+
+                    var formatoAudit = AuditHelper.ConvertToAudit<TformatoCertificado, TformatoCertificadoAuditoria>(tformatoCertificado);
+                    formatoAudit.idFormato = 0;
+                    context.TformatoCertificadoAuditoria.Add(formatoAudit);
+                    context.SaveChanges(); 
+
                     transaction.Commit();
-                 
+                    
                     response = Utils.OkResponse(tformatoCertificado);
                 }
                 catch (Exception ex)
