@@ -42,6 +42,14 @@ namespace certificados.models.Entitys.dbo
         [StringLength(255)]
         public string? Dominio { get; set; }
 
+        [Column("ESTADO")]
+        [StringLength(3)]
+        public string? Estado { get; set; }
+
+        [Column("FACILITADOR")]
+        [StringLength(15)]
+        public string? Facilitador { get; set; }
+
         [Column("IDGRUPO")]
         [Required]
         [ForeignKey("Tgrupo")]

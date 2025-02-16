@@ -88,6 +88,8 @@ namespace certificados.dal.DataAccess
                     existingEvento.Periodo = Utils.SafeString( tevento.Periodo);
                     existingEvento.Tematica = Utils.SafeString(tevento.Tematica);
                     existingEvento.Dominio = Utils.SafeString(tevento.Dominio);
+                    existingEvento.Estado = Utils.SafeString(tevento.Estado);
+                    existingEvento.Facilitador = Utils.SafeString(tevento.Facilitador);
                     existingEvento.UsuarioActualizacion = tevento.UsuarioActualizacion;
                     existingEvento.FModificacion = Utils.timeParsed(DateTime.Now);
 

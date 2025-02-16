@@ -136,7 +136,7 @@ async function cargarFacultad() {
                 const optionEditar = document.createElement("option");
                 optionEditar.value = tipo.idDecanato;
                 optionEditar.textContent = tipo.nombre;
-                selectDecanatoEditar.appendChild(option);
+                selectDecanatoEditar.appendChild(optionEditar);
             });
         } else {
             Utils.showToast('NO EXISTEN ROLES REGISTRADOS', 'info');
@@ -148,6 +148,7 @@ async function cargarFacultad() {
 }
 async function cargarCiclos() {
     try {
+        // Realizar la solicitud HTTP para obtener los ciclos
         const responseCiclos = await Utils.httpRequest(
             `${Utils.path}/ciclo/all`,
             {
@@ -157,21 +158,38 @@ async function cargarCiclos() {
             true
         );
 
-            if (responseCiclos.cod === Utils.COD_OK && responseCiclos.data.length > 0) {
-                const selectCiclo = document.getElementById("ciclo-evento");
-                 
-                responseCiclos.data.forEach(ciclo => {
-                    const option = document.createElement("option");
-                    option.value = ciclo.idCiclo;
-                    option.textContent = ciclo.nombre;
-                    selectCiclo.appendChild(option);
-                });
-             
-            } else {
-                Utils.showToast('NO EXISTEN CICLOS REGISTRADOS', 'info');
-            }
+        // Verificar si la respuesta es válida y contiene datos
+        if (responseCiclos.cod === Utils.COD_OK && responseCiclos.data.length > 0) {
+            const selectCiclo = document.getElementById("ciclo-evento");
+            const selectCicloEditar = document.getElementById("ciclo-editar");
 
+            // Limpiar los selectores antes de agregar nuevas opciones
+            selectCiclo.innerHTML = '';
+            selectCicloEditar.innerHTML = '';
+
+            // Agregar opciones a los selectores
+            responseCiclos.data.forEach(ciclo => {
+                const optionText = ciclo.nombre;
+
+                // Crear opción para el primer selector
+                const option = document.createElement("option");
+                option.value = ciclo.idCiclo;
+                option.textContent = optionText;
+                selectCiclo.appendChild(option);
+
+                // Crear opción para el segundo selector
+                const optionEditar = document.createElement("option");
+                optionEditar.value = ciclo.idCiclo;
+                optionEditar.textContent = optionText;
+                selectCicloEditar.appendChild(optionEditar);
+            });
+        } else {
+            // Mostrar mensaje si no se encuentran ciclos
+            Utils.showToast('NO EXISTEN CICLOS REGISTRADOS', 'info');
+        }
     } catch (error) {
+        // Manejar errores
+        console.error("Error cargando ciclos:", error);
         Utils.showToast("Error cargando datos iniciales", 'error');
     }
 }
@@ -180,7 +198,9 @@ async function cargarFacilitadores() {
     try {
         const condition = {
             estado: 'ACT'
-        }
+        };
+
+        // Realizar la solicitud HTTP
         const expositorResponse = await Utils.httpRequest(
             `${Utils.path}/personas/all`,
             {
@@ -188,30 +208,45 @@ async function cargarFacilitadores() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(condition)
             },
-            true);
+            true
+        );
 
-            if (expositorResponse.cod === Utils.COD_OK && expositorResponse.data.length > 0) {
-                const selectElement = document.getElementById('facilitadorAll');
-                selectElement.innerHTML = '';
+        // Verificar si la respuesta es válida y contiene datos
+        if (expositorResponse.cod === Utils.COD_OK && expositorResponse.data.length > 0) {
+            const selectElement = document.getElementById('facilitadorAll');
+            const selectFacilitadorEditar = document.getElementById('facilitador-editar');
 
-                expositorResponse.data.forEach(persona => {
-                    if (persona.mDatos.rol.includes('Facilitador')) {
-                        const option = document.createElement('option');
-                        option.value = persona.cedula;
-                        option.textContent = `${persona.cedula} - ${persona.nombres} - ${persona.apellidos}`;
-                        selectElement.appendChild(option);
-                    }
-                   
-                });
-            } else {
-                Utils.showToast("No se encontraron facilitadores.", 'info');
-            }
-             
+            // Limpiar los selectores antes de agregar nuevas opciones
+            selectElement.innerHTML = '';
+            selectFacilitadorEditar.innerHTML = '';
+
+            // Filtrar y agregar facilitadores a los selectores
+            expositorResponse.data.forEach(persona => {
+                if (persona.mDatos.rol.includes('Facilitador')) {
+                    const optionText = `${persona.cedula} - ${persona.nombres} - ${persona.apellidos}`;
+
+                    // Crear opción para el primer selector
+                    const option = document.createElement('option');
+                    option.value = persona.cedula;
+                    option.textContent = optionText;
+                    selectElement.appendChild(option);
+
+                    // Crear opción para el segundo selector
+                    const optionEditar = document.createElement('option');
+                    optionEditar.value = persona.cedula;
+                    optionEditar.textContent = optionText;
+                    selectFacilitadorEditar.appendChild(optionEditar);
+                }
+            });
+        } else {
+            // Mostrar mensaje si no se encuentran facilitadores
+            Utils.showToast("No se encontraron facilitadores.", 'info');
+        }
     } catch (error) {
-        console.log(error);
+        // Manejar errores
+        console.error("Error cargando facilitadores:", error);
         Utils.showToast("Error cargando datos iniciales", 'error');
     }
-
 }
 async function cargarModalidades() {
     try {
@@ -300,6 +335,8 @@ async function handleAgregarPlanificacion(event) {
         "Lugar": null,
         "ConCertificado": `${document.getElementById('con-certificado').value}`,
         "Periodo": `${document.getElementById('ciclo-evento').value}`,
+        "Facilitador": `${document.getElementById('facilitadorAll').value}`,
+        "Estado": "ACT",
         "Tematica": `${document.getElementById('tematica').value}`,
         "Dominio": `${document.getElementById('dominioAll').value}`,
         "IdGrupo": `${parseInt(document.getElementById('grupoAll').value, 10)}`,
@@ -389,70 +426,72 @@ async function editarPlanificacion(id) {
     }
 }
 
-//async function handleEditarPlanificacion(event) {
-//    const form = event.target.closest("form");
+async function handleEditarPlanificacion(event) {
+    const form = event.target.closest("form");
 
-//    // Validar el formulario
-//    if (!form.checkValidity()) {
-//        form.classList.add('was-validated');
-//        return;
-//    }
-//    event.preventDefault();
+    // Validar el formulario
+    if (!form.checkValidity()) {
+        form.classList.add('was-validated');
+        return;
+    }
+    event.preventDefault();
 
-//    // Crear el cuerpo de la solicitud para la actualización
-//    const bodyRequest = {
-//        idPlanificacion: document.getElementById('planificacion-id-editar').value,
-//        tematica: document.getElementById('tematica-editar').value,
-//        dominio: document.getElementById('dominio-editar').value,
-//        tipoEvento: document.getElementById('tipo-evento-editar').value,
-//        ciclo: document.getElementById('ciclo-editar').value,
-//        facilitador: document.getElementById('facilitador-editar').value,
-//        modalidad: document.getElementById('modalidad-editar').value,
-//        conCertificado: document.getElementById('con-certificado-editar').value,
-//        grupo: document.getElementById('grupo-editar').value,
-//        decanato: document.getElementById('decanato-editar').value,
-//        fechaInicio: document.getElementById('fecha-inicio-editar').value,
-//        fechaFin: document.getElementById('fecha-fin-editar').value,
-//        horas: document.getElementById('horas-editar').value,
-//        UserModificacion: userInfo.idUsuario
-//    };
+    // Crear el cuerpo de la solicitud para la actualización
+    const bodyRequest = {
+        "Idevento": `${document.getElementById('planificacion-id-editar').value}`,
+        "Tematica": `${document.getElementById('tematica-editar').value}`,
+        "Dominio": `${document.getElementById('dominio-editar').value}`,
+        "IdTipoEvento": `${parseInt(document.getElementById('tipo-evento-editar').value, 10)}`,
+        "Periodo": `${document.getElementById('ciclo-editar').value}`,
+        "Facilitador": `${document.getElementById('facilitador-editar').value}`,
+        "IdModalidad": `${parseInt(document.getElementById('modalidad-editar').value, 10)}`,
+        "ConCertificado": `${document.getElementById('con-certificado-editar').value}`,
+        "IdGrupo": `${parseInt(document.getElementById('grupo-editar').value, 10)}`,
+        "IdDecanato": `${parseInt(document.getElementById('decanato-editar').value, 10)}`,
+        "FechaInicio": `${document.getElementById('fecha-inicio-editar').value}T08:30:00`,
+        "FechaFin": `${document.getElementById('fecha-fin-editar').value}T12:30:00`,
+        "Horas": `${parseInt(document.getElementById('horas-editar').value, 10)}`,
+        "Admin": `${userInfoPl.idUsuario}`,
+        "Estado": "ACT",
+        "Lugar": null,
+    };
 
-//    try {
-//        // Enviar la solicitud de actualización
-//        const response = await Utils.httpRequest(
-//            `${Utils.path}/evento/modificar`, // Asegúrate de que la URL sea correcta
-//            {
-//                method: "POST",
-//                headers: { "Content-Type": "application/json" },
-//                body: JSON.stringify(bodyRequest)
-//            },
-//            true
-//        );
+    try {
+        // Enviar la solicitud de actualización
+        const response = await Utils.httpRequest(
+            `${Utils.path}/evento/modificar`, // Asegúrate de que la URL sea correcta
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(bodyRequest)
+            },
+            true
+        );
 
-//        if (response.cod === Utils.COD_OK) {
-//            // Mostrar mensaje de éxito
-//            Utils.showToast("Planificación actualizada exitosamente", 'info');
+        if (response.cod === Utils.COD_OK) {
+            // Mostrar mensaje de éxito
+            Utils.showToast("Planificación actualizada exitosamente", 'info');
 
-//            // Si estás usando DataTable, puedes actualizar la tabla después de la modificación
-//            if ($.fn.DataTable.isDataTable('#tabla-evento')) {
-//                $('#tabla-evento').DataTable().clear().destroy();
-//            }
+            // Si estás usando DataTable, puedes actualizar la tabla después de la modificación
+            if ($.fn.DataTable.isDataTable('#tabla-evento')) {
+                $('#tabla-evento').DataTable().clear().destroy();
+            }
 
-//            cargarDatosPlanificacion();
-//            // Cerrar el modal
-//            const modal = bootstrap.Modal.getInstance(document.getElementById('modal-editar-planificacion'));
-//            modal.hide();
-//        } else {
-//            // Si hay un error, mostrar el mensaje de error
-//            const messageClient = response.message || "Ocurrió un error inesperado.";
-//            const messageTech = response.data || null;
-//            Utils.showErrorModal(messageClient, messageTech);
-//        }
-//    } catch (error) {
-//        // Si ocurre un error en la solicitud
-//        Utils.showToast("Error al actualizar la planificación", 'danger');
-//    }
-//}
+            cargarDatosPlanificacion();
+            // Cerrar el modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modal-editar-planificacion'));
+            modal.hide();
+        } else {
+            // Si hay un error, mostrar el mensaje de error
+            const messageClient = response.message || "Ocurrió un error inesperado.";
+            const messageTech = response.data || null;
+            Utils.showErrorModal(messageClient, messageTech);
+        }
+    } catch (error) {
+        // Si ocurre un error en la solicitud
+        Utils.showToast("Error al actualizar la planificación", 'danger');
+    }
+}
 
 
 
@@ -485,33 +524,22 @@ async function eliminarPlanificacion(id) {
 }
 
 function asignarSelectEditarPlanificacion(planificacion) {
-    // Asignar valores a los campos del formulario
-    document.getElementById('tipo-evento-editar').value = planificacion.ttipoEvento.descripcion || '';
-    //document.getElementById('ciclo-editar').value = planificacion.ciclo || '';
-    //document.getElementById('facilitador-editar').value = planificacion.facilitador || '';
-    document.getElementById('modalidad-editar').value = planificacion.tmodalidad.nombre || '';
-    document.getElementById('con-certificado-editar').value = planificacion.conCertificado || '';
-    document.getElementById('grupo-editar').value = planificacion.tgrupo.nombre || '';
-    document.getElementById('decanato-editar').value = planificacion.tdecanato.nombre || '';
-
-    // Funcion para agregar una opcion a un select si no existe
-    const agregarOpcionSiNoExiste = (selectId, value, text) => {
-        const select = document.getElementById(selectId);
-        const existeOpcion = Array.from(select.options).some(option => option.value === value);
-        if (!existeOpcion) {
-            const option = document.createElement("option");
-            option.value = value;
-            option.textContent = text;
-            select.appendChild(option);
-        }
+    const selects = {
+        'tipo-evento-editar': planificacion.ttipoEvento.idtipoevento,
+        'ciclo-editar': planificacion.periodo,
+        'facilitador-editar': planificacion.facilitador,
+        'modalidad-editar': planificacion.tmodalidad.idModalidad,
+        'con-certificado-editar': planificacion.conCertificado,
+        'grupo-editar': planificacion.tgrupo.idGrupo,
+        'decanato-editar': planificacion.tdecanato.idDecanato
     };
 
-    // Agregar opciones a los select si no existen
-    agregarOpcionSiNoExiste("tipo-evento-editar", planificacion.ttipoEvento.idtipoevento, planificacion.ttipoEvento.descripcion);
-    agregarOpcionSiNoExiste("modalidad-editar", planificacion.tmodalidad.idModalidad, planificacion.tmodalidad.nombre);
-    agregarOpcionSiNoExiste("con-certificado-editar", planificacion.conCertificado, "");
-    agregarOpcionSiNoExiste("grupo-editar", planificacion.tgrupo.idGrupo, planificacion.tgrupo.nombre);
-    agregarOpcionSiNoExiste("decanato-editar", planificacion.tdecanato.idDecanato, planificacion.tdecanato.nombre);
+    Object.entries(selects).forEach(([id, value]) => {
+        const select = document.getElementById(id);
+        if (select) {
+            select.value = value;
+        }
+    });
 }
 
 
