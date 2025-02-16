@@ -145,42 +145,64 @@ function eliminarPersona(cedula) {
 }
 
 async function editarpersona(cedula) {
-    try { 
+    try {
+        // Realizar la solicitud HTTP para obtener los datos de la persona
         const response = await httpRequest(`${Utils.path}/personas/id`, "POST", { id: cedula });
-         
+
+        // Cargar los roles disponibles
         await cargarRoles();
 
-        if (response && response.cod === Utils.COD_OK) {
-            const persona = response.data;
-             
-            document.getElementById("editar-persona-cedula").value = persona.cedula || "";
-            document.getElementById("editar-persona-nombres").value = persona.nombres || "";
-            document.getElementById("editar-persona-apellidos").value = persona.apellidos || "";
-            document.getElementById("editar-persona-edad").value = persona.edad || "";
-            document.getElementById("editar-persona-genero").value = persona.genero || "";
-            document.getElementById("editar-persona-email").value = persona.mDatos?.email || "";
-            document.getElementById("editar-userIngreso").value = persona.usuarioIngreso || "";
-            document.getElementById("editar-userActualizar").value = userInfoPersona.nombre || "";
-            const selectRol = document.getElementById("editar-persona-rol");
-            const rolUsuario = persona.mDatos?.rol || "";
-             
-            const optionMatch = Array.from(selectRol.options).find((option) =>
-                option.textContent.toLowerCase() === rolUsuario || option.value.toLowerCase() === rolUsuario
+        // Verificar si la respuesta es válida
+        if (!response || response.cod !== Utils.COD_OK) {
+            const messageClient = response?.message || "Error al cargar los datos de la persona.";
+            const messageTech = response?.data || null;
+            Utils.showErrorModal(messageClient, messageTech);
+            return;
+        }
+
+        const persona = response.data;
+
+        // Mapear los campos del formulario con los datos de la persona
+        const campos = {
+            "editar-persona-cedula": persona.cedula || "",
+            "editar-persona-nombres": persona.nombres || "",
+            "editar-persona-apellidos": persona.apellidos || "",
+            "editar-persona-edad": persona.edad || "",
+            "editar-persona-genero": persona.genero || "",
+            "editar-persona-email": persona.mDatos?.email || "",
+            "editar-userIngreso": persona.usuarioIngreso || "",
+            "editar-userActualizar": userInfoPersona.nombre || "",
+        };
+
+        // Llenar los campos del formulario
+        Object.entries(campos).forEach(([id, value]) => {
+            const element = document.getElementById(id);
+            if (element) element.value = value;
+        });
+
+        // Seleccionar el rol correspondiente en el dropdown
+        const selectRol = document.getElementById("editar-persona-rol");
+        if (selectRol) {
+            // Extraer el primer elemento del arreglo de roles (asumiendo que solo hay un rol)
+            const rolUsuario = persona.mDatos?.rol?.[0]?.toLowerCase() || "";
+
+            // Buscar la opción que coincida con el rol
+            const optionMatch = Array.from(selectRol.options).find(
+                (option) =>
+                    option.textContent.toLowerCase() === rolUsuario ||
+                    option.value.toLowerCase() === rolUsuario
             );
 
             if (optionMatch) {
-                selectRol.value = optionMatch.value; // Seleccionar la opción encontrada
+                selectRol.value = optionMatch.value;
             } else {
                 console.warn("No se encontró un rol que coincida con:", rolUsuario);
             }
-             
-            const modalEditarPersona = new bootstrap.Modal(document.getElementById("modal-editar-persona"));
-            modalEditarPersona.show();
-        } else {
-            const messageClient = response.message || "Error al cargar los datos de la persona.";
-            const messageTech = response.data || null;
-            Utils.showErrorModal(messageClient, messageTech);
         }
+
+        // Mostrar el modal de edición
+        const modalEditarPersona = new bootstrap.Modal(document.getElementById("modal-editar-persona"));
+        modalEditarPersona.show();
     } catch (error) {
         console.error("Error al cargar los datos de la persona:", error);
         Utils.showToast("Error al cargar los datos", "danger");
@@ -219,20 +241,26 @@ async function confirmarEliminacionPersona() {
 
 }
 async function confirmarEditarPersona() {
-    const cedulaE = document.getElementById("persona-cedula").value.trim();
-    const nombresE = document.getElementById("persona-nombres").value.trim();
-    const apellidosE = document.getElementById("persona-apellidos").value.trim();
-    const edadE = parseInt(document.getElementById("persona-edad").value.trim(), 10);
-    const generoE = document.getElementById("persona-genero").value.trim();
-    const emailE = document.getElementById("persona-email").value.trim();
+    // Obtener valores de los campos del formulario
+    const cedulaE = document.getElementById("editar-persona-cedula").value.trim();
+    const nombresE = document.getElementById("editar-persona-nombres").value.trim();
+    const apellidosE = document.getElementById("editar-persona-apellidos").value.trim();
+    const edadE = parseInt(document.getElementById("editar-persona-edad").value.trim(), 10);
+    const generoE = document.getElementById("editar-persona-genero").value.trim();
+    const emailE = document.getElementById("editar-persona-email").value.trim();
     const claveE = "DEFECTO"; // Opcional, agrega si es necesario
-    const rolSelectE = document.getElementById("persona-rol");
-    const estadoEditFormE = document.getElementById("estadopersona");
-    const estadoEditE = estadoEditFormE.value.trim();
-    const userIngresoE = document.getElementById("userIngreso").value.trim();
+    const rolSelectE = document.getElementById("editar-persona-rol");
+    const estadoEditE = document.getElementById("editar-estadopersona").value;
+    const userIngresoE = document.getElementById("editar-userIngreso").value.trim();
     const idRolE = parseInt(rolSelectE.value, 10);
-    // Validar los campos
 
+    // Validar campos obligatorios
+    if (!cedulaE || !nombresE || !apellidosE || !emailE || isNaN(edadE) || isNaN(idRolE)) {
+        Utils.showToast("Por favor, complete todos los campos obligatorios.", "warning");
+        return;
+    }
+
+    // Crear el payload para la solicitud
     const payloadEdit = {
         "cedula": `${cedulaE}`,
         "nombres": `${nombresE}`,
@@ -248,6 +276,7 @@ async function confirmarEditarPersona() {
     };
 
     const modalE = bootstrap.Modal.getInstance(document.getElementById('modal-editar-persona'));
+
     try {
         const responseEdit = await Utils.httpRequest(
             `${Utils.path}/personas/modificar`,
@@ -257,26 +286,31 @@ async function confirmarEditarPersona() {
                 body: JSON.stringify(payloadEdit),
             }, true);
 
-
         if (responseEdit && responseEdit.cod === Utils.COD_OK) {
             Utils.showToast("Persona actualizada correctamente", "success");
-            modalE.hide();
-
-            if ($.fn.DataTable.isDataTable('#tabla-persona')) {
-                $('#tabla-persona').DataTable().clear().destroy();
-            }
-
-            cargarDatospersonas();
+            cerrarModalYRecargarTabla(modalE);
         } else {
             const messageClient = responseEdit.message || "Error al actualizar la persona.";
             const messageTech = responseEdit.data || null;
             Utils.showErrorModal(messageClient, messageTech);
         }
     } catch (error) {
+        console.error("Error al actualizar la persona:", error);
         Utils.showToast("Error al realizar la actualización", "danger");
     } finally {
         modalE.hide();
     }
+}
+
+// Funcion para cerrar el modal y recargar la tabla
+function cerrarModalYRecargarTabla(modal) {
+    modal.hide();
+
+    if ($.fn.DataTable.isDataTable('#tabla-persona')) {
+        $('#tabla-persona').DataTable().clear().destroy();
+    }
+
+    cargarDatospersonas();
 }
 
 // Función para validar la entrada del formulario

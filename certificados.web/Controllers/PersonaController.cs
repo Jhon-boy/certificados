@@ -97,6 +97,7 @@ namespace certificados.web.Controllers
             };
             return Ok(personaService.CrearPersona(persona, usuario));
         }
+
         [HttpPost("modificar")]
         public ActionResult<ResponseApp> modificarPersona([FromBody]  PersonaDTO dto)
         {
@@ -149,6 +150,7 @@ namespace certificados.web.Controllers
             };
             return Ok(personaService.ModificarPersona(persona, usuario));
         }
+
         [HttpPost("modificar/perfil")]
         public ActionResult<ResponseApp> modificarPerfil([FromBody] PersonaDTO dto)
         {
@@ -211,6 +213,7 @@ namespace certificados.web.Controllers
             }
             return Ok(personaService.ObtenerPersona(cedula.ToString()));
         }
+
         [HttpPost("perfil")]
         public ActionResult<ResponseApp> buscarPorCedulaCompleto([FromBody] Dictionary<string, object> requestBody)
         {
@@ -220,6 +223,7 @@ namespace certificados.web.Controllers
             }
             return Ok(personaService.ObtenerPersonaCompleta(cedula.ToString()));
         }
+
         [HttpPost("eliminar")]
         public ActionResult<ResponseApp> Eliminarersonas([FromBody] Dictionary<string, object> requestBody)
         {
