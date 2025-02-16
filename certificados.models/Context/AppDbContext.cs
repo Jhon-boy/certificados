@@ -95,7 +95,7 @@ namespace certificados.models.Context
             modelBuilder.Entity<TrolAuditoria>().ToTable("Trol", schema: "auditoria");
             modelBuilder.Entity<TtipoEventoAuditoria>().ToTable("TtipoEvento", schema: "auditoria");
             modelBuilder.Entity<TusuarioAuditoria>().ToTable("Tusuario", schema: "auditoria");
-            modelBuilder.Entity<TcicloAuditoria>().ToTable("TcicloAuditoria", schema: "auditoria");
+            modelBuilder.Entity<TcicloAuditoria>().ToTable("Tciclo", schema: "auditoria");
         }
     }
 }

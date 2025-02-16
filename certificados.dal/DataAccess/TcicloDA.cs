@@ -2,6 +2,8 @@
 using certificados.models.Entitys.dbo;
 using certificados.models.Entitys;
 using certificados.services.Utils;
+using certificados.models.Entitys.auditoria;
+using certificados.models.Helper;
 
 namespace certificados.dal.DataAccess
 {
@@ -12,25 +14,36 @@ namespace certificados.dal.DataAccess
         public ResponseApp insertarCiclo(Tciclo ciclo)
         {
             ResponseApp response = Utils.BadResponse(null);
-            try
+            using (var transaccion = context.Database.BeginTransaction())
             {
-                Tciclo nuevoCiclo = new Tciclo
+                try
                 {
-                    Nombre = Utils.SafeString(ciclo.Nombre),
-                    Descripcion = Utils.SafeString(ciclo.Descripcion),
-                    FCreacion = Utils.timeParsed(DateTime.Now),
-                    UsuarioIngreso = Utils.SafeString(ciclo.UsuarioIngreso)
-                };
+                    Tciclo nuevoCiclo = new Tciclo
+                    {
+                        Nombre = Utils.SafeString(ciclo.Nombre),
+                        Descripcion = Utils.SafeString(ciclo.Descripcion),
+                        FCreacion = Utils.timeParsed(DateTime.Now),
+                        UsuarioIngreso = Utils.SafeString(ciclo.UsuarioIngreso)
+                    };
 
-                context.Tciclo.Add(nuevoCiclo);
-                context.SaveChanges();
+                    context.Tciclo.Add(nuevoCiclo);
+                    context.SaveChanges();
 
-                response = Utils.OkResponse(nuevoCiclo);
-            }
-            catch (Exception ex)
-            {
-                response.Message = $"PROBLEMAS AL INSERTAR CICLO: {ex.Message}";
-                throw new Exception($"ERROR AL INSERTAR CICLO: {ex.Message}");
+                    var cicloAudit = AuditHelper.ConvertToAudit<Tciclo, TcicloAuditoria>(nuevoCiclo);
+                    cicloAudit.IdCiclo = 0;
+                    context.TcicloAuditoria.Add(cicloAudit);
+                    context.SaveChanges();
+                     
+
+                    transaccion.Commit();
+                    response = Utils.OkResponse(nuevoCiclo);
+                }
+                catch (Exception ex)
+                {
+                    transaccion.Rollback();
+                    response.Message = $"PROBLEMAS AL INSERTAR CICLO: {ex.Message}";
+                    throw new Exception($"ERROR AL INSERTAR CICLO: {ex.Message}");
+                }
             }
             return response;
         }

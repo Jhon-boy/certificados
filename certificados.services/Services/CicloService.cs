@@ -1,6 +1,7 @@
 ﻿using certificados.dal.DataAccess;
 using certificados.models.Entitys.dbo;
 using certificados.models.Entitys;
+using certificados.services.Utils;
 
 namespace certificados.services.Services
 {
@@ -18,9 +19,9 @@ namespace certificados.services.Services
             ResponseApp grupoResponse = ConsultarCicloPorNombre(ciclo.Nombre);
             dynamic data = grupoResponse.Data;
 
-            if (ciclo.Nombre.Equals(data.Nombre))
+            if ( grupoResponse.Cod == CONSTANTES.COD_OK && ciclo.Nombre.Equals(data.Nombre))
             {
-                return Utils.Utils.BadResponse("MODALIDAD " + ciclo.Nombre.ToString() + " YA EXISTENTE");
+                return Utils.Utils.BadResponse("CICLO " + ciclo.Nombre.ToString() + " YA EXISTENTE");
             }
 
             return cicloDA.insertarCiclo(ciclo);
