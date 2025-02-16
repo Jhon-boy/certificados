@@ -83,7 +83,7 @@ async function agregarRol(event) {
     };
 
     const bodyRequest = {
-        Nombre: document.getElementById('rolNombre').value,
+        Nombre: document.getElementById('rolNombre').value.trim(),
         Estado: document.getElementById('rolEstado').value === 'true',
         UsuarioIngreso: userInfoR.idUsuario,
         Observacion: document.getElementById('rolDescripcion').value,

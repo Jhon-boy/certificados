@@ -81,7 +81,7 @@ async function handleAgregarCiclo(event) {
     event.preventDefault();
     let userInfoConfig = JSON.parse(localStorage.getItem('userInfo'));
     const bodyRequest = {
-        Nombre: document.getElementById('ciclo-nombre').value,
+        Nombre: document.getElementById('ciclo-nombre').value.trim(),
         Descripcion: document.getElementById('ciclo-descripcion').value,
         UsuarioIngreso: userInfoConfig.idUsuario
     };

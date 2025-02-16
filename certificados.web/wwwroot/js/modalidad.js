@@ -81,7 +81,7 @@ async function handleAgregarModalidad(event) {
     event.preventDefault();
 
     const bodyRequest = {
-        Nombre: document.getElementById('modalidad-nombre').value,
+        Nombre: document.getElementById('modalidad-nombre').value.trim(),
         Descripcion: document.getElementById('modalidad-descripcion').value,
         UsuarioIngreso: userInfo.idUsuario
     };

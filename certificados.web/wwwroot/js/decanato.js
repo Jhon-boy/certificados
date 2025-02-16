@@ -117,7 +117,7 @@ async function guardarCambiosDecanato() {
 
 async function crearDecanato(event) {
     event.preventDefault();
-    const nombre = document.getElementById("decanato-nombre").value;
+    const nombre = document.getElementById("decanato-nombre").value.trim();
     const usuarioIngreso = userInfoDecanato.idUsuario;
 
     const data = { 

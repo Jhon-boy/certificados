@@ -106,7 +106,7 @@ async function handleAgregarGrupo(event) {
     event.preventDefault();
 
     const bodyRequest = {
-        Nombre: document.getElementById('grupo-nombre').value,
+        Nombre: document.getElementById('grupo-nombre').value.trim(),
         Cantidad: parseInt(document.getElementById('grupo-cantidad').value),
         UsuarioIngreso: userInfo.idUsuario
     };
