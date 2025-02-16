@@ -141,42 +141,60 @@ const Utils = (() => {
      * @param {any} message
      * @param {any} type
      */
-    const showToast = (message, type = 'primary') => {
-        const toastContainerId = "toastContainer";
-        let toastContainer = document.getElementById(toastContainerId);
-        if (!toastContainer) {
-            toastContainer = document.createElement("div");
-            toastContainer.id = toastContainerId;
-            toastContainer.style.position = "fixed";
-            toastContainer.style.bottom = "20px";
-            toastContainer.style.left = "50%";
-            toastContainer.style.transform = "translateX(-50%)";
-            toastContainer.style.zIndex = "1060";
-            toastContainer.style.width = "fit-content";
-            document.body.appendChild(toastContainer);
-        }
+    const showToast = (message, type = 'primary', duration = 5000) => {
+        try {
+            // Crear o reutilizar el contenedor de toasts
+            const toastContainerId = "toastContainer";
+            let toastContainer = document.getElementById(toastContainerId);
 
-        const toastHtml = `
-        <div class="toast align-items-center text-bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true"  style="width: 480px; height:65px; font-size: 1.2rem; padding: 20px;"> 
-              <div class="d-flex">
-               <center >
-                     <div class="toast-body">
-                    ${message}
-                     </div>
-                </center>  
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Entenido"></button>
+            if (!toastContainer) {
+                toastContainer = document.createElement("div");
+                toastContainer.id = toastContainerId;
+                toastContainer.style.position = "fixed";
+                toastContainer.style.bottom = "20px";
+                toastContainer.style.left = "50%";
+                toastContainer.style.transform = "translateX(-50%)";
+                toastContainer.style.zIndex = "1060";
+                toastContainer.style.width = "fit-content";
+                document.body.appendChild(toastContainer);
+            }
+
+            // Crear el toast
+            const toastHtml = `
+            <div class="toast align-items-center text-bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true" style="width: 480px; height: 65px; font-size: 1.2rem; padding: 20px;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="toast-body text-center flex-grow-1">
+                        ${message}
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+                </div>
             </div>
-        </div>`;
+        `;
 
-        const tempDiv = document.createElement("div");
-        tempDiv.innerHTML = toastHtml.trim();
-        const toastElement = tempDiv.firstChild;
-        toastContainer.appendChild(toastElement);
-        const toast = new bootstrap.Toast(toastElement);
-        toast.show();
-        toastElement.addEventListener("hidden.bs.toast", () => {
-            toastElement.remove();
-        });
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = toastHtml.trim();
+            const toastElement = tempDiv.firstChild;
+
+            // Añadir el toast al contenedor
+            toastContainer.appendChild(toastElement);
+
+            // Inicializar el toast de Bootstrap
+            const toast = new bootstrap.Toast(toastElement, {
+                autohide: true, // Ocultar automáticamente
+                delay: duration, // Duración personalizada
+            });
+
+            // Mostrar el toast
+            toast.show();
+
+            // Eliminar el toast del DOM después de que se oculte
+            toastElement.addEventListener("hidden.bs.toast", () => {
+                toastElement.remove();
+            });
+
+        } catch (error) {
+            console.error("Error al mostrar el toast:", error);
+        }
     };
     const path = 'api';
     const COD_OK = 'OK';

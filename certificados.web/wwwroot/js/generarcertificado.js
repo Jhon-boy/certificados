@@ -96,8 +96,8 @@ async function listarIntegrantesAprobados(id) {
                         </td>
                         <td class="estado">${estado}</td>
                         <td>
-                            <i class="i bi-file-earmark-pdf-fill text-success me-3"
-                            style="cursor: pointer;"
+                            <i class="i bi-file-earmark-pdf-fill text-primary me-3"
+                            style="cursor: pointer;font-size: 1.4rem;"
                             onclick="generarCertificado('${persona.tpersona.cedula}')" 
                             data-bs-toggle="tooltip" 
                             data-bs-placement="top" 
