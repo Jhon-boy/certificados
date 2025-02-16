@@ -122,14 +122,15 @@ namespace certificados.dal.DataAccess
             {
                 try
                 {
-                    var tipoEventoExistente = context.TtipoEvento.FirstOrDefault(e => e.Idtipoevento == idEvento);
+                    // Busca el evento por su ID
                     var eventoExistente = context.Tevento.FirstOrDefault(e => e.Idevento == idEvento);
 
-                    if (eventoExistente != null && tipoEventoExistente != null)
+                    if (eventoExistente != null)
                     {
-                        context.TtipoEvento.Remove(tipoEventoExistente);
-                        context.Tevento.Remove(eventoExistente);
+                        // Cambia el estado del evento a "Inactivo"
+                        eventoExistente.Estado = "INA"; 
 
+                        // Guarda los cambios en la base de datos
                         context.SaveChanges();
                         transaction.Commit();
 
@@ -143,8 +144,8 @@ namespace certificados.dal.DataAccess
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    response = Utils.BadResponse($"ERROR AL ELIMINAR EVENTO: {ex.Message}");
-                    throw new Exception($"ERROR AL ELIMINAR EVENTO: {ex.Message}");
+                    response = Utils.BadResponse($"ERROR AL CAMBIAR EL ESTADO DEL EVENTO: {ex.Message}");
+                    throw new Exception($"ERROR AL CAMBIAR EL ESTADO DEL EVENTO: {ex.Message}");
                 }
             }
 

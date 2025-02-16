@@ -10,7 +10,9 @@ async function cargarDatosPlanificacion() {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
             },
-            true);
+            true
+        );
+
         setTimeout(() => {
             const hoy = new Date();
 
@@ -18,35 +20,38 @@ async function cargarDatosPlanificacion() {
             const tablaBody = document.querySelector("#tabla-evento tbody");
             tablaBody.innerHTML = '';
 
-            if (response.cod === Utils.COD_OK && response.data.length > 0) { 
-                const eventosEnCurso = response.data.filter(evento => new Date(evento.fechaFin) > hoy);
+            if (response.cod === Utils.COD_OK && response.data.length > 0) {
+                // Filtra los eventos que estén en curso y tengan el estado "ACT"
+                const eventosEnCurso = response.data.filter(evento =>
+                    new Date(evento.fechaFin) > hoy && evento.estado === "ACT"
+                );
 
                 if (eventosEnCurso.length > 0) {
                     eventosEnCurso.forEach(evento => {
                         const fila = `
-                    <tr>
-                        <td>${evento.idevento}</td>
-                        <td>${evento.tematica}</td>
-                        <td>${evento.dominio}</td>
-                        <td>${Utils.formatFecha(evento.fechaInicio)} - ${Utils.formatFecha(evento.fechaFin)}</td>
-                        <td>${evento.tmodalidad.nombre}</td>
-                        <td>${evento.idGrupo}</td>
-                        <td>
-                            <i class="bi bi-pencil-fill text-success me-3"
-                                   style="cursor: pointer;"
-                                   onclick="editarPlanificacion(${evento.idevento})" 
-                                   data-bs-toggle="tooltip" 
-                                   data-bs-placement="top" 
-                                   title="Editar Planificacion"></i>
-                            <i class="bi bi-trash-fill text-danger" 
-                                style="cursor: pointer;" 
-                                onclick="eliminarPlanificacion(${evento.idevento})" 
-                                data-bs-toggle="tooltip" 
-                                data-bs-placement="top" 
-                                title="Eliminar Planificacion"></i>
-                        </td>
-                    </tr>
-                `;
+                            <tr>
+                                <td>${evento.idevento}</td>
+                                <td>${evento.tematica}</td>
+                                <td>${evento.dominio}</td>
+                                <td>${Utils.formatFecha(evento.fechaInicio)} - ${Utils.formatFecha(evento.fechaFin)}</td>
+                                <td>${evento.tmodalidad.nombre}</td>
+                                <td>${evento.idGrupo}</td>
+                                <td>
+                                    <i class="bi bi-pencil-fill text-success me-3"
+                                           style="cursor: pointer;"
+                                           onclick="editarPlanificacion(${evento.idevento})" 
+                                           data-bs-toggle="tooltip" 
+                                           data-bs-placement="top" 
+                                           title="Editar Planificacion"></i>
+                                    <i class="bi bi-trash-fill text-danger" 
+                                        style="cursor: pointer;" 
+                                        onclick="eliminarPlanificacion(${evento.idevento})" 
+                                        data-bs-toggle="tooltip" 
+                                        data-bs-placement="top" 
+                                        title="Eliminar Planificacion"></i>
+                                </td>
+                            </tr>
+                        `;
                         tablaBody.insertAdjacentHTML("beforeend", fila);
                     });
                     Utils.showToast('EVENTOS CARGADOS EXITOSAMENTE', 'success');
@@ -58,8 +63,8 @@ async function cargarDatosPlanificacion() {
                     });
 
                 } else {
-                    tablaBody.innerHTML = '<tr><td colspan="7" class="text-center">No hay eventos en curso.</td></tr>';
-                    Utils.showToast('NO EXISTEN EVENTOS EN CURSO', 'info');
+                    tablaBody.innerHTML = '<tr><td colspan="7" class="text-center">No hay eventos en curso con estado activo.</td></tr>';
+                    Utils.showToast('NO EXISTEN EVENTOS EN CURSO CON ESTADO ACTIVO', 'info');
                 }
             } else {
                 tablaBody.innerHTML = '<tr><td colspan="7" class="text-center">No se encontraron eventos.</td></tr>';
@@ -75,7 +80,7 @@ async function cargarDatosPlanificacion() {
         await cargarFacultad();
 
     } catch (error) {
-        console.log(error)
+        console.log(error);
         Utils.showToast("Error cargando datos iniciales", 'error');
     }
 }
@@ -343,7 +348,7 @@ async function handleAgregarPlanificacion(event) {
         "IdModalidad": `${parseInt(document.getElementById('modalidadAll').value, 10)}`,
         "IdTipoEvento": `${parseInt(document.getElementById('tipo-evento').value, 10)}`,
         "IdDecanato": `${parseInt(document.getElementById('decanatoAll').value, 10)}`,
-        "Admin": `${userInfoPl.idUsuario}`
+        "UsuarioIngreso": `${userInfoPl.idUsuario}`
     };
 
 
@@ -451,7 +456,7 @@ async function handleEditarPlanificacion(event) {
         "FechaInicio": `${document.getElementById('fecha-inicio-editar').value}T08:30:00`,
         "FechaFin": `${document.getElementById('fecha-fin-editar').value}T12:30:00`,
         "Horas": `${parseInt(document.getElementById('horas-editar').value, 10)}`,
-        "Admin": `${userInfoPl.idUsuario}`,
+        "UsuarioActualizacion": `${userInfoPl.idUsuario}`,
         "Estado": "ACT",
         "Lugar": null,
     };
@@ -512,6 +517,11 @@ async function eliminarPlanificacion(id) {
 
         if (response.cod === Utils.COD_OK) {
             Utils.showToast("Planificación eliminada exitosamente", 'success');
+
+            if ($.fn.DataTable.isDataTable('#tabla-evento')) {
+                $('#tabla-evento').DataTable().clear().destroy();
+            }
+
             cargarDatosPlanificacion();
         } else {
             const messageClient = response.message || "Error al eliminar la planificación.";
