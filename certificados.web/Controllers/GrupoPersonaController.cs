@@ -80,7 +80,13 @@ namespace certificados.web.Controllers
             {
                 return Utils.BadResponse("El parámetro 'id' no es válido.");
             }
-            return grupoPersonaService.BuscarById(id, estado);
+
+            if (!int.TryParse(request["idRol"]?.ToString(), out int idRol))
+            {
+                return Utils.BadResponse("El parámetro 'idRol' no es válido.");
+            }
+
+            return grupoPersonaService.BuscarBeneficiarios(id, idRol, estado);
         }
 
         [HttpPost("crear")]

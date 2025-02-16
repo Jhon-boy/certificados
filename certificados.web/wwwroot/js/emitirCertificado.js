@@ -45,6 +45,8 @@ async function cargarDatosCertificadosEmicion() {
                 Utils.showToast('NO EXISTEN GRUPOS REGISTRADOS', 'info');
             }
         }, 150);
+
+        await cargarRolesCertificado();
          
     } catch (error) {
         Utils.showToast("Error cargando datos iniciales", 'error');
@@ -52,12 +54,14 @@ async function cargarDatosCertificadosEmicion() {
 }
  
 async function listarIntegrantes(id) {
+    const beneficiario = document.getElementById("beneficiario").value;
 
     try {
-
         const payload = {
-            idGrupo:id
-        }
+            idGrupo: id,
+            idRol: beneficiario
+        };
+
         const requestIntegrantes = await Utils.httpRequest(
             `${Utils.path}/grupoPersona/pendientes`,
             {
@@ -67,35 +71,36 @@ async function listarIntegrantes(id) {
             },
             true
         );
+
         const tablaBody = document.querySelector("#tabla-certificado tbody");
         tablaBody.innerHTML = '';
 
-        if (requestIntegrantes.cod == Utils.COD_OK && requestIntegrantes.data.length > 0) {
-            requestIntegrantes.data.forEach(persona => { 
-                const asistenciaMarcada = true; // Por defecto desmarcado
-                const calificacionMarcada = true; // Por defecto desmarcado
-                 
+        if (requestIntegrantes.cod === Utils.COD_OK && requestIntegrantes.data.length > 0) {
+            requestIntegrantes.data.forEach(persona => {
+                const asistenciaMarcada = true; // Por defecto marcado
+                const calificacionMarcada = true; // Por defecto marcado
                 const estado = asistenciaMarcada && calificacionMarcada ? "Aprobado" : "Pendiente";
 
                 const fila = `
-                <tr>
-                    <td>${persona.tpersona.cedula}</td>
-                    <td>${persona.tpersona.nombres} ${persona.tpersona.apellidos}</td>
-                     <td>
-                        <div class="form-check">
-                            <input class="form-check-input asistencia" type="checkbox" checked>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="form-check">
-                            <input class="form-check-input calificacion" type="checkbox" checked>
-                        </div>
-                    </td> 
-                    <td  class="estado">${estado}</td>
-                </tr>
-            `;
+                    <tr>
+                        <td>${persona.tpersona.cedula}</td>
+                        <td>${persona.tpersona.nombres} ${persona.tpersona.apellidos}</td>
+                        <td>
+                            <div class="form-check">
+                                <input class="form-check-input asistencia" type="checkbox" ${asistenciaMarcada ? 'checked' : ''}>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="form-check">
+                                <input class="form-check-input calificacion" type="checkbox" ${calificacionMarcada ? 'checked' : ''}>
+                            </div>
+                        </td>
+                        <td class="estado">${estado}</td>
+                    </tr>
+                `;
                 tablaBody.insertAdjacentHTML("beforeend", fila);
             });
+
             reseteoSeleccion();
             const selectCondicion = document.getElementById("condicion");
             selectCondicion.onchange = () => {
@@ -105,11 +110,9 @@ async function listarIntegrantes(id) {
             escucharCambiosCheckboxes();
         } else {
             Utils.showToast('NO EXISTEN INTEGRANTES EN ESTE GRUPO', 'info');
-            return;
         }
-
     } catch (error) {
-        console.log('ERROR -->', error);
+        console.error('ERROR -->', error);
         Utils.showToast("ERROR AL CARGAR DATOS", "error");
     }
 }
@@ -172,7 +175,14 @@ function manejarHabilitacionCheckboxes(condicion) {
 
 function obtenerDatosAprobadosC() { 
     const selectGrupo = document.getElementById("persona-id-grupo");
+    const selectBeneficiario = document.getElementById("beneficiario");
     const idGrupo = selectGrupo.value;
+    const idRol = selectBeneficiario.value;
+
+    if (!idRol) {
+        Utils.showToast("Por favor selecciona un beneficiario antes de continuar", "info");
+        return null;
+    }
 
     if (!idGrupo) {
         Utils.showToast("Por favor selecciona un grupo antes de continuar", "info");
@@ -239,7 +249,39 @@ async function enviarDatosAprobados() {
     }
 
 }
+async function cargarRolesCertificado() {
+    try {
+        const responseRol = await Utils.httpRequest(
+            `${Utils.path}/rol/all`,
+            {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            },
+            true
+        );
 
+        if (responseRol.cod === Utils.COD_OK && responseRol.data.length > 0) {
+            const selectRol = document.getElementById("beneficiario");
+
+            // Agregar la opción por defecto
+            selectRol.innerHTML = '<option value="">Seleccionar Beneficiarios</option>';
+
+            responseRol.data.forEach(rol => {
+                // Verificar si el nombre del rol es "Participantes" o "Facilitadores"
+                if (rol.nombre === "Participante" || rol.nombre === "Facilitador") {
+                    const option = document.createElement("option");
+                    option.value = rol.idRol;
+                    option.textContent = rol.nombre;
+                    selectRol.appendChild(option);
+                }
+            });
+        } else {
+            Utils.showToast('NO EXISTEN MODALIDADES REGISTRADAS', 'info');
+        }
+    } catch (error) {
+        Utils.showToast("Error cargando datos iniciales", 'error');
+    }
+}
 
 function limpiarTabla() {
     const tablaBody = document.querySelector("#tabla-certificado tbody");

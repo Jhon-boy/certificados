@@ -155,21 +155,22 @@ const Utils = (() => {
                 toastContainer.style.left = "50%";
                 toastContainer.style.transform = "translateX(-50%)";
                 toastContainer.style.zIndex = "1060";
+                toastContainer.style.maxWidth = "90%"; // Limitar el ancho máximo
                 toastContainer.style.width = "fit-content";
                 document.body.appendChild(toastContainer);
             }
 
             // Crear el toast
             const toastHtml = `
-            <div class="toast align-items-center text-bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true" style="width: 480px; height: 65px; font-size: 1.2rem; padding: 20px;">
+            <div class="toast align-items-center text-bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true" style="max-width: 100%; width: fit-content; height: auto; min-height: 60px; font-size: 1.2rem; padding: 10px;">
                 <div class="d-flex justify-content-between align-items-center">
-                    <div class="toast-body text-center flex-grow-1">
-                        ${message}
-                    </div>
-                    <button type="button" class="btn-close btn-close-white me-2" data-bs-dismiss="toast" aria-label="Cerrar"></button>
+                <div class="toast-body text-center flex-grow-1" style="word-wrap: break-word; overflow: hidden; text-overflow: ellipsis;">
+                    ${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2" data-bs-dismiss="toast" aria-label="Cerrar"></button>
                 </div>
             </div>
-        `;
+    `;
 
             const tempDiv = document.createElement("div");
             tempDiv.innerHTML = toastHtml.trim();

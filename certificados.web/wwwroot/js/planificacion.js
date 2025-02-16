@@ -112,7 +112,7 @@ async function cargarTipoEvento() {
                 selectTipoEventoEditar.appendChild(optionEditar);
             });
         } else {  
-           Utils.showToast('NO EXISTEN ROLES REGISTRADOS', 'info');
+           Utils.showToast('NO EXISTEN TIPO DE EVENTOS REGISTRADOS', 'info');
         }
     } catch (error) {
         console.log(error)
@@ -144,7 +144,7 @@ async function cargarFacultad() {
                 selectDecanatoEditar.appendChild(optionEditar);
             });
         } else {
-            Utils.showToast('NO EXISTEN ROLES REGISTRADOS', 'info');
+            Utils.showToast('NO EXISTEN DECANATOS REGISTRADOS', 'info');
         }
     } catch (error) {
         console.log(error)
@@ -313,7 +313,7 @@ async function cargarGrupos() {
                 selectGrupoEditar.appendChild(optionEditar);
             });
         } else {
-            Utils.showToast('NO EXISTEN MODALIDADES REGISTRADAS', 'info');
+            Utils.showToast('NO EXISTEN GRUPOS REGISTRADOS', 'info');
         }
     } catch (error) {
         Utils.showToast("Error cargando datos iniciales", 'error');
