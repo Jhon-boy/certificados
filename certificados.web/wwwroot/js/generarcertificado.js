@@ -48,6 +48,7 @@ async function cargarDatosGenerarCertificados() {
 
         await cargarFormatosGenerar();
         await cargarDecanatosGenerar();
+        await cargarRolesGenerarCertificado();
 
     } catch (error) {
         Utils.showToast("Error cargando datos iniciales", 'error');
@@ -56,10 +57,13 @@ async function cargarDatosGenerarCertificados() {
 
 // Listar los integrantes aprobados del grupo seleccionado
 async function listarIntegrantesAprobados(id) {
+    const beneficiario = document.getElementById("generar-beneficiario").value;
+
     try {
         const payload = {
             idGrupo: id,
-            estado: false // Solo los aprobados
+            estado: false, // Solo los aprobados
+            idRol: beneficiario
         };
         const requestIntegrantes = await Utils.httpRequest(
             `${Utils.path}/grupoPersona/pendientes`,
@@ -102,6 +106,12 @@ async function listarIntegrantesAprobados(id) {
                             data-bs-toggle="tooltip" 
                             data-bs-placement="top" 
                             title="Generar Certificado"></i>
+                            <i class="i bi bi-envelope-arrow-up-fill text-secondary me-3"
+                            style="cursor: pointer;font-size: 1.4rem;"
+                            onclick="enviarCertificado('${persona.tpersona.cedula}')" 
+                            data-bs-toggle="tooltip" 
+                            data-bs-placement="top" 
+                            title="Enviar Certificado"></i>
                         </td>
                     </tr>
                 `;
@@ -220,15 +230,15 @@ async function generarCertificado(cedula) {
     try {
         // Obtener el valor del formato seleccionado
         const formato = document.getElementById('formato').value;
-        const decanato = document.getElementById('decanato').value;
+        const decanato = document.getElementById('generar-decanato').value;
 
         // Validar si el formato está seleccionado
         if (!formato || formato === "Selecciona Formato") {
-            Utils.showToast('Por favor, selecciona un formato.', 'error');
+            Utils.showToast('Por favor, selecciona un formato.', 'info');
             return;
         }
-        if (!decanato || decanato === "Seleccionar decanato") {
-            Utils.showToast('Por favor, selecciona un decanato.', 'error');
+        if (!decanato || decanato === "Seleccionar Decanato") {
+            Utils.showToast('Por favor, selecciona un decanato.', 'info');
             return;
         }
 
@@ -247,7 +257,8 @@ async function generarCertificado(cedula) {
                 body: JSON.stringify({
                     cedula: cedula,
                     idFormato: formato,
-                    idDecanato: decanato
+                    idDecanato: decanato,
+                    isEnviarEmail: false
                 })
             },
             true
@@ -296,6 +307,59 @@ async function generarCertificado(cedula) {
     }
 }
 
+async function enviarCertificado(cedula) {
+    try {
+        // Obtener el valor del formato seleccionado
+        const formato = document.getElementById('formato').value;
+        const decanato = document.getElementById('generar-decanato').value;
+
+        // Validar si el formato está seleccionado
+        if (!formato || formato === "Selecciona Formato") {
+            Utils.showToast('Por favor, selecciona un formato.', 'info');
+            return;
+        }
+        if (!decanato || decanato === "Seleccionar Decanato") {
+            Utils.showToast('Por favor, selecciona un decanato.', 'info');
+            return;
+        }
+
+        // Validar si la cédula es válida
+        if (!cedula) {
+            Utils.showToast('Cédula no válida.', 'error');
+            return;
+        }
+
+        // Crear el cuerpo de la solicitud con cédula y formato
+        const requestApr = await Utils.httpRequest(
+            `${Utils.path}/certificado/generarcertificado`,
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    cedula: cedula,
+                    idFormato: formato,
+                    idDecanato: decanato,
+                    isEnviarEmail: true
+                })
+            },
+            true
+        );
+
+        // Manejar la respuesta
+        if (requestApr.cod === Utils.COD_OK) {
+            const mensaje = requestApr.message;
+            Utils.showToast(mensaje, 'info');
+
+        } else {
+            const messageClient = requestApr.message || "Ocurrió un error inesperado.";
+            const messageTech = requestApr.data || null;
+            Utils.showErrorModal(messageClient, messageTech);
+        }
+
+    } catch (error) {
+        Utils.showToast("Error al procesar la solicitud", "error");
+    }
+}
 async function cargarFormatosGenerar() {
     try {
         const responseFormato = await Utils.httpRequest(
@@ -334,7 +398,7 @@ async function cargarDecanatosGenerar() {
             true
         );
         if (responseDecanato.cod === Utils.COD_OK && responseDecanato.data.length > 0) {
-            const selectDecanto = document.getElementById("decanato");
+            const selectDecanto = document.getElementById("generar-decanato");
 
             responseDecanato.data.forEach(dec => {
                 const option = document.createElement("option");
@@ -352,4 +416,38 @@ async function cargarDecanatosGenerar() {
 
 async function limpiarFrmGenerarCertificado() {
     document.getElementById('formParticipante').reset();
+}
+
+async function cargarRolesGenerarCertificado() {
+    try {
+        const responseRol = await Utils.httpRequest(
+            `${Utils.path}/rol/all`,
+            {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            },
+            true
+        );
+
+        if (responseRol.cod === Utils.COD_OK && responseRol.data.length > 0) {
+            const selectRol = document.getElementById("generar-beneficiario");
+
+            // Agregar la opción por defecto
+            selectRol.innerHTML = '<option value="">Seleccionar Beneficiarios</option>';
+
+            responseRol.data.forEach(rol => {
+                // Verificar si el nombre del rol es "Participantes" o "Facilitadores"
+                if (rol.nombre === "Participante" || rol.nombre === "Facilitador") {
+                    const option = document.createElement("option");
+                    option.value = rol.idRol;
+                    option.textContent = rol.nombre;
+                    selectRol.appendChild(option);
+                }
+            });
+        } else {
+            Utils.showToast('NO EXISTEN MODALIDADES REGISTRADAS', 'info');
+        }
+    } catch (error) {
+        Utils.showToast("Error cargando datos iniciales", 'error');
+    }
 }

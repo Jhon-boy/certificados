@@ -99,6 +99,56 @@ namespace certificados.services.Services
             ";
         }
 
+        public ResponseApp SendEmailIndividual(string email, byte[]? pdf = null)
+        {
+            try
+            {
+                using (var cliente = new SmtpClient(host, puerto))
+                using (var correo = new MailMessage())
+                {
+                    correo.From = new MailAddress("tvboxtelevisor95@gmail.com");
+                    correo.To.Add(email);
+                    correo.Subject = "NOTIFICACION DE CERTIFICADOS UNIVERSIDAD DE GUAYAQUIL";
+                    correo.Body = BodyNotificacion();
+                    correo.IsBodyHtml = true;
+
+                    if (pdf != null)
+                    {
+                        correo.Attachments.Add(new Attachment(new MemoryStream(pdf), "CERTIFICADO.pdf", "application/pdf"));
+                    }
+
+                    cliente.Credentials = new NetworkCredential("tvboxtelevisor95@gmail.com", "orpt rnim gqeg vlfn");
+                    cliente.EnableSsl = true;
+                    cliente.Send(correo);
+
+                    return Utils.Utils.OkResponse($"CORREO ENVIADO A: {email}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ERROR AL ENVIAR MAIL: {ex.Message}");
+                return Utils.Utils.BadResponse($"ERROR EN EL ENVIO DE MAIL: {ex.Message}");
+            }
+        }
+
+        private static string BodyNotificacion()
+        {
+            return $@"
+                    <html>
+                    <body>
+                        <h1>Emisión de Certificado</h1>
+                        <p>Estimado,</p>
+                        </br>
+                        <p>Nos complace informarle que se ha emitido el certificado correspondiente a su participación en el evento organizado por la Universidad de Guayaquil</strong>.</p>
+                        </br>
+                        <p>Adjunto encontrará su certificado en formato PDF.</p>
+                        </br>
+                        <p>Gracias por su participación.</p>
+                    </body>
+                    </html>
+            ";
+        }
+
     }
 
 }

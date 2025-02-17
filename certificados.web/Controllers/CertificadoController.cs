@@ -24,7 +24,8 @@ namespace certificados.web.Controllers
 
 
         public CertificadoController(CertificadosService certificadosService, EventoService evento, GrupoService grupoService,
-            GrupoPersonaService grupoPersonaService, DocenteService docenteService, FormatoCertificadoService formato, PersonaService personaService, DecanatoService decanatoService)
+            GrupoPersonaService grupoPersonaService, DocenteService docenteService, FormatoCertificadoService formato, PersonaService personaService, 
+            DecanatoService decanatoService)
         {
             this.certificadosService = certificadosService;
             this.eventoService = evento;
@@ -258,15 +259,27 @@ namespace certificados.web.Controllers
             return certificadosService.Emitir(certificado.Tevento, listaPersonas, certificado, Listadocente, certificado.Tevento.Tdecanato);
             // return certificadosService.Notificar(tevento, listaPersonas);
         }
+
         [HttpPost("generarcertificado")]
         public ActionResult<ResponseApp> GenerarCertificado([FromBody] Dictionary<string, object> request)
         {
+            bool isEnviarEmail = false;
+
             try
             {
                 // Validar que los parámetros requeridos estén presentes
                 if (!request.ContainsKey("cedula") || !request.ContainsKey("idFormato") || !request.ContainsKey("idDecanato"))
                 {
                     return BadRequest(Utils.BadResponse("Faltan parámetros requeridos en la solicitud."));
+                }
+
+                if (request.ContainsKey("isEnviarEmail"))
+                {
+                    var isEnviarEmailProperty = (JsonElement)request["isEnviarEmail"];
+                    if (isEnviarEmailProperty.ValueKind == JsonValueKind.True || isEnviarEmailProperty.ValueKind == JsonValueKind.False)
+                    {
+                        isEnviarEmail = isEnviarEmailProperty.GetBoolean();
+                    }
                 }
 
                 // Extraer y convertir los valores del request
@@ -416,7 +429,17 @@ namespace certificados.web.Controllers
 
                     // Convertir el PDF a base64 y retornar la respuesta
                     var pdfBytes = memoryStream.ToArray();
-                    return Ok(new ResponseApp { Cod = "OK", Message = "CERTIFICADO GENERADO CON ÉXITO", Data = Convert.ToBase64String(pdfBytes) });
+                    string base64String = Convert.ToBase64String(pdfBytes);
+
+                    if (isEnviarEmail)
+                    {
+                        certificadosService.EnviarCertificadoIndividual(cedula, pdfBytes);
+                        return Ok(new ResponseApp { Cod = "OK", Message = "CERTIFICADO ENVIADO AL CORREO ELECTRÓNICO CON ÉXITO", Data = "" });
+                    }
+                    else 
+                    {
+                        return Ok(new ResponseApp { Cod = "OK", Message = "CERTIFICADO GENERADO CON ÉXITO", Data = base64String });
+                    }
                 }
             }
             catch (Exception ex)

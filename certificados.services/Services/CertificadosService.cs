@@ -203,5 +203,25 @@ namespace certificados.services.Services
 
             return Utils.Utils.OkResponse(dict);
         }
+        public ResponseApp EnviarCertificadoIndividual(string cedula, byte[]? pdf)
+        {
+            var persona = personaService.ObtenerPersona(cedula);
+            if (persona == null)
+            {
+                return Utils.Utils.BadResponse("Persona no encontrada");
+            }
+
+            string jsonString = JsonSerializer.Serialize(persona);
+            var json = JsonDocument.Parse(jsonString);
+            string email = json.RootElement.GetProperty("data").GetProperty("mDatos").GetProperty("Email").GetString();
+
+            if (string.IsNullOrEmpty(email))
+            {
+                return Utils.Utils.BadResponse("Correo electrónico no disponible");
+            }
+
+            return Utils.Utils.OkResponse(emailService.SendEmailIndividual(email, pdf));
+        }
+
     }
 }
