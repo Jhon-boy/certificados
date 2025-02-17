@@ -1,6 +1,8 @@
 ﻿using certificados.models.Context;
 using certificados.models.Entitys;
+using certificados.models.Entitys.auditoria;
 using certificados.models.Entitys.dbo;
+using certificados.models.Helper;
 using certificados.services.Utils;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -36,6 +38,11 @@ namespace certificados.dal.DataAccess
 
 
                     context.Tevento.Add(tevento);
+                    context.SaveChanges();
+
+                    var eventoAudit = AuditHelper.ConvertToAudit<Tevento, TeventoAuditoria>(tevento);
+                    eventoAudit.Idevento = 0;
+                    context.TeventoAuditoria.Add(eventoAudit);
                     context.SaveChanges();
 
                     transaction.Commit();

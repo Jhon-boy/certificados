@@ -1,6 +1,8 @@
 ﻿using certificados.models.Context;
 using certificados.models.Entitys;
+using certificados.models.Entitys.auditoria;
 using certificados.models.Entitys.dbo;
+using certificados.models.Helper;
 using certificados.services.Utils;
 using System;
 using System.Collections.Generic;
@@ -17,25 +19,37 @@ namespace certificados.dal.DataAccess
         public ResponseApp insertarTipoEvento(TtipoEvento evento)
         {
             ResponseApp response = Utils.BadResponse(null);
-            try
-            {
-                TtipoEvento nuevoEvento = new TtipoEvento
-                {
-                    Nombre = Utils.SafeString(evento.Nombre),
-                    Descripcion = Utils.SafeString(evento.Descripcion),
-                    FCreacion = Utils.timeParsed(DateTime.Now),
-                    UsuarioIngreso = Utils.SafeString(evento.UsuarioIngreso)
-                };
-                
-                context.TtipoEvento.Add(nuevoEvento);
-                context.SaveChanges();
 
-                response = Utils.OkResponse(nuevoEvento);
-            }
-            catch (Exception ex)
+            using (var transaccion = context.Database.BeginTransaction())
             {
-                response.Message = $"PROBLEMAS AL INSERTAR EVENTO: {ex.Message}";
-                throw new Exception($"ERROR AL INSERTAR EVENTO: {ex.Message}");
+                 
+                try
+                {
+                    TtipoEvento nuevoEvento = new TtipoEvento
+                    {
+                        Nombre = Utils.SafeString(evento.Nombre),
+                        Descripcion = Utils.SafeString(evento.Descripcion),
+                        FCreacion = Utils.timeParsed(DateTime.Now),
+                        UsuarioIngreso = Utils.SafeString(evento.UsuarioIngreso)
+                    };
+
+                    context.TtipoEvento.Add(nuevoEvento);
+                    context.SaveChanges();
+
+                    var tipoAudit = AuditHelper.ConvertToAudit<TtipoEvento, TtipoEventoAuditoria>(nuevoEvento);
+                    tipoAudit.Idtipoevento = 0;
+                    context.TtipoEventoAuditoria.Add(tipoAudit);
+                    context.SaveChanges();
+
+                    transaccion.Commit();
+                    response = Utils.OkResponse(nuevoEvento);
+                }
+                catch (Exception ex)
+                {
+                    transaccion.Rollback();
+                    response.Message = $"PROBLEMAS AL INSERTAR EVENTO: {ex.Message}";
+                    throw new Exception($"ERROR AL INSERTAR EVENTO: {ex.Message}");
+                }
             }
             return response;
         }
