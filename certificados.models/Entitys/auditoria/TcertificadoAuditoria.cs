@@ -15,7 +15,7 @@ namespace certificados.models.Entitys.auditoria
         [Column("TITULO")]
         [StringLength(200)]
         [Required]
-        public required string Titulo { get; set; }
+        public   string Titulo { get; set; }
 
         [Column("IMAGEN")]
         public byte[]? Imagen { get; set; }

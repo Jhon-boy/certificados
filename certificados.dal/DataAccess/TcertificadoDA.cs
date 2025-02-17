@@ -1,6 +1,8 @@
 ﻿using certificados.models.Context;
 using certificados.models.Entitys;
+using certificados.models.Entitys.auditoria;
 using certificados.models.Entitys.dbo;
+using certificados.models.Helper;
 using certificados.services.Utils;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -34,6 +36,12 @@ namespace certificados.dal.DataAccess
 
                     context.Tcertificado.Add(tcertificado);
                     context.SaveChanges();
+
+                    var certifiAudit = AuditHelper.ConvertToAudit<Tcertificado, TcertificadoAuditoria>(tcertificado);
+                    certifiAudit.IdCertificado = 0;
+                    context.TcertificadoAuditoria.Add(certifiAudit);
+                    context.SaveChanges();
+
                     transaction.Commit();
                     response = Utils.OkResponse(tcertificado);
 
