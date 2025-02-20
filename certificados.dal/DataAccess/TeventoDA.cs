@@ -52,7 +52,7 @@ namespace certificados.dal.DataAccess
                 {
                     transaction.Rollback();
                     response.Message = "Error al insertar EVENTO " + ex.Message;
-                    throw new Exception($"ERROR AL INSERTAR EVEMTO: {ex.Message}");
+                    throw new Exception($"ERROR AL INSERTAR EVENTO: {ex.Message}");
 
                 }
 
