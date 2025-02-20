@@ -343,7 +343,7 @@ async function handleAgregarPlanificacion(event) {
         "Facilitador": `${document.getElementById('facilitadorAll').value}`,
         "Estado": "ACT",
         "Tematica": `${document.getElementById('tematica').value}`,
-        "Dominio": `${document.getElementById('dominioAll').value}`,
+        "Dominio": `${document.getElementById('dominioAll').value.trim()}`,
         "IdGrupo": `${parseInt(document.getElementById('grupoAll').value, 10)}`,
         "IdModalidad": `${parseInt(document.getElementById('modalidadAll').value, 10)}`,
         "IdTipoEvento": `${parseInt(document.getElementById('tipo-evento').value, 10)}`,
