@@ -45,7 +45,7 @@ async function inciarDatosActaAsistencia() {
                 response.data.forEach(evento => {
                     const option = document.createElement("option");
                     option.value = evento.idevento;
-                    option.textContent = evento.dominio;
+                    option.textContent = evento.ttipoEvento.nombre;
                     selectEventoActaAsistenciaAll.appendChild(option);
                 });
 
