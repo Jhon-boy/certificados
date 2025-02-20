@@ -7,6 +7,7 @@ using certificados.web.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using iTextSharp.text;
+using iTextSharp.text.pdf;
 
 namespace certificados.web.Controllers
 {
@@ -369,28 +370,22 @@ namespace certificados.web.Controllers
                     });
                     agregarSaltodeLinea(document, 4);
 
-                    // Crear tabla principal para QR y firmantes
-                    var mainTable = new iTextSharp.text.pdf.PdfPTable(2) { DefaultCell = { BorderWidth = 1 } };
-
                     // Agregar QR si existe
                     if (dataFormato.Qr != null)
                     {
                         var qrImage = iTextSharp.text.Image.GetInstance((byte[])dataFormato.Qr);
                         qrImage.ScaleAbsolute(80, 80);
-                        qrImage.Alignment = iTextSharp.text.Image.ALIGN_LEFT;
-
-                        mainTable.AddCell(new iTextSharp.text.pdf.PdfPCell(qrImage)
-                        {
-                            BorderWidth = 0,
-                            HorizontalAlignment = iTextSharp.text.Element.ALIGN_LEFT,
-                            VerticalAlignment = iTextSharp.text.Element.ALIGN_MIDDLE,
-                            PaddingRight = 0
-                        });
+                        qrImage.SetAbsolutePosition(50, 80); // Posición X, Y para el QR
+                        document.Add(qrImage);
                     }
 
-                    // Crear tabla de firmantes
-                    var firmantesTable = new iTextSharp.text.pdf.PdfPTable(3) { DefaultCell = { BorderWidth = 0 } };
+                    // Posiciones iniciales para los firmantes
+                    float startX = 300; // Posición X inicial para el primer firmante
+                    float startY = 100; // Posición Y común para todos los firmantes
+                    float lineHeight = 20;
+                    float spacing = 180; // Espacio horizontal entre firmantes
 
+                    // Crear lista de firmantes
                     var firmantes = new[]
                     {
                         (dataFormato.NombreFirmanteUno, dataFormato.CargoFirmanteUno),
@@ -398,33 +393,29 @@ namespace certificados.web.Controllers
                         (dataFormato.NombreFirmanteTres, dataFormato.CargoFirmanteTres)
                     };
 
+                    // Agregar firmantes al documento
                     foreach (var firmante in firmantes)
                     {
-                        var nombreFirmante = new iTextSharp.text.Paragraph(firmante.Item1, new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12, iTextSharp.text.Font.NORMAL, new BaseColor(11, 48, 90)))
+                        var nombreFirmante = new Paragraph(firmante.Item1, new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12, iTextSharp.text.Font.NORMAL, new BaseColor(11, 48, 90)))
                         {
-                            Alignment = iTextSharp.text.Element.ALIGN_CENTER
+                            Alignment = Element.ALIGN_CENTER
                         };
 
-                        var cargoFirmante = new iTextSharp.text.Paragraph(firmante.Item2, new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 10, iTextSharp.text.Font.NORMAL, new BaseColor(39, 72, 104)))
+                        var cargoFirmante = new Paragraph(firmante.Item2, new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 10, iTextSharp.text.Font.NORMAL, new BaseColor(39, 72, 104)))
                         {
-                            Alignment = iTextSharp.text.Element.ALIGN_CENTER
+                            Alignment = Element.ALIGN_CENTER
                         };
 
-                        firmantesTable.AddCell(new iTextSharp.text.pdf.PdfPCell()
-                        {
-                            BorderWidth = 0,
-                            Phrase = nombreFirmante
-                        });
+                        // Posicionar nombre del firmante
+                        ColumnText.ShowTextAligned(writer.DirectContent, Element.ALIGN_CENTER, new Phrase(nombreFirmante), startX, startY, 0);
 
-                        firmantesTable.AddCell(new iTextSharp.text.pdf.PdfPCell()
-                        {
-                            BorderWidth = 0,
-                            Phrase = cargoFirmante
-                        });
+                        // Posicionar cargo del firmante
+                        ColumnText.ShowTextAligned(writer.DirectContent, Element.ALIGN_CENTER, new Phrase(cargoFirmante), startX, startY - lineHeight, 0);
+
+                        // Mover la posición X para el siguiente firmante
+                        startX += spacing;
                     }
 
-                    mainTable.AddCell(new iTextSharp.text.pdf.PdfPCell(firmantesTable) { BorderWidth = 0 });
-                    document.Add(mainTable);
                     document.Close();
 
                     // Convertir el PDF a base64 y retornar la respuesta
