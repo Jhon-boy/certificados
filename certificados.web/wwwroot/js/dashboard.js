@@ -99,6 +99,19 @@ document.addEventListener('DOMContentLoaded', function () {
         Utils.backToIndex();
     }
     usuarioLogeado.innerHTML = `${userInfo.nombre}`;
+
+    // Generar y mostrar las iniciales del usuario
+    const nombre = userInfo.nombre || '';
+    const apellido = userInfo.apellido || '';
+    const inicialNombre = nombre.charAt(0).toUpperCase();
+    const inicialApellido = apellido.charAt(0).toUpperCase();
+    const iniciales = inicialNombre + inicialApellido;
+
+    const userInitial = document.getElementById('userInitial');
+    if (userInitial) {
+        userInitial.innerHTML = `<div style="width: 40px; height: 40px; border-radius: 50%; background-color: #007bff; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold;">${iniciales}</div>`;
+    }
+
     const defaultView = "Inicio";
     cargarVista(defaultView);
 
